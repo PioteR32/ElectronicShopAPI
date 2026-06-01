@@ -60,59 +60,89 @@ namespace ElectronicShopAPI.Controllers
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
-		[HttpPost("AddProduct")]
-		public async Task<ActionResult<IEnumerable<Product>>> AddProduct([FromBody] ProductDTO productDto)
+		[HttpPost("AddProducts")]
+		public async Task<ActionResult<IEnumerable<Product>>> AddProducts([FromBody] ProductDTO[] productsDto)
 		{
-			// Za pomocą LINQ budujemy zapytanie SQL (efekt końcowy to: SELECT ... WHERE Price <= maxPrice)
 			try
 			{
-				var newProduct = new Product
+				var newProducts = new List<Product>();
+				foreach (var productDto in productsDto)
 				{
-					Name = productDto.Name,
-					Description = productDto.Description,
-					Price = productDto.Price,
-					IsInStock = productDto.IsInStock
-				};
-				_context.Products.Add(newProduct);
+					var newProduct = new Product
+					{
+						Name = productDto.Name,
+						Description = productDto.Description,
+						Price = productDto.Price,
+						IsInStock = productDto.IsInStock
+					};
+
+					
+					newProducts.Add(newProduct);
+					
+				}
+
+				await _context.Products.AddRangeAsync(newProducts);
+
 				await _context.SaveChangesAsync();
-				return Ok(new { message = "Produkt został dodany pomyślnie", productId = newProduct.Id });
+				return Ok(new { message = "Produkty zostały dodane pomyślnie", productIds = newProducts.Select(p => p.Id) });
 
 			}
 			catch (Exception ex)
 			{
+				_context.ChangeTracker.Clear(); 
 				return BadRequest(new { message = "Nie udało się dodać produktu", error = ex.Message });
 			}
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
-		[HttpPost("DeleteProduct")]
-		public async Task<ActionResult<IEnumerable<Product>>> DeleteProduct([FromQuery] int id)
+		[HttpPost("DeleteProducts")]
+		public async Task<ActionResult<IEnumerable<Product>>> DeleteProducts([FromQuery] int[] id)
 		{
-			var product = await _context.Products.FindAsync(id);
-			if (product == null)
+			var products = new List<Product>();
+			foreach (var productId in id)
 			{
-				return NotFound($"Produkt o podanym ID ({id}) nie istnieje w sklepie.");
+				var product = await _context.Products.FindAsync(productId);
+				if (product == null)
+				{
+					return NotFound($"Produkt o podanym ID ({productId}) nie istnieje w sklepie.");
+				}
+				products.Add(product);
 			}
-			_context.Products.Remove(product);
+
+			_context.Products.RemoveRange(products);
 			await _context.SaveChangesAsync();
-			return Ok(new { message = "Produkt został usunięty pomyślnie", id = product.Id });
+			return Ok(new { message = "Produkty zostały usunięte pomyślnie", id = products.Select(p => p.Id) });
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
-		[HttpPost("ModifyProduct")]
-		public async Task<ActionResult<IEnumerable<Product>>> ModifyProduct([FromBody] ProductDTO productDto)
+		[HttpPost("ModifyProducts")]
+		public async Task<ActionResult<IEnumerable<Product>>> ModifyProducts([FromBody] ProductDTO[] productsDto)
 		{
-			var product = await _context.Products.FindAsync(productDto.Id);
-			if (product == null)
+			var products = new List<Product>();
+			foreach (var productDto in productsDto)
 			{
-				return NotFound($"Produkt o podanym ID ({productDto.Id}) nie istnieje w sklepie.");
+				var product = await _context.Products.FindAsync(productDto.Id);
+				if (product == null)
+				{
+					return NotFound($"Produkt o podanym ID ({productDto.Id}) nie istnieje w sklepie.");
+				}
+				products.Add(product);
 			}
-			product.Name = productDto.Name;
-			product.Description = productDto.Description;
-			product.Price = productDto.Price;
-			product.IsInStock = productDto.IsInStock;
+
+			foreach (var product in products)
+			{
+				var productDto = productsDto.FirstOrDefault(dto => dto.Id == product.Id);
+				if (productDto != null)
+				{
+					product.Name = productDto.Name;
+					product.Description = productDto.Description;
+					product.Price = productDto.Price;
+					product.IsInStock = productDto.IsInStock;
+				}
+			}
+
 			await _context.SaveChangesAsync();
-			return Ok(new { message = "Produkt został zaktualizowany pomyślnie", id = product.Id });
+			return Ok(new { message = "Produkty zostały zaktualizowane pomyślnie", ids = products.Select(p => p.Id) });
 		}
 	}
 }
