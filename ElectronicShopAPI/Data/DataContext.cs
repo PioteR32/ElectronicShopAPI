@@ -26,13 +26,15 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
+    public virtual DbSet<Town> Towns { get; set; }
+
     public virtual DbSet<UserList> UserLists { get; set; }
 
     public virtual DbSet<UserListItem> UserListItems { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.;Database=electronic_shop;User Id=electronic_shop_app;Password=loginPassword123!;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.;Database=electronic_shop;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +43,8 @@ public partial class DataContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__customer__3213E83FFFBA0D3B");
 
             entity.ToTable("customers");
+
+            entity.HasIndex(e => e.Email, "UQ_Customers_Email").IsUnique();
 
             entity.HasIndex(e => e.Email, "UQ__customer__AB6E616463301AEB").IsUnique();
 
@@ -54,6 +58,10 @@ public partial class DataContext : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
+            entity.Property(e => e.Password)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .HasColumnName("password");
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .HasColumnName("phone_number");
@@ -67,13 +75,24 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("email");
+            entity.Property(e => e.House)
+                .HasMaxLength(255)
+                .HasColumnName("house");
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("order_date");
+            entity.Property(e => e.Street)
+                .HasMaxLength(255)
+                .HasColumnName("street");
             entity.Property(e => e.TotalAmount)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total_amount");
+            entity.Property(e => e.TownId).HasColumnName("townId");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
@@ -140,6 +159,16 @@ public partial class DataContext : DbContext
             entity.HasOne(d => d.Product).WithMany(p => p.ShoppingCarts)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK__shopping___produ__45F365D3");
+        });
+
+        modelBuilder.Entity<Town>(entity =>
+        {
+            entity.ToTable("towns");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<UserList>(entity =>

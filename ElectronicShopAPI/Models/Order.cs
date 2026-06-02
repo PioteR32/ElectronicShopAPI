@@ -13,6 +13,14 @@ public partial class Order
 
     public decimal TotalAmount { get; set; }
 
+    public string Email { get; set; } = null!;
+
+    public string Street { get; set; } = null!;
+
+    public string House { get; set; } = null!;
+
+    public int TownId { get; set; }
+
     public virtual Customer? Customer { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();

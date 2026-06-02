@@ -1,16 +1,11 @@
-﻿
-using ElectronicShopAPI.Data; // Ścieżka do Twojego wygenerowanego DataContext
-using ElectronicShopAPI.DTO;
-using ElectronicShopAPI.Models;
-using Microsoft.AspNetCore.Authorization; // Ścieżka do Twoich modeli
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+ // Ścieżka do Twojego wygenerowanego DataContext
+using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
+using Microsoft.AspNetCore.Authorization;
+using ElectronicShopAPI.DTO;
 using System.Security.Claims;
-using System.Text;
+using ElectronicShopAPI.Data;
 
 namespace ElectronicShopAPI.Controllers
 {
@@ -58,7 +53,7 @@ namespace ElectronicShopAPI.Controllers
 
 		}
 		[AllowAnonymous]
-		[HttpGet("Login/{login}/Password/{password}")]
+		[HttpPost("Login/{login}/Password/{password}")]
 		public async Task<IActionResult> LogIn(string login, string password)
 		{
 			try

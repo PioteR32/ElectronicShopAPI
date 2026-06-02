@@ -23,7 +23,7 @@ namespace ElectronicShopAPI
 	}
 	public static class AuthorizationFnc
 	{
-		public static string GenerateToken(int userId, string username, string role, IConfiguration configuration,params string[] customPermission )
+		public static string GenerateToken(int userId, string username, string role, IConfiguration configuration, params string[] customPermission )
 		{
 			var tokenHandler = new JwtSecurityTokenHandler();
 			var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);

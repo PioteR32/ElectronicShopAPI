@@ -1,5 +1,4 @@
 using ElectronicShopAPI;
-using ElectronicShopAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,7 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DataContext>(options =>
+builder.Services.AddDbContext<ElectronicShopAPI.Data.DataContext>(options =>
 {
 	options.UseSqlServer("Server=.;Database=electronic_shop;User Id=electronic_shop_app;Password=loginPassword123!;TrustServerCertificate=True;");
 });
@@ -104,7 +103,7 @@ builder.Services.AddAuthorization(options =>
 		policy.RequireClaim("Permission", Permission.AllPrivilages.ToString()));
 });
 var app = builder.Build();
-
+app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

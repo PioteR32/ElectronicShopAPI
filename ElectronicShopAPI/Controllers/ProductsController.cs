@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ElectronicShopAPI.Data; // Ścieżka do Twojego wygenerowanego DataContext
 using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
 using ElectronicShopAPI.DTO;
+using ElectronicShopAPI.Data;
 namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
@@ -95,7 +95,7 @@ namespace ElectronicShopAPI.Controllers
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
-		[HttpPost("DeleteProducts")]
+		[HttpDelete("DeleteProducts")]
 		public async Task<ActionResult<IEnumerable<Product>>> DeleteProducts([FromQuery] int[] id)
 		{
 			var products = new List<Product>();
@@ -115,7 +115,7 @@ namespace ElectronicShopAPI.Controllers
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
-		[HttpPost("ModifyProducts")]
+		[HttpPut("ModifyProducts")]
 		public async Task<ActionResult<IEnumerable<Product>>> ModifyProducts([FromBody] ProductDTO[] productsDto)
 		{
 			var products = new List<Product>();
