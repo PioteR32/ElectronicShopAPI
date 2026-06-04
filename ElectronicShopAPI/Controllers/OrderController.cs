@@ -30,37 +30,38 @@ namespace ElectronicShopAPI.Controllers
 				OrderDate = DateTime.Now,
 				OrderItems = new List<OrderItem>() // ensure collection is initialized
 			};
-
+			var productIds = orderDTO.OrderItemDTO.Select(oi => oi.ProductId).ToList();
+			var products = _context.Products
+					.Where(p => productIds.Contains(p.Id)).ToList();
 			if (userId == null)
 			{
 				// collect product ids from DTO in-memory
-				var productIds = orderDTO.OrderItemDTO.Select(oi => oi.ProductId).ToList();
+				
 
 				// materialize product info from database (no assignments inside expression)
-				var products = _context.Products
-					.Where(p => productIds.Contains(p.Id))
-					.Select(p => new { p.Id, p.IsInStock, p.Price })
-					.ToList();
-
-				// detect missing product ids from DTO
-				var missing = productIds.Except(products.Select(p => p.Id)).ToList();
-				if (missing.Any())
-					throw new Exception("Failed to create order: Products not found: " + string.Join(", ", missing));
-
-				foreach (var product in products)
+				if(products.Where(p => p.NumOnStock == 0 ).Count() != 0)
 				{
-					if (product.IsInStock != true)
-						throw new Exception($"Failed to create order: Product with ID {product.Id} not in stock");
+					throw new Exception("Failed to create order: Some products not in stock");
+				}
 
-					var dtoItem = orderDTO.OrderItemDTO.FirstOrDefault(q => q.ProductId == product.Id);
-					var quantity = dtoItem?.Quantity ?? 0;
+				var orderItems = products.Select(p => new OrderItem { ProductId = p.Id, Price = p.Price,  Quantity = 0 });
+				OrderItemDTO tmpOrderItemDTO;
 
-					order.OrderItems.Add(new OrderItem
+				foreach(var orderItem in orderItems)
+				{
+					tmpOrderItemDTO = orderDTO.OrderItemDTO.Where(oi => oi.ProductId == orderItem.ProductId).FirstOrDefault();
+
+					if(tmpOrderItemDTO == null)
+						throw new Exception("Failed to create order");
+
+					orderItem.Quantity = tmpOrderItemDTO?.Quantity ?? 0;
+
+					if(orderItem.Quantity < products.Find(p => p.Id == orderItem.ProductId)?.NumOnStock || orderItem.Quantity == null) 
 					{
-						ProductId = product.Id,
-						Quantity = quantity,
-						Price = product.Price
-					});
+						throw new Exception("Failed to create order: Quantity must be smaller than available stock");
+					}
+
+					order.OrderItems.Add(orderItem);
 				}
 
 				order.TotalAmount = order.OrderItems.Sum(oi => oi.Quantity * oi.Price);
@@ -69,14 +70,24 @@ namespace ElectronicShopAPI.Controllers
 			{
 				int IuserId = int.Parse(userId);
 				var shoppingCartItems = _context.ShoppingCarts.Where(c => c.CustomerId == IuserId)
-					.Join(_context.Products, c => c.ProductId, p => p.Id, (c, p) => new { c.Quantity, p.Price, p.IsInStock });
+					.Join(_context.Products, c => c.ProductId, p => p.Id, (c, p) => new { c.Quantity, p.Price, p.NumOnStock });
 
-				if (shoppingCartItems.Where(x => x.IsInStock == true).Count() == 0)
+				if (shoppingCartItems.Where(x => x.NumOnStock >= x.Quantity).Count() == 0)
 				{
 					throw new Exception("Failed to create order: No valid items in shopping cart");
 				}
 
 				order.TotalAmount = shoppingCartItems.Sum(cp => cp.Quantity * cp.Price);
+			}
+
+			foreach (var oi in order.OrderItems)
+			{
+				var product = products.Find(p => p.Id == oi.ProductId);
+				if (product != null)
+				{
+					product.NumOnStock -= oi.Quantity;
+					_context.Products.Update(product);
+				}
 			}
 
 			return order;
@@ -110,6 +121,7 @@ namespace ElectronicShopAPI.Controllers
 				Order order = await GenerateOrderItems(orderDTO, town.Id, userId);
 
 				await _context.Orders.AddAsync(order);
+
 				await _context.SaveChangesAsync();
 
 				return Ok(new { message = "Order created successfully", orderId = order.Id });

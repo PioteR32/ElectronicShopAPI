@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
-
+using ElectronicShopAPI.Models;
 namespace ElectronicShopAPI.Data;
 
 public partial class DataContext : DbContext
@@ -130,12 +129,12 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.IsInStock)
-                .HasDefaultValue(true)
-                .HasColumnName("is_in_stock");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+            entity.Property(e => e.NumOnStock)
+                .HasDefaultValue(300)
+                .HasColumnName("numOnStock");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("price");
@@ -197,6 +196,9 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .HasColumnName("quantity");
             entity.Property(e => e.UserListId).HasColumnName("user_list_id");
 
             entity.HasOne(d => d.Product).WithMany(p => p.UserListItems)

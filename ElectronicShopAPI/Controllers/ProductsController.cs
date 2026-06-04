@@ -73,7 +73,7 @@ namespace ElectronicShopAPI.Controllers
 						Name = productDto.Name,
 						Description = productDto.Description,
 						Price = productDto.Price,
-						IsInStock = productDto.IsInStock
+						NumOnStock = productDto.NumOnStock
 					};
 
 					
@@ -137,7 +137,7 @@ namespace ElectronicShopAPI.Controllers
 					product.Name = productDto.Name;
 					product.Description = productDto.Description;
 					product.Price = productDto.Price;
-					product.IsInStock = productDto.IsInStock;
+					product.NumOnStock = productDto.NumOnStock ;
 				}
 			}
 

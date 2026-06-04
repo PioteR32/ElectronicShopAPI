@@ -19,7 +19,7 @@ namespace ElectronicShopAPI
 		Delete,
 		ModifyProducts,
 		AllCustomers,
-		AllPrivilages,
+		AllPrivilages
 	}
 	public static class AuthorizationFnc
 	{

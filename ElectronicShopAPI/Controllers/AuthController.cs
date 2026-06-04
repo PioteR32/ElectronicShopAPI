@@ -10,7 +10,7 @@ namespace ElectronicShopAPI.Controllers
 	public class AuthController : ControllerBase
 	{
 		private readonly IConfiguration _configuration;
-
+		//Scaffold-DbContext "Server=.;Database=electronic_shop;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context DataContext -Force
 		public AuthController(IConfiguration configuration)
 		{
 			_configuration = configuration;

@@ -13,7 +13,7 @@ public partial class Product
 
     public decimal Price { get; set; }
 
-    public bool? IsInStock { get; set; }
+    public int NumOnStock { get; set; }
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 

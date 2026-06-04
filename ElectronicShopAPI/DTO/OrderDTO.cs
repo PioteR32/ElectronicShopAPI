@@ -22,9 +22,5 @@ namespace ElectronicShopAPI.DTO
 
 		public List<OrderItemDTO> OrderItemDTO { get; set; }
 	}
-	public class OrderItemDTO
-	{
-		public int ProductId { get; set; }
-		public int Quantity { get; set; } // Liczba pojedyncza - spójna z bazą
-	}
+	
 }

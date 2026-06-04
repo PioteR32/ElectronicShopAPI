@@ -10,7 +10,8 @@
 
 		public decimal Price { get; set; }
 
-		public bool? IsInStock { get; set; }
+		public bool? IsInStock { get => NumOnStock > 0; }
+		public int NumOnStock { get; set; }
 	}
 }
 
