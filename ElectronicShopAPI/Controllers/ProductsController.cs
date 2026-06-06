@@ -4,26 +4,27 @@ using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
 using ElectronicShopAPI.DTO;
 using ElectronicShopAPI.Data;
+using ElectronicShopAPI.Services;
 namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
 	public class ProductsController : ControllerBase
 	{
-		private readonly DataContext _context;
+		private readonly IProductService _productService;
 
-		// Konstruktor wstrzykujący bazę danych
-		public ProductsController(DataContext context)
+		// Konstruktor wstrzykujący serwis produktów
+		public ProductsController(IProductService productService)
 		{
-			_context = context;
+			_productService = productService;
 		}
 
 		// 1. STANDARDOWY GET (Pobiera wszystko)
 		[AllowAnonymous]
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+		public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts([FromQuery] int? pageNumber, [FromQuery] int? pageSize)
 		{
-			var products = await _context.Products.ToListAsync();
+			var products = await _productService.GetAllProducts(pageNumber, pageSize);
 			return Ok(products);
 		}
 
@@ -34,14 +35,11 @@ namespace ElectronicShopAPI.Controllers
 		public async Task<ActionResult<Product>> GetProductById(int id)
 		{
 			// FindAsync szuka rekordu bezpośrednio po kluczu głównym (Primary Key)
-			var product = await _context.Products.FindAsync(id);
-
+			var product = await _productService.GetProductById(id);
 			if (product == null)
 			{
-				// Jeśli produkt nie istnieje, zwracamy czysty HTTP 404 NotFound
 				return NotFound($"Produkt o podanym ID ({id}) nie istnieje w sklepie.");
 			}
-
 			return Ok(product);
 		}
 
@@ -52,10 +50,7 @@ namespace ElectronicShopAPI.Controllers
 		public async Task<ActionResult<IEnumerable<Product>>> GetCheapProducts([FromQuery] decimal maxPrice)
 		{
 			// Za pomocą LINQ budujemy zapytanie SQL (efekt końcowy to: SELECT ... WHERE Price <= maxPrice)
-			var filteredProducts = await _context.Products
-				.Where(p => p.Price <= maxPrice)
-				.ToListAsync();
-
+			var filteredProducts = await _productService.GetCheapProducts(maxPrice);
 			return Ok(filteredProducts);
 		}
 
@@ -65,31 +60,15 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var newProducts = new List<Product>();
-				foreach (var productDto in productsDto)
-				{
-					var newProduct = new Product
-					{
-						Name = productDto.Name,
-						Description = productDto.Description,
-						Price = productDto.Price,
-						NumOnStock = productDto.NumOnStock
-					};
-
-					
-					newProducts.Add(newProduct);
-					
-				}
-
-				await _context.Products.AddRangeAsync(newProducts);
-
-				await _context.SaveChangesAsync();
-				return Ok(new { message = "Produkty zostały dodane pomyślnie", productIds = newProducts.Select(p => p.Id) });
-
+				var ids = await _productService.AddProducts(productsDto);
+				return Ok(new { message = "Produkty zostały dodane pomyślnie", productIds = ids });
+			}
+			catch (KeyNotFoundException knf)
+			{
+				return NotFound(knf.Message);
 			}
 			catch (Exception ex)
 			{
-				_context.ChangeTracker.Clear(); 
 				return BadRequest(new { message = "Nie udało się dodać produktu", error = ex.Message });
 			}
 		}
@@ -98,51 +77,30 @@ namespace ElectronicShopAPI.Controllers
 		[HttpDelete("DeleteProducts")]
 		public async Task<ActionResult<IEnumerable<Product>>> DeleteProducts([FromQuery] int[] id)
 		{
-			var products = new List<Product>();
-			foreach (var productId in id)
+			try
 			{
-				var product = await _context.Products.FindAsync(productId);
-				if (product == null)
-				{
-					return NotFound($"Produkt o podanym ID ({productId}) nie istnieje w sklepie.");
-				}
-				products.Add(product);
+				var ids = await _productService.DeleteProducts(id);
+				return Ok(new { message = "Produkty zostały usunięte pomyślnie", id = ids });
 			}
-
-			_context.Products.RemoveRange(products);
-			await _context.SaveChangesAsync();
-			return Ok(new { message = "Produkty zostały usunięte pomyślnie", id = products.Select(p => p.Id) });
+			catch (KeyNotFoundException knf)
+			{
+				return NotFound(knf.Message);
+			}
 		}
 
 		[Authorize(Policy = "ModifyProducts")]
 		[HttpPut("ModifyProducts")]
 		public async Task<ActionResult<IEnumerable<Product>>> ModifyProducts([FromBody] ProductDTO[] productsDto)
 		{
-			var products = new List<Product>();
-			foreach (var productDto in productsDto)
+			try
 			{
-				var product = await _context.Products.FindAsync(productDto.Id);
-				if (product == null)
-				{
-					return NotFound($"Produkt o podanym ID ({productDto.Id}) nie istnieje w sklepie.");
-				}
-				products.Add(product);
+				var ids = await _productService.ModifyProducts(productsDto);
+				return Ok(new { message = "Produkty zostały zaktualizowane pomyślnie", ids = ids });
 			}
-
-			foreach (var product in products)
+			catch (KeyNotFoundException knf)
 			{
-				var productDto = productsDto.FirstOrDefault(dto => dto.Id == product.Id);
-				if (productDto != null)
-				{
-					product.Name = productDto.Name;
-					product.Description = productDto.Description;
-					product.Price = productDto.Price;
-					product.NumOnStock = productDto.NumOnStock ;
-				}
+				return NotFound(knf.Message);
 			}
-
-			await _context.SaveChangesAsync();
-			return Ok(new { message = "Produkty zostały zaktualizowane pomyślnie", ids = products.Select(p => p.Id) });
 		}
 	}
 }

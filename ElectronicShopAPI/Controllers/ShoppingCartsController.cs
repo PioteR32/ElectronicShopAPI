@@ -4,16 +4,17 @@ using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
 using ElectronicShopAPI.DTO;
 using ElectronicShopAPI.Data;
+using ElectronicShopAPI.Services;
 namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
 	public class ShoppingCartsController: ControllerBase
 	{
-		private readonly DataContext _context;
-		public ShoppingCartsController(DataContext context)
+		private readonly IShoppingCartService _shoppingCartService;
+		public ShoppingCartsController(IShoppingCartService shoppingCartService)
 		{
-			_context = context;
+			_shoppingCartService = shoppingCartService;
 		}
 		[Authorize(Policy = "Read")]
 		[HttpGet]
@@ -22,8 +23,7 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-				var shoppingCarts = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId)
-					.Join(_context.Products, sc => sc.ProductId, p => p.Id, (sc, p) => new { ShoppingCart = sc, Product = p });
+				var shoppingCarts = await _shoppingCartService.GetUserShoppingCart(userId);
 				return Ok(shoppingCarts);
 			}
 			catch (Exception ex)
@@ -37,95 +37,59 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				List<ShoppingCart> shoppingCartItems = new List<ShoppingCart>();
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-
-				if(item == null || item.Any(i => i.ProductId < 0) || item.Any(i => i.Quantity <= 0))
-				{
-					return BadRequest(new { message = "Invalid item data" });
-				}
-
-				foreach (var i in item)
-				{
-					shoppingCartItems.Add(new ShoppingCart() { CustomerId = userId, ProductId = i.ProductId, Quantity = i.Quantity });
-				}
-				
-				_context.ShoppingCarts.AddRange(shoppingCartItems);
-
-				await _context.SaveChangesAsync();
-
-				return Ok(shoppingCartItems);
+				await _shoppingCartService.AddItemsToShoppingCart(userId, item);
+				return Ok(true);
+			}
+			catch (ArgumentException ae)
+			{
+				return BadRequest(new { message = "Invalid item data", error = ae.Message });
 			}
 			catch (Exception ex)
 			{
-				_context.ChangeTracker.Clear();
 				return BadRequest(new { message = "Failed to add item to shopping cart", error = ex.Message });
 			}
 		}
 
 		[Authorize(Policy = "Delete")]
-		[HttpPost]
+		[HttpDelete]
 		public async Task<IActionResult> RemoveItemsFromShoppingCart([FromBody] OrderItemDTO[] items)
 		{
 			try
 			{
-				List<ShoppingCart> shoppingCartItems = new List<ShoppingCart>();
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-
-				if(items == null || items.Any(i => i.ProductId < 0) || items.Any(i => i.Quantity <= 0))
-				{
-					return BadRequest(new { message = "Invalid item data" });
-				}
-
-				var itemsToRemove = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId && items.Any(si => si.ProductId == sc.ProductId));
-				_context.ShoppingCarts.RemoveRange(itemsToRemove);
-
-				await _context.SaveChangesAsync();
-
-				return Ok(shoppingCartItems);
+				await _shoppingCartService.RemoveItemsFromShoppingCart(userId, items);
+				return Ok(true);
+			}
+			catch (ArgumentException ae)
+			{
+				return BadRequest(new { message = "Invalid item data", error = ae.Message });
 			}
 			catch (Exception ex)
 			{
-				_context.ChangeTracker.Clear();
 				return BadRequest(new { message = "Failed to remove item from shopping cart", error = ex.Message });
 			}
 		}
 		[Authorize(Policy = "Write")]
-		[HttpPost]
+		[HttpPatch]
 		public async Task<IActionResult> ModifyQuantityItemsInShoppingCart([FromBody] OrderItemDTO[] item)
 		{
 			try
 			{
-				List<ShoppingCart> shoppingCartItems = new List<ShoppingCart>();
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-
-				if(item == null || item.Any(i => i.ProductId < 0) || item.Any(i => i.Quantity <= 0))
-				{
-					return BadRequest(new { message = "Invalid item data" });
-				}
-
-				var itemsToUpdate = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId && item.Any(si => si.ProductId == sc.ProductId));
-				foreach (var shoppingCartItem in itemsToUpdate)
-				{
-					var itemToUpdate = item.FirstOrDefault(i => i.ProductId == shoppingCartItem.ProductId);
-					if (itemToUpdate != null)
-					{
-						shoppingCartItem.Quantity = itemToUpdate.Quantity;
-					}
-					else
-					{
-						return BadRequest(new { message = "Item not found in shopping cart" });
-					}
-				}
-				_context.ShoppingCarts.UpdateRange(itemsToUpdate);
-
-				await _context.SaveChangesAsync();
-
-				return Ok(shoppingCartItems);
+				await _shoppingCartService.ModifyQuantityItemsInShoppingCart(userId, item);
+				return Ok(true);
+			}
+			catch (ArgumentException ae)
+			{
+				return BadRequest(new { message = "Invalid item data", error = ae.Message });
+			}
+			catch (KeyNotFoundException knf)
+			{
+				return BadRequest(new { message = "Item not found in shopping cart", error = knf.Message });
 			}
 			catch (Exception ex)
 			{
-				_context.ChangeTracker.Clear();
 				return BadRequest(new { message = "Failed to remove item from shopping cart", error = ex.Message });
 			}
 		}

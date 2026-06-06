@@ -1,0 +1,72 @@
+using ElectronicShopAPI.Data;
+using ElectronicShopAPI.DTO;
+using ElectronicShopAPI.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace ElectronicShopAPI.Services
+{
+	public interface ICustomerService
+	{
+		Task CreateUser(CustomerDTO dto);
+		Task<string?> LogIn(string login, string password);
+		Task<Customer?> GetUser(int userId);
+		Task<Customer?> GetUsers(int userId);
+	}
+
+	public class CustomerService : ICustomerService
+	{
+		private readonly DataContext _context;
+		private readonly IConfiguration _configuration;
+
+		public CustomerService(DataContext context, IConfiguration configuration)
+		{
+			_context = context;
+			_configuration = configuration;
+		}
+
+		public async Task CreateUser(CustomerDTO dto)
+		{
+			if (_context.Customers.Any(c => c.Email == dto.Email && c.PhoneNumber == dto.PhoneNumber))
+			{
+				throw new InvalidOperationException("Email or Phone Number already exists");
+			}
+
+			await _context.Customers.AddAsync(new Customer
+			{
+				FirstName = dto.FirstName,
+				LastName = dto.LastName,
+				Email = dto.Email,
+				PhoneNumber = dto.PhoneNumber,
+				Password = dto.Password
+			});
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task<string?> LogIn(string login, string password)
+		{
+			if (login == "admin" && password == "password")
+			{
+				return AuthorizationFnc.GenerateToken(-1, login, "Admin", _configuration, Permission.AllPrivilages.ToString());
+			}
+
+			var customer = await _context.Customers.Where(c => (c.Email == login || c.PhoneNumber == login) && c.Password == password).FirstOrDefaultAsync();
+			if (customer != null)
+			{
+				return AuthorizationFnc.GenerateToken(customer.Id, login, "User", _configuration, Permission.Read.ToString(), Permission.Write.ToString(), Permission.Delete.ToString());
+			}
+
+			return null;
+		}
+
+		public async Task<Customer?> GetUser(int userId)
+		{
+			return await _context.Customers.Where(c => c.Id == userId).FirstOrDefaultAsync();
+		}
+
+		public async Task<Customer?> GetUsers(int userId)
+		{
+			// original controller returned single user; keep that behavior
+			return await GetUser(userId);
+		}
+	}
+}

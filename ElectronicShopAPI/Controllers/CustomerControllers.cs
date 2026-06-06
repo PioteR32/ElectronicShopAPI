@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using ElectronicShopAPI.DTO;
 using System.Security.Claims;
 using ElectronicShopAPI.Data;
+using ElectronicShopAPI.Services;
 
 namespace ElectronicShopAPI.Controllers
 {
@@ -13,12 +14,10 @@ namespace ElectronicShopAPI.Controllers
 	[Route("api/[controller]")]
 	public class CustomerControllers : ControllerBase
 	{
-		private readonly DataContext _context;
-		private readonly IConfiguration _configuration;
-		public CustomerControllers(DataContext dataContext, IConfiguration configuration)
+		private readonly ICustomerService _customerService;
+		public CustomerControllers(ICustomerService customerService)
 		{
-			_context = dataContext;
-			_configuration = configuration;
+			_customerService = customerService;
 		}
 		[AllowAnonymous]
 		[HttpPost]
@@ -26,25 +25,12 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				if (!_context.Customers.Any(c => c.Email == cCDTO.Email && c.PhoneNumber == cCDTO.PhoneNumber))
-				{
-					await _context.Customers.AddAsync(new Customer()
-					{
-						FirstName = cCDTO.FirstName
-						,
-						LastName = cCDTO.LastName
-					,
-						Email = cCDTO.Email
-					,
-						PhoneNumber = cCDTO.PhoneNumber
-					,
-						Password = cCDTO.Password
-					});
-					await _context.SaveChangesAsync();
-					return Ok(new { message = "Create User Success" });
-				}
-				else
-					return BadRequest(new { message = "Create User Failed", error = "Email or Phone Number already exists" });
+				await _customerService.CreateUser(cCDTO);
+				return Ok(new { message = "Create User Success" });
+			}
+			catch (InvalidOperationException ioe)
+			{
+				return BadRequest(new { message = "Create User Failed", error = ioe.Message });
 			}
 			catch (Exception ex)
 			{
@@ -58,21 +44,11 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				if (login == "admin" && password == "password")
-				{
-
-					return Ok(new { Token = AuthorizationFnc.GenerateToken(-1, login, "Admin", _configuration, [Permission.AllPrivilages.ToString()]) });
-				}
-				var customer = _context.Customers.Where(c => (c.Email == login || c.PhoneNumber == login) && c.Password == password).First();
-				if (customer != null)
-				{
-
-					return Ok(new { message = "Login Success", Token = AuthorizationFnc.GenerateToken(customer.Id, login, "User", _configuration, [Permission.Read.ToString(), Permission.Write.ToString(), Permission.Delete.ToString()]) });
-				}
+				var token = await _customerService.LogIn(login, password);
+				if (token != null)
+					return Ok(new { message = "Login Success", Token = token });
 				else
-				{
 					return BadRequest(new { message = "Login Failed", error = "Invalid Email, Phone Number, or Password" });
-				}
 			}
 			catch (Exception ex)
 			{
@@ -88,10 +64,33 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-				var user = await _context.Customers.Where(c => c.Id == userId).FirstOrDefaultAsync();
+				var user = await _customerService.GetUser(userId);
 				if (user != null)
 				{
-					return Ok(new { message = "Get User Success",user = user });
+					return Ok(new { message = "Get User Success", user = user });
+				}
+				else
+				{
+					return NotFound(new { message = "User not found" });
+				}
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Get User Failed", error = ex.Message });
+			}
+		}
+		//to do user filter DTO and add filter to get user method
+		[Authorize(Policy = "AllCustomers")]
+		[HttpPost]
+		public async Task<IActionResult> GetUsers()
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+				var user = await _customerService.GetUsers(userId);
+				if (user != null)
+				{
+					return Ok(new { message = "Get User Success", user = user });
 				}
 				else
 				{
