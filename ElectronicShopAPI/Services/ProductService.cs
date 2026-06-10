@@ -7,13 +7,13 @@ namespace ElectronicShopAPI.Services
 {
 	public interface IProductService
 	{
-		Task<IEnumerable<Product>> GetAllProducts(int? pageNumber, int? pageSize);
-		Task<Product?> GetProductById(int id);
-		Task<IEnumerable<Product>> GetCheapProducts(decimal maxPrice);
+		Task<IEnumerable<ProductDTO>> GetAllProducts(int? pageNumber, int? pageSize);
+		Task<ProductDTO?> GetProductById(int id);
+		Task<IEnumerable<ProductDTO>> GetCheapProducts(decimal maxPrice);
 		Task<IEnumerable<int>> AddProducts(ProductDTO[] productsDto);
 		Task<IEnumerable<int>> DeleteProducts(int[] ids);
 		Task<IEnumerable<int>> ModifyProducts(ProductDTO[] productsDto);
-		Task<IEnumerable<Product>> FilterProducts(ProductFilterDTO filter);
+		Task<IEnumerable<ProductDTO>> FilterProducts(ProductFilterDTO filter);
 	}
 
 	public class ProductService: IProductService
@@ -24,7 +24,7 @@ namespace ElectronicShopAPI.Services
 			_context = context;
 		}
 
-		public async Task<IEnumerable<Product>> GetAllProducts(int? pageNumber, int? pageSize)
+		public async Task<IEnumerable<ProductDTO>> GetAllProducts(int? pageNumber, int? pageSize)
 		{
 			var query = _context.Products.AsQueryable();
 
@@ -33,17 +33,20 @@ namespace ElectronicShopAPI.Services
 				query = query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
 			}
 
-			return await query.ToListAsync();
+			var products = await query.ToListAsync();
+			return products.Select(p => ProductDTO.FromModel(p));
 		}
 
-		public async Task<Product?> GetProductById(int id)
+		public async Task<ProductDTO?> GetProductById(int id)
 		{
-			return await _context.Products.FindAsync(id);
+			var p = await _context.Products.FindAsync(id);
+			return p == null ? null : ProductDTO.FromModel(p);
 		}
 
-		public async Task<IEnumerable<Product>> GetCheapProducts(decimal maxPrice)
+		public async Task<IEnumerable<ProductDTO>> GetCheapProducts(decimal maxPrice)
 		{
-			return await _context.Products.Where(p => p.Price <= maxPrice).ToListAsync();
+			var products = await _context.Products.Where(p => p.Price <= maxPrice).ToListAsync();
+			return products.Select(p => ProductDTO.FromModel(p));
 		}
 
 		public async Task<IEnumerable<int>> AddProducts(ProductDTO[] productsDto)
@@ -115,7 +118,7 @@ namespace ElectronicShopAPI.Services
 			return products.Select(p => p.Id);
 		}
 
-		public async Task<IEnumerable<Product>> FilterProducts(ProductFilterDTO filter)
+		public async Task<IEnumerable<ProductDTO>> FilterProducts(ProductFilterDTO filter)
 		{
 			var data =  _context.Products.Where(p => !filter.Id.HasValue || p.Id == filter.Id);
 			if (!string.IsNullOrEmpty(filter.Name))
@@ -140,7 +143,8 @@ namespace ElectronicShopAPI.Services
 			}
 			data = data.Skip((filter.PageNumber - 1) * filter.PageSize).Take(filter.PageSize);
 
-			return await data.ToListAsync();
+			var products = await data.ToListAsync();
+			return products.Select(p => ProductDTO.FromModel(p));
 		}
 	}
 }

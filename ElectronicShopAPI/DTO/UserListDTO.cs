@@ -9,5 +9,13 @@
 
 		public string? Description { get; set; }
 
+		public static UserListDTO FromModel(Models.UserList ul) => new UserListDTO
+		{
+			Id = ul.Id,
+			CustomerId = ul.CustomerId,
+			Name = ul.Name,
+			Description = ul.Description
+		};
+
 	}
 }

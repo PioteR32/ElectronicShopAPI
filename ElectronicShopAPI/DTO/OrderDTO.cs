@@ -17,10 +17,21 @@ namespace ElectronicShopAPI.DTO
 		public string Street { get; set; } = null!;
 
 		public string House { get; set; } = null!;
-
-		public string Town { get; set; }
+		public string? Town { get; set; }
 
 		public List<OrderItemDTO> OrderItemDTO { get; set; }
+		public static OrderDTO FromModel(Models.Order o) => new OrderDTO
+		{
+			Id = o.Id,
+			CustomerId = o.CustomerId,
+			OrderDate = o.OrderDate,
+			TotalAmount = o.TotalAmount,
+			Email = o.Email,
+			Street = o.Street,
+			House = o.House,
+			Town = o.TownId != null ? o.TownId.ToString() : null,
+			OrderItemDTO = o.OrderItems?.Select(o => DTO.OrderItemDTO.FromModel(o)).ToList() ?? new List<OrderItemDTO>()
+		};
 	}
 	
 }

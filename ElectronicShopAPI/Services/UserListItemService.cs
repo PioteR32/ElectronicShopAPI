@@ -7,7 +7,7 @@ namespace ElectronicShopAPI.Services
 {
 	public interface IUserListItemService
 	{
-		Task<IEnumerable<object>> GetAllUserListItems(int userId, int listId);
+		Task<IEnumerable<UserListItemDetailDTO>> GetAllUserListItems(int userId, int listId);
 		Task AddUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos);
 		Task DeleteUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos);
 		Task ModifyUserListItemsQuantity(int userId, int listId, UserListItemDTO userListItemDTO);
@@ -22,18 +22,19 @@ namespace ElectronicShopAPI.Services
 			_context = context;
 		}
 
-		public async Task<IEnumerable<object>> GetAllUserListItems(int userId, int listId)
+		public async Task<IEnumerable<UserListItemDetailDTO>> GetAllUserListItems(int userId, int listId)
 		{
 			if (!_context.UserLists.Any(ul => ul.Id == listId && ul.CustomerId == userId))
 			{
 				throw new KeyNotFoundException("User list not found or does not belong to the user");
 			}
 
-			var userListItems = await _context.UserListItems.Where(c => c.UserListId == listId)
-				.Join(_context.Products, uli => uli.ProductId, p => p.Id, (uli, p) => new { UserListItem = uli, Product = p })
+			var items = await _context.UserListItems
+				.Where(c => c.UserListId == listId)
+				.Join(_context.Products, uli => uli.ProductId, p => p.Id, (uli, p) => new { Uli = uli, P = p })
 				.ToListAsync();
 
-			return userListItems;
+			return items.Select(x => UserListItemDetailDTO.FromModels(x.Uli, x.P));
 		}
 
 		public async Task AddUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos)

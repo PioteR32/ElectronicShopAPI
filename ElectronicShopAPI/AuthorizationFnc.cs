@@ -36,7 +36,7 @@ namespace ElectronicShopAPI
 					new Claim(ClaimTypes.Role, role),
 					new Claim("Permission", string.Join(",", customPermission))
 				}),
-				Expires = DateTime.UtcNow.AddHours(2),
+				Expires = DateTime.UtcNow.AddDays(30),
 				Issuer = configuration["Jwt:Issuer"],
 				Audience = configuration["Jwt:Audience"],
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

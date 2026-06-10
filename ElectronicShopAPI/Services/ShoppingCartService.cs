@@ -26,8 +26,15 @@ namespace ElectronicShopAPI.Services
 		{
 			var shoppingCarts = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId)
 				.Join(_context.Products, sc => sc.ProductId, p => p.Id, (sc, p) => new { ShoppingCart = sc, Product = p });
-
-			return await shoppingCarts.ToListAsync();
+			var shoppingCartItems = await shoppingCarts.Select(sc => new ShoppingCartItemDTO
+			{
+				ShoppingCartId = sc.ShoppingCart.Id,
+				CustomerId = sc.ShoppingCart.CustomerId,
+				ProductId = sc.ShoppingCart.ProductId,
+				Product = ProductDTO.FromModel(sc.Product),
+				Quantity = sc.ShoppingCart.Quantity
+			}).ToListAsync();
+			return shoppingCartItems;
 		}
 
 		public async Task AddItemsToShoppingCart(int userId, OrderItemDTO[] items)

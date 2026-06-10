@@ -17,12 +17,12 @@ namespace ElectronicShopAPI.Controllers
 			_shoppingCartService = shoppingCartService;
 		}
 		[Authorize(Policy = "Read")]
-		[HttpGet]
+		[HttpGet("ShoppingCart")]
 		public async Task<IActionResult> GetUserShoppingCart()
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				var shoppingCarts = await _shoppingCartService.GetUserShoppingCart(userId);
 				return Ok(shoppingCarts);
 			}
@@ -37,7 +37,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				await _shoppingCartService.AddItemsToShoppingCart(userId, item);
 				return Ok(true);
 			}
@@ -57,7 +57,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				await _shoppingCartService.RemoveItemsFromShoppingCart(userId, items);
 				return Ok(true);
 			}
@@ -76,7 +76,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				await _shoppingCartService.ModifyQuantityItemsInShoppingCart(userId, item);
 				return Ok(true);
 			}

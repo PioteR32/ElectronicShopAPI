@@ -17,7 +17,7 @@ namespace ElectronicShopAPI.Controllers
 			_userListService = userListService;
 		}
 		[Authorize(Policy = "Read")]
-		[HttpGet]
+		[HttpGet("UserLists")]
 		public async Task<IActionResult> GetAllUserLists()
 		{
 			try
@@ -38,9 +38,9 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-				await _userListService.AddUserList(userId, userListDto);
-				return Ok(true);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var id = await _user_list_service.AddUserList(userId, userListDto);
+				return Ok(id);
 			}
 			catch (Exception ex)
 			{
@@ -54,9 +54,9 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-				await _userListService.ModifyUserList(userId, listId, userListDto);
-				return Ok(true);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var id = await _user_list_service.ModifyUserList(userId, listId, userListDto);
+				return Ok(id);
 			}
 			catch (KeyNotFoundException knf)
 			{
@@ -74,9 +74,9 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-				await _userListService.DeleteUserList(userId, listId);
-				return Ok(true);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var id = await _user_list_service.DeleteUserList(userId, listId);
+				return Ok(id);
 			}
 			catch (KeyNotFoundException knf)
 			{

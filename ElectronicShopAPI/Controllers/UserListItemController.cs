@@ -16,13 +16,13 @@ namespace ElectronicShopAPI.Controllers
 		{
 			_userListItemService = userListItemService;
 		}
-		[Authorize(Policy = "Read")]
-		[HttpGet]
+		[Authorize(Policy = "AllCustomers")]
+		[HttpGet("{listId}")]
 		public async Task<IActionResult> GetAllUserListItems(int listId)
 		{
-			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
 			try
 			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				var userListItems = await _userListItemService.GetAllUserListItems(userId, listId);
 				return Ok(userListItems);
 			}
@@ -32,7 +32,7 @@ namespace ElectronicShopAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Failed to retrieve user list items", error = ex.Message });
+				return BadRequest(new { message = "Failed to add user list items", error = ex.Message });
 			}
 		}
 
@@ -82,7 +82,7 @@ namespace ElectronicShopAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Failed to retrieve user list items", error = ex.Message });
+				return BadRequest(new { message = "Failed to delete user list items", error = ex.Message });
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace ElectronicShopAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Failed to retrieve user list items", error = ex.Message });
+				return BadRequest(new { message = "Failed to modify user list items", error = ex.Message });
 			}
 		}
 	}

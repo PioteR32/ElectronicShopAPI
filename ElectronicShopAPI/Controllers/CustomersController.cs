@@ -12,10 +12,10 @@ namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class CustomerControllers : ControllerBase
+	public class CustomersController : ControllerBase
 	{
 		private readonly ICustomerService _customerService;
-		public CustomerControllers(ICustomerService customerService)
+		public CustomersController(ICustomerService customerService)
 		{
 			_customerService = customerService;
 		}
@@ -58,16 +58,17 @@ namespace ElectronicShopAPI.Controllers
 		}
 		
 		[Authorize(Policy = "Read")]
-		[HttpGet]
+		[HttpGet("Profile")]
 		public async Task<IActionResult> GetUser()
 		{
 			try
 			{
+				// Retrieve the user id from the token's claims
 				var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 				var user = await _customerService.GetUser(userId);
 				if (user != null)
 				{
-					return Ok(new { message = "Get User Success", user = user });
+					return Ok(user);
 				}
 				else
 				{
@@ -81,16 +82,16 @@ namespace ElectronicShopAPI.Controllers
 		}
 		//to do user filter DTO and add filter to get user method
 		[Authorize(Policy = "AllCustomers")]
-		[HttpPost]
+		[HttpGet("AllCustomers")]
 		public async Task<IActionResult> GetUsers()
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
 				var user = await _customerService.GetUsers(userId);
 				if (user != null)
 				{
-					return Ok(new { message = "Get User Success", user = user });
+					return Ok(user);
 				}
 				else
 				{

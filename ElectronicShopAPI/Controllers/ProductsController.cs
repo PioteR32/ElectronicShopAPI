@@ -22,7 +22,7 @@ namespace ElectronicShopAPI.Controllers
 		// 1. STANDARDOWY GET (Pobiera wszystko)
 		[AllowAnonymous]
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts([FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery] int? pageNumber, [FromQuery] int? pageSize)
 		{
 			var products = await _productService.GetAllProducts(pageNumber, pageSize);
 			return Ok(products);
@@ -32,7 +32,7 @@ namespace ElectronicShopAPI.Controllers
 		// URL: api/products/5
 		[AllowAnonymous]
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Product>> GetProductById(int id)
+		public async Task<ActionResult<ProductDTO>> GetProductById(int id)
 		{
 			// FindAsync szuka rekordu bezpośrednio po kluczu głównym (Primary Key)
 			var product = await _productService.GetProductById(id);
@@ -47,7 +47,7 @@ namespace ElectronicShopAPI.Controllers
 		// URL: api/products/filter?maxPrice=150
 		[AllowAnonymous]
 		[HttpGet("filter")]
-		public async Task<ActionResult<IEnumerable<Product>>> GetCheapProducts([FromQuery] decimal maxPrice)
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetCheapProducts([FromQuery] decimal maxPrice)
 		{
 			// Za pomocą LINQ budujemy zapytanie SQL (efekt końcowy to: SELECT ... WHERE Price <= maxPrice)
 			var filteredProducts = await _productService.GetCheapProducts(maxPrice);
@@ -56,12 +56,12 @@ namespace ElectronicShopAPI.Controllers
 
 		[Authorize(Policy = "ModifyProducts")]
 		[HttpPost("AddProducts")]
-		public async Task<ActionResult<IEnumerable<Product>>> AddProducts([FromBody] ProductDTO[] productsDto)
+		public async Task<ActionResult<IEnumerable<int>>> AddProducts([FromBody] ProductDTO[] productsDto)
 		{
 			try
 			{
 				var ids = await _productService.AddProducts(productsDto);
-				return Ok(new { message = "Produkty zostały dodane pomyślnie", productIds = ids });
+				return Ok(ids);
 			}
 			catch (KeyNotFoundException knf)
 			{
@@ -75,12 +75,12 @@ namespace ElectronicShopAPI.Controllers
 
 		[Authorize(Policy = "ModifyProducts")]
 		[HttpDelete("DeleteProducts")]
-		public async Task<ActionResult<IEnumerable<Product>>> DeleteProducts([FromQuery] int[] id)
+		public async Task<ActionResult<IEnumerable<int>>> DeleteProducts([FromQuery] int[] id)
 		{
 			try
 			{
 				var ids = await _productService.DeleteProducts(id);
-				return Ok(new { message = "Produkty zostały usunięte pomyślnie", id = ids });
+				return Ok(ids);
 			}
 			catch (KeyNotFoundException knf)
 			{
@@ -90,12 +90,12 @@ namespace ElectronicShopAPI.Controllers
 
 		[Authorize(Policy = "ModifyProducts")]
 		[HttpPut("ModifyProducts")]
-		public async Task<ActionResult<IEnumerable<Product>>> ModifyProducts([FromBody] ProductDTO[] productsDto)
+		public async Task<ActionResult<IEnumerable<int>>> ModifyProducts([FromBody] ProductDTO[] productsDto)
 		{
 			try
 			{
 				var ids = await _productService.ModifyProducts(productsDto);
-				return Ok(new { message = "Produkty zostały zaktualizowane pomyślnie", ids = ids });
+				return Ok(ids);
 			}
 			catch (KeyNotFoundException knf)
 			{

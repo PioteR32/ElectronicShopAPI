@@ -9,8 +9,8 @@ namespace ElectronicShopAPI.Services
 	{
 		Task CreateUser(CustomerDTO dto);
 		Task<string?> LogIn(string login, string password);
-		Task<Customer?> GetUser(int userId);
-		Task<Customer?> GetUsers(int userId);
+		Task<CustomerDTO?> GetUser(int userId);
+		Task<CustomerDTO?> GetUsers(int userId);
 	}
 
 	public class CustomerService : ICustomerService
@@ -58,12 +58,13 @@ namespace ElectronicShopAPI.Services
 			return null;
 		}
 
-		public async Task<Customer?> GetUser(int userId)
+		public async Task<CustomerDTO?> GetUser(int userId)
 		{
-			return await _context.Customers.Where(c => c.Id == userId).FirstOrDefaultAsync();
+			var c = await _context.Customers.Where(cu => cu.Id == userId).FirstOrDefaultAsync();
+			return c == null ? null : CustomerDTO.FromModel(c);
 		}
 
-		public async Task<Customer?> GetUsers(int userId)
+		public async Task<CustomerDTO?> GetUsers(int userId)
 		{
 			// original controller returned single user; keep that behavior
 			return await GetUser(userId);
