@@ -39,7 +39,7 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-				var id = await _user_list_service.AddUserList(userId, userListDto);
+				var id = await _userListService.AddUserList(userId, userListDto);
 				return Ok(id);
 			}
 			catch (Exception ex)
@@ -55,7 +55,7 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-				var id = await _user_list_service.ModifyUserList(userId, listId, userListDto);
+				var id = await _userListService.ModifyUserList(userId, listId, userListDto);
 				return Ok(id);
 			}
 			catch (KeyNotFoundException knf)
@@ -75,7 +75,7 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-				var id = await _user_list_service.DeleteUserList(userId, listId);
+				var id = await _userListService.DeleteUserList(userId, listId);
 				return Ok(id);
 			}
 			catch (KeyNotFoundException knf)

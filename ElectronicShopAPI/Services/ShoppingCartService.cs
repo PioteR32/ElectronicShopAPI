@@ -11,6 +11,7 @@ namespace ElectronicShopAPI.Services
 		Task AddItemsToShoppingCart(int userId, OrderItemDTO[] items);
 		Task RemoveItemsFromShoppingCart(int userId, OrderItemDTO[] items);
 		Task ModifyQuantityItemsInShoppingCart(int userId, OrderItemDTO[] items);
+		Task<IEnumerable<ShoppingCart>> FindItemsInShoppingCart(int userId, string find);
 	}
 
 	public class ShoppingCartService : IShoppingCartService
@@ -90,5 +91,16 @@ namespace ElectronicShopAPI.Services
 			_context.ShoppingCarts.UpdateRange(itemsToUpdate);
 			await _context.SaveChangesAsync();
 		}
+		public async Task<IEnumerable<ShoppingCartItemDTO>> FindItemsInShoppingCart(int userId, string find)
+		{
+			var shoppingCart = _context.ShoppingCarts.Where(sc => sc.Id == userId).Include(p => p.Product);
+			if(find == "" || find == null)
+			{
+				return shoppingCart.Select(sc => ShoppingCartItemDTO.FromModels(sc,sc.Product)).ToList();
+			}
+			return shoppingCart.Where(sc => sc.Product.Name.Contains(find) || sc.Product.Description.Contains(find))
+				.Select(sc => ShoppingCartItemDTO.FromModels(sc, sc.Product)).ToList();
+		}
+
 	}
 }

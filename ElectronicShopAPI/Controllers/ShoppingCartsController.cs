@@ -16,6 +16,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			_shoppingCartService = shoppingCartService;
 		}
+
 		[Authorize(Policy = "Read")]
 		[HttpGet("ShoppingCart")]
 		public async Task<IActionResult> GetUserShoppingCart()
@@ -31,6 +32,7 @@ namespace ElectronicShopAPI.Controllers
 				return BadRequest(new { message = "Failed to retrieve shopping cart", error = ex.Message });
 			}
 		}
+
 		[Authorize(Policy = "Write")]
 		[HttpPost]
 		public async Task<IActionResult> AddItemsToShoppingCart([FromBody] OrderItemDTO[] item)
@@ -93,5 +95,21 @@ namespace ElectronicShopAPI.Controllers
 				return BadRequest(new { message = "Failed to remove item from shopping cart", error = ex.Message });
 			}
 		}
+
+		[Authorize(Policy = "Read")]
+		[HttpGet("FindShoppingCart")]
+		public async Task<IActionResult> FindItemsInShoppingCart([FromBody] string name)
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				return Ok(_shoppingCartService.FindItemsInShoppingCart(userId, name)); 
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Failed to retrieve shopping cart", error = ex.Message });
+			}
+		}
+
 	}
 }
