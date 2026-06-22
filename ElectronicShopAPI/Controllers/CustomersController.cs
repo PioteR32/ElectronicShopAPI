@@ -63,8 +63,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				// Retrieve the user id from the token's claims
-				var userId = int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				var user = await _customerService.GetUser(userId);
 				if (user != null)
 				{
@@ -88,19 +87,19 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
-				var user = await _customerService.GetUsers(userId);
-				if (user != null)
+				var users = await _customerService.GetUsers(userId);
+				if (users != null)
 				{
-					return Ok(user);
+					return Ok(users);
 				}
 				else
 				{
-					return NotFound(new { message = "User not found" });
+					return NotFound(new { message = "Users not found" });
 				}
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Get User Failed", error = ex.Message });
+				return BadRequest(new { message = "Get Users Failed", error = ex.Message });
 			}
 		}
 	}

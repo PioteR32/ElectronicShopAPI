@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
+using ElectronicShopAPI.Models; // Path to your models
 using Microsoft.AspNetCore.Authorization;
 using ElectronicShopAPI.DTO;
 using ElectronicShopAPI.Services;
