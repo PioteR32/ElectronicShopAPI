@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElectronicShopAPI.Models;
 using Microsoft.AspNetCore.Authorization;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using ElectronicShopAPI.Data;

@@ -1,8 +1,8 @@
 using ElectronicShopAPI.Data;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
-
+using ElectronicShopAPI.Extensions;
 namespace ElectronicShopAPI.Services
 {
 	public interface IShoppingCartService
@@ -11,7 +11,7 @@ namespace ElectronicShopAPI.Services
 		Task AddItemsToShoppingCart(int userId, OrderItemDTO[] items);
 		Task RemoveItemsFromShoppingCart(int userId, OrderItemDTO[] items);
 		Task ModifyQuantityItemsInShoppingCart(int userId, OrderItemDTO[] items);
-		Task<IEnumerable<ShoppingCart>> FindItemsInShoppingCart(int userId, string find);
+		Task<IEnumerable<ShoppingCartItemDTO>> FindItemsInShoppingCart(int userId, string find);
 	}
 
 	public class ShoppingCartService : IShoppingCartService
@@ -32,7 +32,7 @@ namespace ElectronicShopAPI.Services
 				ShoppingCartId = sc.ShoppingCart.Id,
 				CustomerId = sc.ShoppingCart.CustomerId,
 				ProductId = sc.ShoppingCart.ProductId,
-				Product = ProductDTO.FromModel(sc.Product),
+				Product = Extensions.Extensions.ToDto(sc.Product),
 				Quantity = sc.ShoppingCart.Quantity
 			}).ToListAsync();
 			return shoppingCartItems;
@@ -96,10 +96,10 @@ namespace ElectronicShopAPI.Services
 			var shoppingCart = _context.ShoppingCarts.Where(sc => sc.Id == userId).Include(p => p.Product);
 			if(find == "" || find == null)
 			{
-				return shoppingCart.Select(sc => ShoppingCartItemDTO.FromModels(sc,sc.Product)).ToList();
+				return shoppingCart.Select(sc => Extensions.Extensions.ToDto(sc, sc.Product)).ToList();
 			}
 			return shoppingCart.Where(sc => sc.Product.Name.Contains(find) || sc.Product.Description.Contains(find))
-				.Select(sc => ShoppingCartItemDTO.FromModels(sc, sc.Product)).ToList();
+				.Select(sc => Extensions.Extensions.ToDto(sc, sc.Product)).ToList();
 		}
 
 	}

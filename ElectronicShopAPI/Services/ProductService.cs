@@ -1,6 +1,6 @@
 ﻿using ElectronicShopAPI.Data;
-using ElectronicShopAPI.DTO.Filters;
-using ElectronicShopAPI.DTO;
+using Shared.DTO.Filters;
+using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 namespace ElectronicShopAPI.Services
@@ -34,19 +34,19 @@ namespace ElectronicShopAPI.Services
 			}
 
 			var products = await query.ToListAsync();
-			return products.Select(p => ProductDTO.FromModel(p));
+			return products.Select(p => Extensions.Extensions.ToDto(p));
 		}
 
 		public async Task<ProductDTO?> GetProductById(int id)
 		{
 			var p = await _context.Products.FindAsync(id);
-			return p == null ? null : ProductDTO.FromModel(p);
+			return p == null ? null : Extensions.Extensions.ToDto(p);
 		}
 
 		public async Task<IEnumerable<ProductDTO>> GetCheapProducts(decimal maxPrice)
 		{
 			var products = await _context.Products.Where(p => p.Price <= maxPrice).ToListAsync();
-			return products.Select(p => ProductDTO.FromModel(p));
+			return products.Select(p => Extensions.Extensions.ToDto(p));
 		}
 
 		public async Task<IEnumerable<int>> AddProducts(ProductDTO[] productsDto)
@@ -144,7 +144,7 @@ namespace ElectronicShopAPI.Services
 			data = data.Skip((filter.PageNumber - 1) * filter.PageSize).Take(filter.PageSize);
 
 			var products = await data.ToListAsync();
-			return products.Select(p => ProductDTO.FromModel(p));
+			return products.Select(p => Extensions.Extensions.ToDto(p));
 		}
 	}
 }

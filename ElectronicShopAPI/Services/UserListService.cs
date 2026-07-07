@@ -1,5 +1,5 @@
 using ElectronicShopAPI.Data;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +24,7 @@ namespace ElectronicShopAPI.Services
 		public async Task<IEnumerable<UserListDTO>> GetAllUserLists(int userId)
 		{
 			var lists = await _context.UserLists.Where(ul => ul.CustomerId == userId).ToListAsync();
-			return lists.Select(UserListDTO.FromModel);
+			return lists.Select(ul => Extensions.Extensions.ToDto(ul));
 		}
 
 		public async Task<int> AddUserList(int userId, UserListDTO dto)

@@ -1,8 +1,7 @@
 using ElectronicShopAPI.Data;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
-
 namespace ElectronicShopAPI.Services
 {
 	public interface ICustomerService
@@ -61,7 +60,7 @@ namespace ElectronicShopAPI.Services
 		public async Task<CustomerDTO?> GetUser(int userId)
 		{
 			var c = await _context.Customers.Where(cu => cu.Id == userId).FirstOrDefaultAsync();
-			return c == null ? null : CustomerDTO.FromModel(c);
+			return c == null ? null : Extensions.Extensions.ToDto(c);
 		}
 
 		public async Task<CustomerDTO?> GetUsers(int userId)

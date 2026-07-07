@@ -1,4 +1,4 @@
-﻿namespace ElectronicShopAPI.DTO.Filters
+﻿namespace Shared.DTO.Filters
 {
 	public class ProductFilterDTO
 	{

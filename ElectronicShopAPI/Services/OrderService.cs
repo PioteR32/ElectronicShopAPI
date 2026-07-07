@@ -1,5 +1,5 @@
 using ElectronicShopAPI.Data;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 

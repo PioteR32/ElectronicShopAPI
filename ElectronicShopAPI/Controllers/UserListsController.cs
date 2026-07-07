@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Data;
 using ElectronicShopAPI.Services;
 namespace ElectronicShopAPI.Controllers

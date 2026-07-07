@@ -1,4 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/" />
   <Project Path="ElectronicShopAPI/ElectronicShopAPI.csproj" />
+  <Project Path="ElectronicShopApp/ElectronicShopApp.csproj" Id="38212794-dea0-43be-8a0a-057705e20aa6">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="Shared/Shared.csproj" Id="cbd92011-ef66-4a50-b0e1-414edee84712" />
 </Solution>

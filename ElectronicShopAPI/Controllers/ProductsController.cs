@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Data;
 using ElectronicShopAPI.Services;
 namespace ElectronicShopAPI.Controllers
@@ -21,8 +21,8 @@ namespace ElectronicShopAPI.Controllers
 
 		// 1. STANDARDOWY GET (Pobiera wszystko)
 		[AllowAnonymous]
-		[HttpGet]
-		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+		[HttpGet("{pageNumber}-{pageSize}")]
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts(int pageNumber,int pageSize)
 		{
 			var products = await _productService.GetAllProducts(pageNumber, pageSize);
 			return Ok(products);

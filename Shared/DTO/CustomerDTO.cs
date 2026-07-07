@@ -1,4 +1,4 @@
-﻿namespace ElectronicShopAPI.DTO
+﻿namespace Shared.DTO
 {
 	using System.ComponentModel.DataAnnotations;
 
@@ -19,14 +19,6 @@
 
 		public string? PhoneNumber { get; set; }
 
-		public static CustomerDTO FromModel(Models.Customer c) => new CustomerDTO
-		{
-			Id = c.Id,
-			FirstName = c.FirstName,
-			LastName = c.LastName,
-			Email = c.Email,
-			Password = c.Password,
-			PhoneNumber = c.PhoneNumber
-		};
+		// conversions moved to ElectronicShopAPI.Extensions.DtoExtensions
 	}
 }

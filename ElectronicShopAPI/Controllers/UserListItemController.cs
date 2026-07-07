@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElectronicShopAPI.Models; // Path to your models
 using Microsoft.AspNetCore.Authorization;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using ElectronicShopAPI.Services;
 // using ElectronicShopAPI.Data; // not needed, logic moved to service
 namespace ElectronicShopAPI.Controllers

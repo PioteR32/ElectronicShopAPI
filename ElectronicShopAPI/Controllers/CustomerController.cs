@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
  // Ścieżka do Twojego wygenerowanego DataContext
 using ElectronicShopAPI.Models; // Ścieżka do Twoich modeli
 using Microsoft.AspNetCore.Authorization;
-using ElectronicShopAPI.DTO;
+using Shared.DTO;
 using System.Security.Claims;
 using ElectronicShopAPI.Data;
 using ElectronicShopAPI.Services;
@@ -12,10 +12,10 @@ namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class CustomersController : ControllerBase
+	public class CustomerController : ControllerBase
 	{
 		private readonly ICustomerService _customerService;
-		public CustomersController(ICustomerService customerService)
+		public CustomerController(ICustomerService customerService)
 		{
 			_customerService = customerService;
 		}
@@ -39,12 +39,12 @@ namespace ElectronicShopAPI.Controllers
 
 		}
 		[AllowAnonymous]
-		[HttpPost("Login/{login}/Password/{password}")]
-		public async Task<IActionResult> LogIn(string login, string password)
+		[HttpPost("Login")]
+		public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
 		{
 			try
 			{
-				var token = await _customerService.LogIn(login, password);
+				var token = await _customerService.LogIn(loginDTO.Login, loginDTO.Password);
 				if (token != null)
 					return Ok(new { message = "Login Success", Token = token });
 				else
