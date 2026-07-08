@@ -1,22 +1,12 @@
-﻿using ElectronicShopAPI.Data;
+using ElectronicShopAPI.Data;
 using Shared.DTO.Filters;
 using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
-namespace ElectronicShopAPI.Services
-{
-	public interface IProductService
-	{
-		Task<IEnumerable<ProductDTO>> GetAllProducts(int? pageNumber, int? pageSize);
-		Task<ProductDTO?> GetProductById(int id);
-		Task<IEnumerable<ProductDTO>> GetCheapProducts(decimal maxPrice);
-		Task<IEnumerable<int>> AddProducts(ProductDTO[] productsDto);
-		Task<IEnumerable<int>> DeleteProducts(int[] ids);
-		Task<IEnumerable<int>> ModifyProducts(ProductDTO[] productsDto);
-		Task<IEnumerable<ProductDTO>> FilterProducts(ProductFilterDTO filter);
-	}
 
-	public class ProductService: IProductService
+namespace ElectronicShopAPI.Services.Classes
+{
+	public class ProductService : IProductService
 	{
 		private readonly DataContext _context;
 		public ProductService(DataContext context)
@@ -120,7 +110,7 @@ namespace ElectronicShopAPI.Services
 
 		public async Task<IEnumerable<ProductDTO>> FilterProducts(ProductFilterDTO filter)
 		{
-			var data =  _context.Products.Where(p => !filter.Id.HasValue || p.Id == filter.Id);
+			var data = _context.Products.Where(p => !filter.Id.HasValue || p.Id == filter.Id);
 			if (!string.IsNullOrEmpty(filter.Name))
 			{
 				data = data.Where(p => p.Name.Contains(filter.Name));

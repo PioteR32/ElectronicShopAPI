@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using ElectronicShopAPI.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace ElectronicShopAPI.Data;
 
 public partial class DataContext : DbContext
@@ -15,7 +16,17 @@ public partial class DataContext : DbContext
     {
     }
 
+    public virtual DbSet<CategoriesFilter> CategoriesFilters { get; set; }
+
+    public virtual DbSet<Category> Categories { get; set; }
+
+    public virtual DbSet<Comment> Comments { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
+
+    public virtual DbSet<Filter> Filters { get; set; }
+
+    public virtual DbSet<FilterOption> FilterOptions { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
@@ -33,10 +44,68 @@ public partial class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.;Database=electronic_shop;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.;Database=electronic_shop;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<CategoriesFilter>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__categori__3213E83FAEBA84B6");
+
+            entity.ToTable("categories_filters");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.FilterId).HasColumnName("filter_id");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.CategoriesFilters)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_category_categories_filters");
+
+            entity.HasOne(d => d.Filter).WithMany(p => p.CategoriesFilters)
+                .HasForeignKey(d => d.FilterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_filters_categories_filters");
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__categori__3213E83F5AA0FB75");
+
+            entity.ToTable("categories", tb => tb.HasTrigger("TR_categories_CascadeDelete"));
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.ParentId).HasColumnName("parent_id");
+
+            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
+                .HasForeignKey(d => d.ParentId)
+                .HasConstraintName("FK_categories_parent");
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Comments__3213E83F7CAEE322");
+
+            entity.ToTable("comments");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Comment1)
+                .HasMaxLength(1000)
+                .HasColumnName("comment");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Rating).HasColumnName("rating");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_product_comments");
+        });
+
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__customer__3213E83FFFBA0D3B");
@@ -64,6 +133,45 @@ public partial class DataContext : DbContext
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .HasColumnName("phone_number");
+        });
+
+        modelBuilder.Entity<Filter>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__filters__3213E83F11D398AB");
+
+            entity.ToTable("filters");
+
+            entity.HasIndex(e => e.Name, "UQ__filters__72E12F1B31071586").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<FilterOption>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__filter_o__3213E83F4CBB9179");
+
+            entity.ToTable("filter_options");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.FilterId).HasColumnName("filter_id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.ParentId).HasColumnName("parent_id");
+
+            entity.HasOne(d => d.Filter).WithMany(p => p.FilterOptions)
+                .HasForeignKey(d => d.FilterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_filter_options_filters");
+
+            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
+                .HasForeignKey(d => d.ParentId)
+                .HasConstraintName("FK_filter_options_parent");
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -138,6 +246,23 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("price");
+
+            entity.HasMany(d => d.Categories).WithMany(p => p.Products)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ProductCategory",
+                    r => r.HasOne<Category>().WithMany()
+                        .HasForeignKey("CategoryId")
+                        .HasConstraintName("FK_pc_categories"),
+                    l => l.HasOne<Product>().WithMany()
+                        .HasForeignKey("ProductId")
+                        .HasConstraintName("FK_pc_products"),
+                    j =>
+                    {
+                        j.HasKey("ProductId", "CategoryId");
+                        j.ToTable("product_categories");
+                        j.IndexerProperty<int>("ProductId").HasColumnName("product_id");
+                        j.IndexerProperty<int>("CategoryId").HasColumnName("category_id");
+                    });
         });
 
         modelBuilder.Entity<ShoppingCart>(entity =>

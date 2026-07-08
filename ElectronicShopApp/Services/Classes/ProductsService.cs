@@ -7,10 +7,11 @@ using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using ElectronicShopApp.Services.Interfaces;
 
-namespace ElectronicShopApp.Services
+namespace ElectronicShopApp.Services.Classes
 {
-	internal class ProductsService
+	public class ProductsService : IProductsService
 	{
 		private readonly HttpClient _httpClient;
 		private readonly JsonSerializerOptions _serializerOptions;

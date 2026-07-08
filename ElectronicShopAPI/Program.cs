@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using ElectronicShopAPI.Services;
+using ElectronicShopAPI.Services.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,14 +20,13 @@ builder.Services.AddDbContext<ElectronicShopAPI.Data.DataContext>(options =>
 	options.UseSqlServer("Server=.;Database=electronic_shop;User Id=electronic_shop_app;Password=loginPassword123!;TrustServerCertificate=True;");
 });
 // Register application services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
-builder.Services.AddScoped<IUserListService, UserListService>();
-builder.Services.AddScoped<IUserListItemService, UserListItemService>();
-// register other services implementations
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+// Register service implementations from Services.Classes and interfaces from Services.Interfaces
+builder.Services.AddScoped<IProductService, ElectronicShopAPI.Services.Classes.ProductService>();
+builder.Services.AddScoped<ICustomerService, ElectronicShopAPI.Services.Classes.CustomerService>();
+builder.Services.AddScoped<IOrderService, ElectronicShopAPI.Services.Classes.OrderService>();
+builder.Services.AddScoped<IShoppingCartService, ElectronicShopAPI.Services.Classes.ShoppingCartService>();
+builder.Services.AddScoped<IUserListService, ElectronicShopAPI.Services.Classes.UserListService>();
+builder.Services.AddScoped<IUserListItemService, ElectronicShopAPI.Services.Classes.UserListItemService>();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 

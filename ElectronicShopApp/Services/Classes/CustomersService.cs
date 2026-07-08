@@ -1,3 +1,4 @@
+using ElectronicShopApp.Services.Interfaces;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace ElectronicShopApp.Services
+namespace ElectronicShopApp.Services.Classes
 {
-	public class CustomersService
+	public class CustomersService : ICustomersService
 	{
 		private readonly HttpClient _httpClient;
 		private readonly JsonSerializerOptions _serializerOptions;

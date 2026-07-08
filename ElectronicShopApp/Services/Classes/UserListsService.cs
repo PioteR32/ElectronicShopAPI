@@ -1,3 +1,4 @@
+using ElectronicShopApp.Services.Interfaces;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
@@ -6,37 +7,36 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace ElectronicShopApp.Services
+namespace ElectronicShopApp.Services.Classes
 {
-	public class OrdersService
+	public class UserListsService : IUserListsService
 	{
 		private readonly HttpClient _httpClient;
 		private readonly JsonSerializerOptions _serializerOptions;
-		private const string BaseEndpoint = "Order";
+		private const string BaseEndpoint = "UserLists";
 
-		public OrdersService(HttpClient httpClient)
+		public UserListsService(HttpClient httpClient)
 		{
 			_httpClient = httpClient;
 			_httpClient.BaseAddress = new Uri(Global.baseUrl);
 			_serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		}
 
-		public async Task<int?> CreateOrder(OrderDTO dto)
+		public async Task<IEnumerable<UserListDTO>> GetUserLists(int customerId)
 		{
 			try
 			{
-				Global.ApplyAuthHeader(_httpClient);
-				var resp = await _httpClient.PostAsJsonAsync($"{BaseEndpoint}/CreateOrder", dto, _serializerOptions);
-				if (!resp.IsSuccessStatusCode) return null;
+			Global.ApplyAuthHeader(_httpClient);
+				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetUserLists/{customerId}");
+				if (!resp.IsSuccessStatusCode) return new List<UserListDTO>();
 				var content = await resp.Content.ReadAsStringAsync();
-				using var doc = JsonDocument.Parse(content);
-				if (doc.RootElement.TryGetProperty("orderId", out var idElem)) return idElem.GetInt32();
+				return JsonSerializer.Deserialize<List<UserListDTO>>(content, _serializerOptions) ?? new List<UserListDTO>();
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
+				return new List<UserListDTO>();
 			}
-			return null;
 		}
 
 		// auth header applied from Global.ApplyAuthHeader

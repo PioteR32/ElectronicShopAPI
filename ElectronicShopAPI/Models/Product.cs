@@ -15,9 +15,13 @@ public partial class Product
 
     public int NumOnStock { get; set; }
 
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
 
     public virtual ICollection<UserListItem> UserListItems { get; set; } = new List<UserListItem>();
+
+    public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
 }

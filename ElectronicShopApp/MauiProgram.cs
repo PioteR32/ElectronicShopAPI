@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using ElectronicShopApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
+using ElectronicShopApp.Services.Interfaces;
 namespace ElectronicShopApp
 {
 	public static class MauiProgram
@@ -21,13 +21,14 @@ namespace ElectronicShopApp
 			builder.Logging.AddDebug();
 
 #endif
-			// Register API services and HttpClient
-			
-			builder.Services.AddHttpClient<Services.CustomersService>();
-			builder.Services.AddHttpClient<Services.ProductsService>();
-			builder.Services.AddHttpClient<Services.OrdersService>();
-			builder.Services.AddHttpClient<Services.ShoppingCartService>();
-			builder.Services.AddHttpClient<Services.UserListsService>();
+			// Register API services and HttpClient (use interfaces)
+
+			// Register implementations for interfaces
+			builder.Services.AddHttpClient<ICustomersService, Services.Classes.CustomersService>();
+			builder.Services.AddHttpClient<IProductsService, Services.Classes.ProductsService>();
+			builder.Services.AddHttpClient<IOrdersService, Services.Classes.OrdersService>();
+			builder.Services.AddHttpClient<IShoppingCartService, Services.Classes.ShoppingCartService>();
+			builder.Services.AddHttpClient<IUserListsService, Services.Classes.UserListsService>();
 			return builder.Build();
 
 		

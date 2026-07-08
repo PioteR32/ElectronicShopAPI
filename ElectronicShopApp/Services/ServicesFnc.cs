@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ElectronicShopApp.Services
 {
-	internal static class ServicesFnc
+	public static class ServicesFnc
 	{
 		public static void AddAuthHeaderIfPresent(HttpClient httpClient)
 		{

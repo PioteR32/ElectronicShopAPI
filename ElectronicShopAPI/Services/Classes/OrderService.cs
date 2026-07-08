@@ -3,13 +3,8 @@ using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ElectronicShopAPI.Services
+namespace ElectronicShopAPI.Services.Classes
 {
-	public interface IOrderService
-	{
-		Task<int> CreateOrder(OrderDTO orderDTO, string? userId);
-	}
-
 	public class OrderService : IOrderService
 	{
 		private readonly DataContext _context;

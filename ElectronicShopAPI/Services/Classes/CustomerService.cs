@@ -2,16 +2,9 @@ using ElectronicShopAPI.Data;
 using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
-namespace ElectronicShopAPI.Services
-{
-	public interface ICustomerService
-	{
-		Task CreateUser(CustomerDTO dto);
-		Task<string?> LogIn(string login, string password);
-		Task<CustomerDTO?> GetUser(int userId);
-		Task<CustomerDTO?> GetUsers(int userId);
-	}
 
+namespace ElectronicShopAPI.Services.Classes
+{
 	public class CustomerService : ICustomerService
 	{
 		private readonly DataContext _context;
@@ -65,7 +58,6 @@ namespace ElectronicShopAPI.Services
 
 		public async Task<CustomerDTO?> GetUsers(int userId)
 		{
-			// original controller returned single user; keep that behavior
 			return await GetUser(userId);
 		}
 	}

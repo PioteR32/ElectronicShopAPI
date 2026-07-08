@@ -1,10 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ElectronicShopAPI.Models;
 
-public partial class Customer 
+public partial class Customer
 {
     public int Id { get; set; }
 

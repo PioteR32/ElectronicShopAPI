@@ -3,16 +3,8 @@ using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ElectronicShopAPI.Services
+namespace ElectronicShopAPI.Services.Classes
 {
-	public interface IUserListService
-	{
-		Task<IEnumerable<UserListDTO>> GetAllUserLists(int userId);
-		Task<int> AddUserList(int userId, UserListDTO dto);
-		Task<int> ModifyUserList(int userId, int listId, UserListDTO dto);
-		Task<int> DeleteUserList(int userId, int listId);
-	}
-
 	public class UserListService : IUserListService
 	{
 		private readonly DataContext _context;

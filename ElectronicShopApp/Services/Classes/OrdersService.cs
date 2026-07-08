@@ -1,3 +1,4 @@
+using ElectronicShopApp.Services.Interfaces;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
@@ -6,36 +7,37 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace ElectronicShopApp.Services
+namespace ElectronicShopApp.Services.Classes
 {
-	public class ShoppingCartService
+	public class OrdersService : IOrdersService
 	{
 		private readonly HttpClient _httpClient;
 		private readonly JsonSerializerOptions _serializerOptions;
-		private const string BaseEndpoint = "ShoppingCarts";
+		private const string BaseEndpoint = "Order";
 
-		public ShoppingCartService(HttpClient httpClient)
+		public OrdersService(HttpClient httpClient)
 		{
 			_httpClient = httpClient;
 			_httpClient.BaseAddress = new Uri(Global.baseUrl);
 			_serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		}
 
-		public async Task<IEnumerable<ShoppingCartItemDTO>> GetCart(int customerId)
+		public async Task<int?> CreateOrder(OrderDTO dto)
 		{
 			try
 			{
 				Global.ApplyAuthHeader(_httpClient);
-				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetCart/{customerId}");
-				if (!resp.IsSuccessStatusCode) return new List<ShoppingCartItemDTO>();
+				var resp = await _httpClient.PostAsJsonAsync($"{BaseEndpoint}/CreateOrder", dto, _serializerOptions);
+				if (!resp.IsSuccessStatusCode) return null;
 				var content = await resp.Content.ReadAsStringAsync();
-				return JsonSerializer.Deserialize<List<ShoppingCartItemDTO>>(content, _serializerOptions) ?? new List<ShoppingCartItemDTO>();
+				using var doc = JsonDocument.Parse(content);
+				if (doc.RootElement.TryGetProperty("orderId", out var idElem)) return idElem.GetInt32();
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-				return new List<ShoppingCartItemDTO>();
 			}
+			return null;
 		}
 
 		// auth header applied from Global.ApplyAuthHeader
