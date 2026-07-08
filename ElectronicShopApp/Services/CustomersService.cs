@@ -17,7 +17,7 @@ namespace ElectronicShopApp.Services
 		public CustomersService(HttpClient httpClient)
 		{
 			_httpClient = httpClient;
-			_httpClient.BaseAddress = new Uri(GlobalStaticVariables.baseUrl);
+			_httpClient.BaseAddress = new Uri(Global.baseUrl);
 			_serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		}
 
@@ -25,7 +25,7 @@ namespace ElectronicShopApp.Services
 		{
 			try
 			{
-				AddAuthHeaderIfPresent();
+				Global.ApplyAuthHeader(_httpClient);
 				var resp = await _httpClient.PostAsJsonAsync(BaseEndpoint, dto, _serializerOptions);
 				return resp.IsSuccessStatusCode;
 			}
@@ -41,14 +41,17 @@ namespace ElectronicShopApp.Services
 			try
 			{
 				// Login endpoint returns token in JSON { Token: "..." }
-				var resp = await _httpClient.PostAsync($"{BaseEndpoint}/Login/{login}/Password/{password}", null);
+				var resp = await _httpClient.PostAsJsonAsync($"{BaseEndpoint}/Login", new LoginDTO { Login = login, Password = password }, _serializerOptions);
 				if (!resp.IsSuccessStatusCode) return null;
+
 				var content = await resp.Content.ReadAsStringAsync();
 				using var doc = JsonDocument.Parse(content);
+
 				if (doc.RootElement.TryGetProperty("Token", out var t))
 				{
 					var token = t.GetString();
-					if (!string.IsNullOrWhiteSpace(token)) GlobalStaticVariables.authorizeToken = token;
+					if (!string.IsNullOrWhiteSpace(token)) Global.ApplyAuthHeader(_httpClient); // ensure header applied after login
+					if (!string.IsNullOrWhiteSpace(token)) Global.authorizeToken = token;
 					return token;
 				}
 			}
@@ -63,7 +66,7 @@ namespace ElectronicShopApp.Services
 		{
 			try
 			{
-				AddAuthHeaderIfPresent();
+				Global.ApplyAuthHeader(_httpClient);
 				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/Profile");
 				if (!resp.IsSuccessStatusCode) return null;
 				var content = await resp.Content.ReadAsStringAsync();
@@ -76,12 +79,6 @@ namespace ElectronicShopApp.Services
 			}
 		}
 
-		private void AddAuthHeaderIfPresent()
-		{
-			if (!string.IsNullOrWhiteSpace(GlobalStaticVariables.authorizeToken))
-				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GlobalStaticVariables.authorizeToken);
-			else
-				_httpClient.DefaultRequestHeaders.Authorization = null;
-		}
+		// auth header applied from Global.ApplyAuthHeader
 	}
 }

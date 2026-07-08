@@ -19,7 +19,7 @@ namespace ElectronicShopApp.Services
 		public ProductsService(HttpClient httpClient)
 		{
 			_httpClient = httpClient;
-			_httpClient.BaseAddress = new Uri(GlobalStaticVariables.baseUrl);
+			_httpClient.BaseAddress = new Uri(Global.baseUrl);
 			_serializerOptions = new JsonSerializerOptions
 			{
 				PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Swagger domyślnie używa camelCase
@@ -31,7 +31,7 @@ namespace ElectronicShopApp.Services
 		{
 			try
 			{
-				AddAuthHeaderIfPresent();
+				Global.ApplyAuthHeader(_httpClient);
 
 				var response = await _httpClient.GetAsync(baseEndpoint + @"/1-10");
 				if (response.IsSuccessStatusCode)
@@ -44,17 +44,7 @@ namespace ElectronicShopApp.Services
 			return new List<ProductDTO>();
 		}
 
-		private void AddAuthHeaderIfPresent()
-		{
-			if (!string.IsNullOrWhiteSpace(GlobalStaticVariables.authorizeToken))
-			{
-				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GlobalStaticVariables.authorizeToken);
-			}
-			else
-			{
-				_httpClient.DefaultRequestHeaders.Authorization = null;
-			}
-		}
+		// auth header applied from Global.ApplyAuthHeader
 
 	}
 }

@@ -17,7 +17,7 @@ namespace ElectronicShopApp.Services
 		public UserListsService(HttpClient httpClient)
 		{
 			_httpClient = httpClient;
-			_httpClient.BaseAddress = new Uri(GlobalStaticVariables.baseUrl);
+			_httpClient.BaseAddress = new Uri(Global.baseUrl);
 			_serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		}
 
@@ -25,7 +25,7 @@ namespace ElectronicShopApp.Services
 		{
 			try
 			{
-				AddAuthHeaderIfPresent();
+			Global.ApplyAuthHeader(_httpClient);
 				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetUserLists/{customerId}");
 				if (!resp.IsSuccessStatusCode) return new List<UserListDTO>();
 				var content = await resp.Content.ReadAsStringAsync();
@@ -38,12 +38,6 @@ namespace ElectronicShopApp.Services
 			}
 		}
 
-		private void AddAuthHeaderIfPresent()
-		{
-			if (!string.IsNullOrWhiteSpace(GlobalStaticVariables.authorizeToken))
-				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GlobalStaticVariables.authorizeToken);
-			else
-				_httpClient.DefaultRequestHeaders.Authorization = null;
-		}
+		// auth header applied from Global.ApplyAuthHeader
 	}
 }
