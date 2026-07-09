@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using ElectronicShopApp.Services.Interfaces;
+using ElectronicShopApp.ViewModels;
 namespace ElectronicShopApp
 {
 	public static class MauiProgram
@@ -29,6 +30,10 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<IOrdersService, Services.Classes.OrdersService>();
 			builder.Services.AddHttpClient<IShoppingCartService, Services.Classes.ShoppingCartService>();
 			builder.Services.AddHttpClient<IUserListsService, Services.Classes.UserListsService>();
+			builder.Services.AddHttpClient<ICommentService, Services.Classes.CommentsService>();
+
+			builder.Services.AddSingleton<MainPageViewModel>();
+
 			return builder.Build();
 
 		

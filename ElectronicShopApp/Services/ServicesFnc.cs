@@ -15,5 +15,18 @@ namespace ElectronicShopApp.Services
 			else
 				httpClient.DefaultRequestHeaders.Authorization = null;
 		}
+
+		public static string TableToUrlString<T>(string nameOfPropertie, IEnumerable<T> value)
+		{
+			if(value == null || value.Count() == 0)
+				return string.Empty;
+			var url = string.Empty;
+
+			foreach (var item in value)
+			{
+				url += $"&{nameOfPropertie}={item}";
+			}
+			return url;	
+		}
 	}
 }

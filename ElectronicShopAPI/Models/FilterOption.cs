@@ -18,4 +18,6 @@ public partial class FilterOption
     public virtual ICollection<FilterOption> InverseParent { get; set; } = new List<FilterOption>();
 
     public virtual FilterOption? Parent { get; set; }
+
+    public virtual ICollection<ProductFilterOption> ProductFilterOptions { get; set; } = new List<ProductFilterOption>();
 }

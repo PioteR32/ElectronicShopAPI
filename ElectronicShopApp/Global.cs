@@ -6,9 +6,6 @@ namespace ElectronicShopApp
 {
 	internal class Global
 	{
-		// string do pobierania struktury bazy danych z serwera SQL Server i generowania modeli w projekcie. Użyj tego polecenia w konsoli Menedżera pakietów NuGet w Visual Studio, aby wygenerować modele na podstawie istniejącej bazy danych.
-		//Scaffold-DbContext "Server=.;Database=electronic_shop;Trusted_Connection=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir Data -Context DataContext -Force
-
 
 		//
 		public static string baseUrl = "https://localhost:7276/api/";

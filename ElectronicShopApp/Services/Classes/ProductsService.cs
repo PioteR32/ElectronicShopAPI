@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using ElectronicShopApp.Services.Interfaces;
+using Shared.DTO.Filters;
 
 namespace ElectronicShopApp.Services.Classes
 {
@@ -28,7 +29,7 @@ namespace ElectronicShopApp.Services.Classes
 			};
 		}
 
-		public async Task<IEnumerable<ProductDTO>> GetProducts(int pageNumber,int pageSize)
+		public async Task<IEnumerable<ProductDTO>> GetProducts(int pageNumber, int pageSize)
 		{
 			try
 			{
@@ -44,8 +45,23 @@ namespace ElectronicShopApp.Services.Classes
 			catch (Exception ex) { Debug.WriteLine($"Błąd: {ex.Message}"); }
 			return new List<ProductDTO>();
 		}
+		public async Task<IEnumerable<ProductDTO>> GetFilteredProducts(ProductFilterDTO filter)
+		{
+			string queryString = $"?pageIndex={filter.PageIndex}&pageSize={filter.PageSize}&minPrice={filter.MinPrice}&maxPrice={filter.MaxPrice}&isInStock={filter.IsInStock}&orderByOptions={filter.OrderByOptions}";
+			queryString += ServicesFnc.TableToUrlString("filterOptionsIds", filter.FilterOptionsIds);
 
-		// auth header applied from Global.ApplyAuthHeader
+			try
+			{
+				var response = await _httpClient.GetAsync(baseEndpoint + @"/filter" + queryString);
+				if (response.IsSuccessStatusCode)
+				{
+					var content = await response.Content.ReadAsStringAsync();
+					return JsonSerializer.Deserialize<List<ProductDTO>>(content, _serializerOptions) ?? new List<ProductDTO>();
+				}
+			}
+			catch (Exception ex) { Debug.WriteLine($"ProductsService.GetFilteredProducts Błąd: {ex.Message}"); }
+			return new List<ProductDTO>();
+		}
 
 	}
 }

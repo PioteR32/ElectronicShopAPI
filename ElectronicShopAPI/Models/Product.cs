@@ -19,6 +19,8 @@ public partial class Product
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+    public virtual ICollection<ProductFilterOption> ProductFilterOptions { get; set; } = new List<ProductFilterOption>();
+
     public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
 
     public virtual ICollection<UserListItem> UserListItems { get; set; } = new List<UserListItem>();

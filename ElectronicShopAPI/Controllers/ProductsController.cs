@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Shared.DTO;
 using ElectronicShopAPI.Data;
 using ElectronicShopAPI.Services;
+using Shared.DTO.Filters;
 namespace ElectronicShopAPI.Controllers
 {
 	[ApiController]
@@ -27,7 +28,7 @@ namespace ElectronicShopAPI.Controllers
 			var products = await _productService.GetAllProducts(pageNumber, pageSize);
 			return Ok(products);
 		}
-
+		
 		// 2. NOWA FUNKCJA: Pobieranie jednego konkretnego produktu po ID
 		// URL: api/products/5
 		[AllowAnonymous]
@@ -47,10 +48,10 @@ namespace ElectronicShopAPI.Controllers
 		// URL: api/products/filter?maxPrice=150
 		[AllowAnonymous]
 		[HttpGet("filter")]
-		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetCheapProducts([FromQuery] decimal maxPrice)
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetFilterProducts([FromQuery] ProductFilterDTO filter)
 		{
 			// Za pomocą LINQ budujemy zapytanie SQL (efekt końcowy to: SELECT ... WHERE Price <= maxPrice)
-			var filteredProducts = await _productService.GetCheapProducts(maxPrice);
+			var filteredProducts = await _productService.GetFilterProducts(filter);
 			return Ok(filteredProducts);
 		}
 

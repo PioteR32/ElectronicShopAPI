@@ -3,6 +3,7 @@ using Shared.DTO.Filters;
 using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace ElectronicShopAPI.Services.Classes
 {
@@ -108,21 +109,12 @@ namespace ElectronicShopAPI.Services.Classes
 			return products.Select(p => p.Id);
 		}
 
-		public async Task<IEnumerable<ProductDTO>> FilterProducts(ProductFilterDTO filter)
+		public async Task<IEnumerable<ProductDTO>> GetFilterProducts(ProductFilterDTO filter)
 		{
-			var data = _context.Products.Where(p => !filter.Id.HasValue || p.Id == filter.Id);
-			if (!string.IsNullOrEmpty(filter.Name))
-			{
-				data = data.Where(p => p.Name.Contains(filter.Name));
-			}
-			if (!string.IsNullOrEmpty(filter.Description))
-			{
-				data = data.Where(p => p.Description.Contains(filter.Description));
-			}
-			if (filter.IsInStock.HasValue)
-			{
-				data = data.Where(p => p.NumOnStock > 0);
-			}
+			bool isInStock = filter.IsInStock.HasValue ? filter.IsInStock.HasValue : true;
+
+			
+			var data = _context.Products.AsNoTracking().Where(p => isInStock ? p.NumOnStock > 0 : p.NumOnStock == 0);
 			if (filter.MinPrice.HasValue)
 			{
 				data = data.Where(p => p.Price >= filter.MinPrice);
@@ -131,8 +123,76 @@ namespace ElectronicShopAPI.Services.Classes
 			{
 				data = data.Where(p => p.Price <= filter.MaxPrice);
 			}
-			data = data.Skip((filter.PageNumber - 1) * filter.PageSize).Take(filter.PageSize);
+			
+			if (filter.FilterOptionsIds != null && filter.FilterOptionsIds.Count > 0)
+			{
+				var filterCount = _context.FilterOptions
+				.Where(fo => filter.FilterOptionsIds.Contains(fo.Id))
+				.Join(_context.Filters,
+					fo => fo.FilterId,
+					f => f.Id,
+					(fo, f) => new { FilterOption = fo, Filter = f })
+				.GroupBy(x => x.Filter.Id)
+				.Count();
 
+				data = data
+					.Join(_context.ProductFilterOptions,
+					p => p.Id,
+					f => f.ProductId,
+					(p, f) => new { Product = p, FilterOptionId = f.FilterOptionId })
+					.Join(_context.FilterOptions,
+						x => x.FilterOptionId,
+						fo => fo.Id,
+						(x, fo) => new { x.Product, FilterOption = fo })
+					.Where(x => filter.FilterOptionsIds.Contains(x.FilterOption.Id))
+					.Join(_context.Filters,
+						x => x.FilterOption.FilterId,
+						f => f.Id,
+						(x, f) => new { JoinTable = x, Filter = f })
+					
+					.GroupBy(x => new { x.JoinTable.Product})
+					.Where(x => x.GroupBy(xx => xx.Filter.Id).Count() == filterCount)
+					.Select(x => x.Key.Product);
+			}
+			
+			
+
+			if (filter.OrderByOptions != null)
+			{
+				switch (filter.OrderByOptions)
+				{
+					case OrderByOptions.SortByPriceAsc:
+						data = data.OrderBy(p => p.Price);
+						break;
+					case OrderByOptions.SortByPriceDesc:
+						data = data.OrderByDescending(p => p.Price);
+						break;
+					case OrderByOptions.SortByRatingAsc:
+						data = data.Join(_context.Comments,
+							p => p.Id,
+							r => r.ProductId,
+							(p, r) => new { Product = p, Rating = r.Rating })
+							.GroupBy(x => x.Product)
+							.Select(g => new { Product = g.Key, AverageRating = g.Average(x => x.Rating) })
+							.OrderBy(x => x.AverageRating)
+							.Select(x => x.Product);
+						break;
+					case OrderByOptions.SortByRatingDesc:
+						data = data.Join(_context.Comments,
+							p => p.Id,
+							r => r.ProductId,
+							(p, r) => new { Product = p, Rating = r.Rating })
+							.GroupBy(x => x.Product)
+							.Select(g => new { Product = g.Key, AverageRating = g.Average(x => x.Rating) })
+							.OrderByDescending(x => x.AverageRating)
+							.Select(x => x.Product);
+						break;
+					default:
+						break;
+				}
+			}
+
+			data = data.Skip((filter.PageIndex - 1) * filter.PageSize).Take(filter.PageSize);
 			var products = await data.ToListAsync();
 			return products.Select(p => Extensions.Extensions.ToDto(p));
 		}

@@ -13,5 +13,9 @@ public partial class Comment
 
     public int ProductId { get; set; }
 
+    public int CustomerId { get; set; }
+
+    public virtual Customer Customer { get; set; } = null!;
+
     public virtual Product Product { get; set; } = null!;
 }

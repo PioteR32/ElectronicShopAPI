@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using ElectronicShopAPI.Services;
 using ElectronicShopAPI.Services.Classes;
+using ElectronicShopAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IOrderService, ElectronicShopAPI.Services.Classes.Ord
 builder.Services.AddScoped<IShoppingCartService, ElectronicShopAPI.Services.Classes.ShoppingCartService>();
 builder.Services.AddScoped<IUserListService, ElectronicShopAPI.Services.Classes.UserListService>();
 builder.Services.AddScoped<IUserListItemService, ElectronicShopAPI.Services.Classes.UserListItemService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 
