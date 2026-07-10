@@ -13,13 +13,28 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
-            
+
             <Button Text="Search" Grid.Column="0" ></Button>
             <Entry Placeholder="Search for products..." Grid.Column="1" Text="{Binding SearchText}" />
-            
+
         </Grid>
-        
-        <CollectionView ItemsSource="{Binding Categories}">
+
+        <CollectionView ItemsSource="{Binding Categories}" IsVisible="False">
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView" 
+                     Binding="{Binding CurrentState}" 
+                     Value="Categories">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
+                    <Label Text="Categories" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
+                    <Button Text="Wróć" FontAttributes="Bold" FontSize="Large" Grid.Column="0" />
+                </Grid>
+            </CollectionView.Header>
+            
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border>
@@ -32,6 +47,32 @@
                                     />
                         </Grid>
                     </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <CollectionView ItemsSource="{Binding Products}" IsVisible="False">
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView" 
+                     Binding="{Binding CurrentState}" 
+                     Value="Products">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*"  >
+                        <Border 
+                            StrokeShape="RoundRectangle 8"
+                            BackgroundColor="Gray" 
+                            Padding="10" 
+                            Margin="5">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="Medium"/>
+                                <Label Text="{Binding Price, StringFormat='Price: {0:C}'}" FontSize="Small"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

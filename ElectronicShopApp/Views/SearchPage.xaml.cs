@@ -9,9 +9,10 @@ public partial class SearchPage : ContentPage
 	{
 		try
 		{
+			_searchPageViewModel = searchPageViewModel;
 			InitializeComponent();
 			this.BindingContext = searchPageViewModel;
-			_searchPageViewModel = searchPageViewModel;
+			
 		}
 		catch
 		{

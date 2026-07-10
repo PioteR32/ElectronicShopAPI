@@ -9,6 +9,12 @@ using System.Windows.Input;
 
 namespace ElectronicShopApp.ViewModels
 {
+	public enum SearchPageState
+	{
+		Search,
+		Categories,
+		Filters
+	}
 	public class SearchPageViewModel : BindableObject
 	{
 		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService)
@@ -16,9 +22,18 @@ namespace ElectronicShopApp.ViewModels
 			_categoriesService = categoriesService;
 			this._productsService = _productsService;
 		}
-
-		#region UIProperties
 		readonly ProductFilterDTO _productFilter = new ProductFilterDTO();
+		#region ContentPageProperties
+		SearchPageState _currentState = SearchPageState.Categories;
+		public SearchPageState CurrentState 
+		{ 
+			get { return _currentState; }
+			set 
+			{ 
+				_currentState = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public string? SearchText
 		{
@@ -99,7 +114,16 @@ namespace ElectronicShopApp.ViewModels
 
 		private readonly IProductsService _productsService;
 
-
+		List<ProductDTO> _products;
+		public List<ProductDTO> Products
+		{
+			get { return _products; }
+			set
+			{
+				_products = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 		#region Categories
@@ -126,7 +150,8 @@ namespace ElectronicShopApp.ViewModels
 				Categories = _allCategories.Where(c => c.ParentId == CategoryId).ToList();
 				if (Categories.Count == 0)
 				{
-					await _productsService.GetFilteredProducts(_productFilter);
+					Products = new List<ProductDTO>(await _productsService.GetFilteredProducts(_productFilter));
+					CurrentState = SearchPageState.Search;
 				}
 			}
 		});
