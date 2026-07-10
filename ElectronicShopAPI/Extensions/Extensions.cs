@@ -89,5 +89,15 @@ namespace ElectronicShopAPI.Extensions
 			Item = uli.ToDto(),
 			Product = p.ToDto()
 		};
+
+		// Category
+		public static CategoryDTO ToDto(this Category c) => new CategoryDTO
+		{
+			Id = c.Id,
+			Name = c.Name,
+			ParentId = c.ParentId
+		};
+
+		public static IEnumerable<CategoryDTO> ToDtos(this IEnumerable<Category> categories) => categories.Select(c => c.ToDto());
 	}
 }

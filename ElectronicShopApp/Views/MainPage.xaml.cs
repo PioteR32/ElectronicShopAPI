@@ -12,11 +12,17 @@ namespace ElectronicShopApp.Views
 		// 1. Wstrzykujemy ViewModel przez konstruktor (Dependency Injection w MAUI)
 		public MainPage(MainPageViewModel viewModel)
 		{
-			InitializeComponent();
+			try
+			{
+				InitializeComponent();
 
-			// 2. Przypisujemy ViewModel jako BindingContext, aby XAML widział właściwość "Products"
-			_viewModel = viewModel;
-			BindingContext = _viewModel;
+				// 2. Przypisujemy ViewModel jako BindingContext, aby XAML widział właściwość "Products"
+				_viewModel = viewModel;
+				BindingContext = _viewModel;
+			}
+			catch 
+			{ 
+			}
 		}
 
 		// 3. Nadpisujemy metodę cyklu życia strony - wywołuje się za każdym razem, gdy ekran się pojawia

@@ -47,7 +47,14 @@ namespace ElectronicShopApp.Services.Classes
 		}
 		public async Task<IEnumerable<ProductDTO>> GetFilteredProducts(ProductFilterDTO filter)
 		{
-			string queryString = $"?pageIndex={filter.PageIndex}&pageSize={filter.PageSize}&minPrice={filter.MinPrice}&maxPrice={filter.MaxPrice}&isInStock={filter.IsInStock}&orderByOptions={filter.OrderByOptions}";
+			string queryString = $"?pageIndex={filter.PageIndex}" +
+				$"&pageSize={filter.PageSize}" +
+				$"&searchPhrase={filter.SearchPhrase}" +
+				$"&categoryId={filter.CategoryId}" +
+				$"&minPrice={filter.MinPrice}" +
+				$"&maxPrice={filter.MaxPrice}" +
+				$"&isInStock={filter.IsInStock}" +
+				$"&orderByOptions={filter.OrderByOptions}";
 			queryString += ServicesFnc.TableToUrlString("filterOptionsIds", filter.FilterOptionsIds);
 
 			try

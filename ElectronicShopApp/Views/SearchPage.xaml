@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ElectronicShopApp.Views.SearchPage"
+             xmlns:modelViews="clr-namespace:ElectronicShopApp.ViewModels"
+             Title="SearchPage">
+    <!--<ContentPage.BindingContext>
+        <modelViews:SearchPageViewModel />
+    </ContentPage.BindingContext>-->
+    <VerticalStackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            
+            <Button Text="Search" Grid.Column="0" ></Button>
+            <Entry Placeholder="Search for products..." Grid.Column="1" Text="{Binding SearchText}" />
+            
+        </Grid>
+        
+        <CollectionView ItemsSource="{Binding Categories}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border>
+                        <Grid ColumnDefinitions="*"  >
+                            <Button Text="{Binding Name}" 
+                                    FontAttributes="Bold" 
+                                    FontSize="Medium"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type modelViews:SearchPageViewModel}}, Path=CategoryClickCommand}"
+                                    CommandParameter="{Binding .}"
+                                    />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

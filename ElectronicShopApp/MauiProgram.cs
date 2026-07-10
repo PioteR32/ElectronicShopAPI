@@ -31,8 +31,13 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<IShoppingCartService, Services.Classes.ShoppingCartService>();
 			builder.Services.AddHttpClient<IUserListsService, Services.Classes.UserListsService>();
 			builder.Services.AddHttpClient<ICommentService, Services.Classes.CommentsService>();
+			builder.Services.AddHttpClient<ICategoriesService, Services.Classes.CategoriesService>();
+
+			builder.Services.AddSingleton<ElectronicShopApp.Views.MainPage>();
+			builder.Services.AddSingleton<ElectronicShopApp.Views.SearchPage>();
 
 			builder.Services.AddSingleton<MainPageViewModel>();
+			builder.Services.AddSingleton<SearchPageViewModel>();
 
 			return builder.Build();
 

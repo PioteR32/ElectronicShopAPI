@@ -6,21 +6,21 @@
     xmlns:local="clr-namespace:ElectronicShopApp.Views"
     Title="ElectronicShopApp">
 
-    <ShellContent
+    <!--<ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-    <!--<TabBar>
-        <Tab Title="Główna" Icon="home.png">
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+        Route="MainPage" />-->
+    <TabBar>
+        <Tab Title="Główna" >
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"   Title="Home"/>
         </Tab>
 
-        <Tab Title="Szukaj" Icon="search.png">
-            <ShellContent ContentTemplate="{DataTemplate local:SearchPage}" />
+        <Tab Title="Szukaj">
+            <ShellContent ContentTemplate="{DataTemplate local:SearchPage}" Title="Search"/>
         </Tab>
 
-        <Tab Title="Profil" Icon="profile.png">
-            <ShellContent ContentTemplate="{DataTemplate local:ProfilePage}" />
+        <Tab Title="Profil">
+            <ShellContent ContentTemplate="{DataTemplate local:ProfilePage}" Title="Profile" />
         </Tab>
-    </TabBar>-->
+    </TabBar>
 </Shell>

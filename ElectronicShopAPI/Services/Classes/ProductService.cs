@@ -108,13 +108,14 @@ namespace ElectronicShopAPI.Services.Classes
 			await _context.SaveChangesAsync();
 			return products.Select(p => p.Id);
 		}
-
+		private static char[] splitChars = new char[] { ' ', ',', '.', ';', ':', '-', '_', '/', '\\', '|', '!', '?', '@', '#', '$', '%', '^', '&', '*', '(', ')', '[', ']', '{', '}', '<', '>', '=', '+', '~' };
 		public async Task<IEnumerable<ProductDTO>> GetFilterProducts(ProductFilterDTO filter)
 		{
 			bool isInStock = filter.IsInStock.HasValue ? filter.IsInStock.HasValue : true;
 
 			
 			var data = _context.Products.AsNoTracking().Where(p => isInStock ? p.NumOnStock > 0 : p.NumOnStock == 0);
+
 			if (filter.MinPrice.HasValue)
 			{
 				data = data.Where(p => p.Price >= filter.MinPrice);
@@ -123,7 +124,19 @@ namespace ElectronicShopAPI.Services.Classes
 			{
 				data = data.Where(p => p.Price <= filter.MaxPrice);
 			}
-			
+			if(filter.SearchPhrase != null && filter.SearchPhrase.Length > 0)
+			{
+				var splittedSearch = filter.SearchPhrase.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+				data = data.Where(p => 
+				p.Name.Split(splitChars, StringSplitOptions.RemoveEmptyEntries)
+				.Concat(p.Description.Split(splitChars, StringSplitOptions.RemoveEmptyEntries))
+				.All(word => splittedSearch.Contains(word)));
+			}
+
+			if (filter.CategoryId.HasValue)
+			{
+				data = data.Include(p => p.Categories).Where(p => p.Categories.Any(c => c.Id == filter.CategoryId));
+			}
 			if (filter.FilterOptionsIds != null && filter.FilterOptionsIds.Count > 0)
 			{
 				var filterCount = _context.FilterOptions
@@ -154,8 +167,6 @@ namespace ElectronicShopAPI.Services.Classes
 					.Where(x => x.GroupBy(xx => xx.Filter.Id).Count() == filterCount)
 					.Select(x => x.Key.Product);
 			}
-			
-			
 
 			if (filter.OrderByOptions != null)
 			{

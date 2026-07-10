@@ -2,6 +2,8 @@
 {
 	public class ProductFilterDTO
 	{
+		public string? SearchPhrase { get; set; } = null;
+		public int? CategoryId { get; set; } = null;
 		public decimal? MinPrice { get; set; } = null;
 		public decimal? MaxPrice { get; set;} = null;
 		public bool? IsInStock { get; set; } = null;
