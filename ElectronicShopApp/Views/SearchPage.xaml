@@ -76,5 +76,31 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <CollectionView ItemsSource="{Binding Filters}" IsVisible="False">
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView" 
+             Binding="{Binding CurrentState}" 
+             Value="Filters">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*"  >
+                        <Border 
+                    StrokeShape="RoundRectangle 8"
+                    BackgroundColor="Gray" 
+                    Padding="10" 
+                    Margin="5">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="Medium"/>
+                                <Label Text="{Binding Price, StringFormat='Price: {0:C}'}" FontSize="Small"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

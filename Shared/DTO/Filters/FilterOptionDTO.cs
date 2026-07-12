@@ -8,7 +8,7 @@ namespace Shared.DTO.Filters
 {
 	public class FilterOptionDTO
 	{
-		public int id;
+		public int Id { get; set; }
 		public string Name { get; set; } = null!;
 
 		public int FilterId { get; set; }

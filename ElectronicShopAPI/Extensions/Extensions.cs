@@ -99,5 +99,25 @@ namespace ElectronicShopAPI.Extensions
 		};
 
 		public static IEnumerable<CategoryDTO> ToDtos(this IEnumerable<Category> categories) => categories.Select(c => c.ToDto());
+
+		// Filter
+		public static Shared.DTO.Filters.FilterDTO ToDto(this Filter f) => new Shared.DTO.Filters.FilterDTO
+		{
+			Id = f.Id,
+			Name = f.Name
+		};
+
+		public static IEnumerable<Shared.DTO.Filters.FilterDTO> ToDtos(this IEnumerable<Filter> filters) => filters.Select(f => f.ToDto());
+
+		// FilterOption
+		public static Shared.DTO.Filters.FilterOptionDTO ToDto(this FilterOption fo) => new Shared.DTO.Filters.FilterOptionDTO
+		{
+			Id = fo.Id,
+			Name = fo.Name,
+			FilterId = fo.FilterId,
+			ParentId = fo.ParentId
+		};
+
+		public static IEnumerable<Shared.DTO.Filters.FilterOptionDTO> ToDtos(this IEnumerable<FilterOption> options) => options.Select(o => o.ToDto());
 	}
 }

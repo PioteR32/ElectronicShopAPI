@@ -30,6 +30,8 @@ builder.Services.AddScoped<IUserListService, ElectronicShopAPI.Services.Classes.
 builder.Services.AddScoped<IUserListItemService, ElectronicShopAPI.Services.Classes.UserListItemService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<ICategoryService, ElectronicShopAPI.Services.Classes.CategoryService>();
+builder.Services.AddScoped<IFilterService, ElectronicShopAPI.Services.Classes.FilterService>();
+builder.Services.AddScoped<IFilterOptionService, ElectronicShopAPI.Services.Classes.FilterOptionService>();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
 
