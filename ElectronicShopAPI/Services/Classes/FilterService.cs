@@ -1,6 +1,7 @@
 using ElectronicShopAPI.Data;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO;
 using Shared.DTO.Filters;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,23 @@ namespace ElectronicShopAPI.Services.Classes
 			_context = context;
 		}
 
-		public async Task<IEnumerable<FilterDTO>> GetAllFilters(int? pageNumber, int? pageSize)
+		public async Task<IEnumerable<FilterDTO>> GetAllFilters()
 		{
-			var query = _context.Filters.AsQueryable();
-			if (pageNumber.HasValue && pageSize.HasValue)
-			{
-				query = query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
-			}
-			var list = await query.ToListAsync();
+			var list = await _context.Filters.ToListAsync();
 			return list.Select(f => ElectronicShopAPI.Extensions.Extensions.ToDto(f));
 		}
+		public async Task<IEnumerable<FilterDTO>> GetCategoryFilters(CategoryDTO categoryDto)
+		{
+			if (categoryDto == null)
+				return _context.Filters.ToListAsync().Result.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
 
+
+			var list = await _context.Filters.Include(f => f.CategoriesFilters)
+				.Where(fo => fo.CategoriesFilters.Any(cf => cf.CategoryId == categoryDto.Id))
+				.ToListAsync();
+
+			return list.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
+		}
 		public async Task<FilterDTO?> GetFilterById(int id)
 		{
 			var f = await _context.Filters.FindAsync(id);

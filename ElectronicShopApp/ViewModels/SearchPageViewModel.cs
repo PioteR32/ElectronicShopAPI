@@ -17,13 +17,17 @@ namespace ElectronicShopApp.ViewModels
 	}
 	public class SearchPageViewModel : BindableObject
 	{
-		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService)
+		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService, IFilterService filterService, IFilterOptionService filterOptionService)
 		{
 			_categoriesService = categoriesService;
 			this._productsService = _productsService;
+			_filterService = filterService;
+			_filterOptionService = filterOptionService;
 		}
 		readonly ProductFilterDTO _productFilter = new ProductFilterDTO();
+
 		#region ContentPageProperties
+
 		SearchPageState _currentState = SearchPageState.Categories;
 		public SearchPageState CurrentState 
 		{ 
@@ -169,6 +173,68 @@ namespace ElectronicShopApp.ViewModels
 			Categories = _allCategories.Where(c => c.ParentId == CategoryId).ToList();
 		}
 
+		#endregion
+
+		#region Filters
+		List<FilterDTO> _filters = new List<FilterDTO>();
+		public List<FilterDTO> Filters
+		{
+			get { return _filters; }
+			set
+			{
+				_filters = value;
+				OnPropertyChanged();
+			}
+		}
+
+		private readonly IFilterService _filterService;
+		private readonly IFilterOptionService _filterOptionService;
+
+		public async Task LoadFiltersAsync()
+		{
+			Filters = (await _filterService.GetFilters()).ToList();
+		}
+
+		public async Task<List<FilterOptionDTO>> GetOptionsForFilterAsync(int filterId)
+		{
+			return (await _filterOptionService.GetOptionsForFilter(filterId)).ToList();
+		}
+
+		List<FilterOptionDTO> _clickedFilterOptions = new List<FilterOptionDTO>();
+		List<FilterOptionDTO> ClickedFilterOptions
+		{
+			get { return _clickedFilterOptions; }
+			set
+			{
+				_clickedFilterOptions = value;
+				OnPropertyChanged();
+			}
+		}
+		public ICommand FilterClickedCommand => new Command<FilterDTO>(async (filter) =>
+		{
+			if (filter != null)
+			{			
+				if (Filters.Contains(filter))
+				{
+					
+				}
+				
+			}
+		});
+		public ICommand FilterOptionClickCommand => new Command<FilterOptionDTO>(async (filterOption) =>
+		{
+			if (filterOption != null)
+			{
+				if (ClickedFilterOptions.Contains(filterOption))
+				{
+					ClickedFilterOptions.Remove(filterOption);
+				}
+				else
+				{
+					ClickedFilterOptions.Add(filterOption);
+				}
+			}
+		});
 		#endregion
 	}
 }

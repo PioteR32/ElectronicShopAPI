@@ -16,10 +16,10 @@ namespace ElectronicShopAPI.Controllers
 		}
 
 		[AllowAnonymous]
-		[HttpGet("{pageNumber}-{pageSize}")]
-		public async Task<ActionResult<IEnumerable<FilterDTO>>> GetFilters(int pageNumber, int pageSize)
+		[HttpGet("filters")]
+		public async Task<ActionResult<IEnumerable<FilterDTO>>> GetFilters()
 		{
-			var items = await _filterService.GetAllFilters(pageNumber, pageSize);
+			var items = await _filterService.GetAllFilters();
 			return Ok(items);
 		}
 

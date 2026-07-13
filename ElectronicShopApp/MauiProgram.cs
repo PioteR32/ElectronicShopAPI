@@ -32,6 +32,8 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<IUserListsService, Services.Classes.UserListsService>();
 			builder.Services.AddHttpClient<ICommentService, Services.Classes.CommentsService>();
 			builder.Services.AddHttpClient<ICategoriesService, Services.Classes.CategoriesService>();
+			builder.Services.AddHttpClient<IFilterService, Services.Classes.FiltersService>();
+			builder.Services.AddHttpClient<IFilterOptionService, Services.Classes.FilterOptionsService>();
 
 			builder.Services.AddSingleton<ElectronicShopApp.Views.MainPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.SearchPage>();
