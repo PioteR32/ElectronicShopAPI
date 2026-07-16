@@ -3,10 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ElectronicShopApp.Views.SearchPage"
              xmlns:modelViews="clr-namespace:ElectronicShopApp.ViewModels"
+             xmlns:converters="clr-namespace:ElectronicShopApp.Converters"
+             xmlns:views="clr-namespace:ElectronicShopApp.Views"
              Title="SearchPage">
     <!--<ContentPage.BindingContext>
         <modelViews:SearchPageViewModel />
     </ContentPage.BindingContext>-->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IntToSearchPageStateConverter x:Key="IntToSearchPageState" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -14,11 +22,24 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
+            
             <Button Text="Search" Grid.Column="0" ></Button>
             <Entry Placeholder="Search for products..." Grid.Column="1" Text="{Binding SearchText}" />
 
         </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
+            <Button Text="Products" Grid.Column="0" Command="{Binding ChangeView}" CommandParameter="0" ></Button>
+            <Button Text="Choose Categories" Grid.Column="1" Command="{Binding ChangeView}" CommandParameter="1" />
+            <Button Text="Filters" Grid.Column="2" Command="{Binding ChangeView}" CommandParameter="2" />
+
+        </Grid>
+        <ScrollView>
         <CollectionView ItemsSource="{Binding Categories}" IsVisible="False">
             <CollectionView.Triggers>
                 <DataTrigger TargetType="CollectionView" 
@@ -59,6 +80,7 @@
                     <Setter Property="IsVisible" Value="True" />
                 </DataTrigger>
             </CollectionView.Triggers>
+            
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*"  >
@@ -85,22 +107,53 @@
                     <Setter Property="IsVisible" Value="True" />
                 </DataTrigger>
             </CollectionView.Triggers>
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
+                    <Label Text="Filters" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
+                    <Button Text="Wróć" FontAttributes="Bold" FontSize="Large" Grid.Column="0" />
+                </Grid>
+            </CollectionView.Header>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*"  >
-                        <Border 
-                    StrokeShape="RoundRectangle 8"
-                    BackgroundColor="Gray" 
-                    Padding="10" 
-                    Margin="5">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="Medium"/>
-                                <Label Text="{Binding Price, StringFormat='Price: {0:C}'}" FontSize="Small"/>
-                            </VerticalStackLayout>
-                        </Border>
+                    <Grid ColumnDefinitions="*,*"
+                          RowDefinitions="*,*"
+                          >
+
+                        <Label Text="{Binding Name}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="Medium" 
+                                       HorizontalOptions="Start"/>
+                                
+                                <Button Text="Rozwiń" 
+                                        FontAttributes="Bold" 
+                                        FontSize="Medium" Grid.Column="1" 
+                                        
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type modelViews:SearchPageViewModel}}, Path=FilterClickedCommand}"
+                                        CommandParameter="{Binding .}"
+                                        />
+                        <CollectionView 
+                            ItemsSource="{Binding FilterOptions}"
+                            IsVisible="{Binding ShowOptions}"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            HeightRequest="300"
+                           
+                            >
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <views:FilterOptionView 
+                                        FilterOption="{Binding .}"                  
+                                        ShowFilterOptionsCommand="{Binding Source={RelativeSource AncestorType={x:Type modelViews:SearchPageViewModel}}, Path=FilterOptionClickCommand}"
+                                        ShowFilterOptionsCommandParameter="{Binding .}" />
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        </ScrollView>
     </VerticalStackLayout>
 </ContentPage>

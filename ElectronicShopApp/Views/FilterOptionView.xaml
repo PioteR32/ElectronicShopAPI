@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:ElectronicShopApp.Views"
+             x:Class="ElectronicShopApp.Views.FilterOptionView"
+             x:Name="this">
+    <Grid 
+        ColumnDefinitions="*,*,10*,10*" 
+        RowDefinitions="*,*" 
+        BindingContext="{Binding FilterOption,Source={x:Reference this}}">
+        
+        <CheckBox 
+            IsChecked="{Binding IsSelected}" 
+            Grid.Column="1" />
+
+        <Label 
+            Text="{Binding Name}" 
+            FontAttributes="Bold" 
+            FontSize="Medium" 
+            HorizontalOptions="Start"
+            Grid.Column="2"/>
+
+        <Button 
+            IsVisible="{Binding HaveOptions}"
+            Text="Rozwiń" 
+            FontAttributes="Bold" 
+            FontSize="Medium"
+            Command="{Binding ShowFilterOptionsCommand, Source={x:Reference this}}"
+            CommandParameter="{Binding .}"
+            Grid.Column="3"/>
+        <CollectionView 
+            ItemsSource="{Binding FilterOptionValues}"
+            IsVisible="{Binding ShowOptions}"
+            Grid.Column="0"
+            Grid.Row="1"
+            Grid.ColumnSpan="4"
+            >
+            
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <views:FilterOptionView 
+                        FilterOption="{Binding .}"    
+                        ShowFilterOptionsCommand="{Binding ShowFilterOptionsCommand, Source={x:Reference this}}"
+                        ShowFilterOptionsCommandParameter="{Binding .}"/>
+                        
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

@@ -22,14 +22,14 @@ namespace ElectronicShopAPI.Services.Classes
 			var list = await _context.Filters.ToListAsync();
 			return list.Select(f => ElectronicShopAPI.Extensions.Extensions.ToDto(f));
 		}
-		public async Task<IEnumerable<FilterDTO>> GetCategoryFilters(CategoryDTO categoryDto)
+		public async Task<IEnumerable<FilterDTO>> GetCategoryFilters(int categoryID)
 		{
-			if (categoryDto == null)
+			if (categoryID < 0)
 				return _context.Filters.ToListAsync().Result.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
 
 
 			var list = await _context.Filters.Include(f => f.CategoriesFilters)
-				.Where(fo => fo.CategoriesFilters.Any(cf => cf.CategoryId == categoryDto.Id))
+				.Where(fo => fo.CategoriesFilters.Any(cf => cf.CategoryId == categoryID))
 				.ToListAsync();
 
 			return list.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));

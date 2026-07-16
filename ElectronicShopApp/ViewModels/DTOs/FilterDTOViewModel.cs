@@ -16,6 +16,7 @@ namespace ElectronicShopApp.ViewModels.DTOs
 		}
 		public FilterDTO FilterDTO { get; }
 
+
 		List<FilterOptionDTOViewModel> _filterOptions;
 		public List<FilterOptionDTOViewModel> FilterOptions
 		{
@@ -27,10 +28,24 @@ namespace ElectronicShopApp.ViewModels.DTOs
 			}
 		}
 
-		public int Id { get; set; }
+		private bool _showOptions;
+		public bool ShowOptions
+		{
+			get => _showOptions;
+			set
+			{
+				_showOptions = value;
+				OnPropertyChanged();
+			}
+		}
+
+
+		public int Id { get => FilterDTO.Id; }
 		public string Name 
 		{ 
 			get => FilterDTO.Name; 
-		} 
+		}
+		
+
 	}
 }

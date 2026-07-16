@@ -14,5 +14,13 @@ namespace Shared.DTO.Filters
 		public int FilterId { get; set; }
 
 		public int? ParentId { get; set; }
+
+		public bool? HasOptions { get; set; } = null;
+
+		public FilterOptionDTO SetHaveOption(bool value)
+		{
+			HasOptions = value;
+			return this;
+		}
 	}
 }

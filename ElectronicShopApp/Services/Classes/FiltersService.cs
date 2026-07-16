@@ -23,16 +23,13 @@ namespace ElectronicShopApp.Services.Classes
 		}
 
 		// Convenience wrapper calling API endpoint for category filters
-		public async Task<IEnumerable<FilterDTO>> GetCategoryFilters(int categoryId)
-		{
-			return await GetFiltersForCategory(categoryId);
-		}
+		
 
 		public async Task<IEnumerable<FilterDTO>> GetFiltersForCategory(int categoryId)
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync(baseEndpoint + $"/ByCategory/{categoryId}");
+				var response = await _httpClient.GetAsync(baseEndpoint + $"/by-category/{categoryId}");
 				if (response.IsSuccessStatusCode)
 				{
 					var content = await response.Content.ReadAsStringAsync();
@@ -43,11 +40,11 @@ namespace ElectronicShopApp.Services.Classes
 			return new List<FilterDTO>();
 		}
 
-		public async Task<IEnumerable<FilterDTO>> GetFilters(int pageNumber = 1, int pageSize = 100)
+		public async Task<IEnumerable<FilterDTO>> GetFilters()
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync(baseEndpoint + $"/{pageNumber}-{pageSize}");
+				var response = await _httpClient.GetAsync(baseEndpoint + $"/filters");
 				if (response.IsSuccessStatusCode)
 				{
 					var content = await response.Content.ReadAsStringAsync();

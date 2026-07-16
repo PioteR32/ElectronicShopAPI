@@ -9,7 +9,7 @@ namespace ElectronicShopAPI.Services
 	{
 		Task<IEnumerable<FilterDTO>> GetAllFilters();
 		Task<FilterDTO?> GetFilterById(int id);
-		Task<IEnumerable<FilterDTO>> GetCategoryFilters(CategoryDTO categoryDto);
+		Task<IEnumerable<FilterDTO>> GetCategoryFilters(int categoryID);
 		Task<IEnumerable<int>> AddFilters(FilterDTO[] filtersDto);
 		Task<IEnumerable<int>> DeleteFilters(int[] ids);
 		Task<IEnumerable<int>> ModifyFilters(FilterDTO[] filtersDto);

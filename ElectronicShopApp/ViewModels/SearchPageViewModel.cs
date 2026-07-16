@@ -1,4 +1,6 @@
-﻿using ElectronicShopApp.Services.Interfaces;
+﻿
+using ElectronicShopApp.Services.Interfaces;
+using ElectronicShopApp.ViewModels.DTOs;
 using Shared;
 using Shared.DTO;
 using Shared.DTO.Filters;
@@ -11,7 +13,7 @@ namespace ElectronicShopApp.ViewModels
 {
 	public enum SearchPageState
 	{
-		Search,
+		Products,
 		Categories,
 		Filters
 	}
@@ -23,18 +25,41 @@ namespace ElectronicShopApp.ViewModels
 			this._productsService = _productsService;
 			_filterService = filterService;
 			_filterOptionService = filterOptionService;
+			ChangeView = new Command<string>(async (state) =>
+			{
+				CurrentState = (SearchPageState)int.Parse(state);
+				if (CurrentState == SearchPageState.Products)
+				{
+					SearchCommand.Execute(null);
+				}
+				else if (CurrentState == SearchPageState.Categories)
+				{
+					if (CategoryId != null)
+					{
+						Categories = _allCategories.Where(c => c.ParentId == CategoryId).ToList();
+					}
+					else
+						Categories = _allCategories.Where(c => c.ParentId == null).ToList();
+				}
+				else if (CurrentState == SearchPageState.Filters)
+				{
+					Filters = await GetFilters();
+					OnPropertyChanged(nameof(Filters));
+				}
+			});
 		}
 		readonly ProductFilterDTO _productFilter = new ProductFilterDTO();
 
 		#region ContentPageProperties
 
 		SearchPageState _currentState = SearchPageState.Categories;
-		public SearchPageState CurrentState 
-		{ 
+		public SearchPageState CurrentState
+		{
 			get { return _currentState; }
-			set 
-			{ 
+			set
+			{
 				_currentState = value;
+				
 				OnPropertyChanged();
 			}
 		}
@@ -54,8 +79,11 @@ namespace ElectronicShopApp.ViewModels
 			set
 			{
 				_productFilter.CategoryId = value;
+
 			}
 		}
+
+		public ICommand ChangeView { get; set; }
 
 		//public decimal? MinPrice
 		//{
@@ -110,7 +138,8 @@ namespace ElectronicShopApp.ViewModels
 		{
 			_productFilter.SearchPhrase = SearchText;
 			_productFilter.CategoryId = CategoryId;
-			await _productsService.GetFilteredProducts(_productFilter);
+			var tmp = await _productsService.GetFilteredProducts(_productFilter);
+			Products = new List<ProductDTO>(tmp);
 		});
 		#endregion
 
@@ -130,6 +159,7 @@ namespace ElectronicShopApp.ViewModels
 		}
 
 		#endregion
+
 		#region Categories
 
 		private readonly ICategoriesService _categoriesService;
@@ -155,7 +185,7 @@ namespace ElectronicShopApp.ViewModels
 				if (Categories.Count == 0)
 				{
 					Products = new List<ProductDTO>(await _productsService.GetFilteredProducts(_productFilter));
-					CurrentState = SearchPageState.Search;
+					CurrentState = SearchPageState.Products;
 				}
 			}
 		});
@@ -176,8 +206,8 @@ namespace ElectronicShopApp.ViewModels
 		#endregion
 
 		#region Filters
-		List<FilterDTO> _filters = new List<FilterDTO>();
-		public List<FilterDTO> Filters
+		List<FilterDTOViewModel> _filters = new List<FilterDTOViewModel>();
+		public List<FilterDTOViewModel> Filters
 		{
 			get { return _filters; }
 			set
@@ -190,18 +220,28 @@ namespace ElectronicShopApp.ViewModels
 		private readonly IFilterService _filterService;
 		private readonly IFilterOptionService _filterOptionService;
 
-		public async Task LoadFiltersAsync()
+		//public async Task LoadFiltersAsync()
+		//{
+		//	Filters = (await _filterService.GetFilters());
+		//}
+
+		async Task<List<FilterDTOViewModel>> GetFilters()
 		{
-			Filters = (await _filterService.GetFilters()).ToList();
+			if(CategoryId != null)
+			{
+				var filters = await _filterService.GetFiltersForCategory(CategoryId.Value);
+				return filters.Select(f => new FilterDTOViewModel(f)).ToList();
+			}
+			else
+			{
+				var filters = await _filterService.GetFilters();
+				return filters.Select(f => new FilterDTOViewModel(f)).ToList();
+			}
 		}
 
-		public async Task<List<FilterOptionDTO>> GetOptionsForFilterAsync(int filterId)
-		{
-			return (await _filterOptionService.GetOptionsForFilter(filterId)).ToList();
-		}
 
-		List<FilterOptionDTO> _clickedFilterOptions = new List<FilterOptionDTO>();
-		List<FilterOptionDTO> ClickedFilterOptions
+		List<FilterOptionDTOViewModel> _clickedFilterOptions = new List<FilterOptionDTOViewModel>();
+		List<FilterOptionDTOViewModel> ClickedFilterOptions
 		{
 			get { return _clickedFilterOptions; }
 			set
@@ -210,31 +250,66 @@ namespace ElectronicShopApp.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public ICommand FilterClickedCommand => new Command<FilterDTO>(async (filter) =>
+		public ICommand FilterClickedCommand => new Command<FilterDTOViewModel>(async (filter) =>
 		{
 			if (filter != null)
-			{			
-				if (Filters.Contains(filter))
-				{
-					
-				}
-				
+			{
+				filter.ShowOptions = !filter.ShowOptions;
+				var tmp = await _filterOptionService.GetOptionsForFilter(filter.Id);
+				filter.FilterOptions = tmp.Select(fo => new FilterOptionDTOViewModel(fo)).ToList();
+
+				FilterOptionSelected(filter.FilterOptions);
 			}
 		});
-		public ICommand FilterOptionClickCommand => new Command<FilterOptionDTO>(async (filterOption) =>
+		public ICommand FilterOptionClickCommand => new Command<FilterOptionDTOViewModel>(async (filterOption) =>
 		{
 			if (filterOption != null)
 			{
-				if (ClickedFilterOptions.Contains(filterOption))
+				if (filterOption.HaveOptions.HasValue && filterOption.HaveOptions.Value)
 				{
-					ClickedFilterOptions.Remove(filterOption);
-				}
-				else
-				{
-					ClickedFilterOptions.Add(filterOption);
+					filterOption.ShowOptions = !filterOption.ShowOptions;
+					if(filterOption.ShowOptions)
+					{
+						filterOption.FilterOptionValues = (await _filterOptionService.GetOptionsForParentFilterOption(filterOption.FilterOptionDTO.Id))
+							.Select(fo => new FilterOptionDTOViewModel(fo))
+							.ToList();
+
+						FilterOptionSelected(filterOption.FilterOptionValues);
+					}
 				}
 			}
 		});
+		void FilterOptionSelected(List<FilterOptionDTOViewModel> filterOption)
+		{
+			foreach (var option in _productFilter.FilterOptionsIds)
+			{
+				var foundOption = filterOption.Find(fo => fo.FilterOptionDTO.Id == option);
+				if (foundOption != null)
+				{
+					foundOption.IsSelected = true;
+				}
+			}
+		}
+		public List<FilterOptionDTOViewModel>  GetFilterOptions(List<FilterOptionDTOViewModel> filterOptions)
+		{
+			var newList = filterOptions.ToList();
+			foreach(var option in filterOptions)
+			{
+				if(option.FilterOptionValues.Count > 0)
+				{
+					newList.AddRange(GetFilterOptions(option.FilterOptionValues));
+				}
+			}
+			return newList;
+		}
+		public ICommand SaveFilterOptionsCommand => new Command(() =>
+		{
+			var mainFiltersOptions = Filters.SelectMany(f => f.FilterOptions).ToList();
+			_productFilter.FilterOptionsIds = new List<int>(GetFilterOptions(mainFiltersOptions)
+				.Where(fo => fo.IsSelected)
+				.Select(fo => fo.FilterOptionDTO.Id));
+		});
+		
 		#endregion
 	}
 }

@@ -6,8 +6,8 @@ namespace ElectronicShopApp.Services.Interfaces
 {
 	public interface IFilterService
 	{
-		Task<IEnumerable<FilterDTO>> GetFilters(int pageNumber = 1, int pageSize = 100);
-		Task<IEnumerable<FilterDTO>> GetCategoryFilters(int categoryId);
+		Task<IEnumerable<FilterDTO>> GetFilters();
+		Task<IEnumerable<FilterDTO>> GetFiltersForCategory(int categoryId);
 		Task<FilterDTO?> GetById(int id);
 		Task<IEnumerable<int>> AddFilters(FilterDTO[] filters);
 		Task<IEnumerable<int>> DeleteFilters(int[] ids);

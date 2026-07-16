@@ -26,7 +26,7 @@ namespace ElectronicShopApp.ViewModels.DTOs
 		}
 
 		List<FilterOptionDTOViewModel> _filterOptionValues;
-		List<FilterOptionDTOViewModel> FilterOptionValues
+		public List<FilterOptionDTOViewModel> FilterOptionValues
 		{
 			get { return _filterOptionValues; }
 			set
@@ -37,8 +37,6 @@ namespace ElectronicShopApp.ViewModels.DTOs
 		}
 
 		bool _isSelected;
-
-
 		public bool IsSelected
 		{
 			get
@@ -51,5 +49,17 @@ namespace ElectronicShopApp.ViewModels.DTOs
 				OnPropertyChanged(nameof(IsSelected));
 			}
 		}
+		public bool? HaveOptions { get => FilterOptionDTO.HasOptions; }
+		private bool _showOptions;
+		public bool ShowOptions
+		{
+			get => _showOptions && (HaveOptions.HasValue && HaveOptions.Value);
+			set
+			{
+				_showOptions = value;
+				OnPropertyChanged();
+			}
+		}
+		
 	}
 }

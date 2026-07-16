@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Shared.DTO.Filters;
+using ElectronicShopAPI.Models;
 using ElectronicShopAPI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Shared.DTO.Filters;
 
 namespace ElectronicShopAPI.Controllers
 {
@@ -14,12 +15,21 @@ namespace ElectronicShopAPI.Controllers
 		{
 			_filterService = filterService;
 		}
-
+		public const string urlGetFilters = "filters";
 		[AllowAnonymous]
-		[HttpGet("filters")]
+		[HttpGet(urlGetFilters)]
 		public async Task<ActionResult<IEnumerable<FilterDTO>>> GetFilters()
 		{
 			var items = await _filterService.GetAllFilters();
+			return Ok(items);
+		}
+
+
+		[AllowAnonymous]
+		[HttpGet("filters/by-category/{categoryID}")]
+		public async Task<ActionResult<IEnumerable<FilterDTO>>> GetFiltersByCategory(int categoryID)
+		{
+			var items = await _filterService.GetCategoryFilters(categoryID);
 			return Ok(items);
 		}
 

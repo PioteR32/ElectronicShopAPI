@@ -8,7 +8,8 @@ namespace ElectronicShopApp.Services.Interfaces
 	{
 		Task<IEnumerable<FilterOptionDTO>> GetOptions();
 		Task<IEnumerable<FilterOptionDTO>> GetOptionsForFilter(int filterId);
-		Task<IEnumerable<FilterOptionDTO>> GetCategoryFilterOptions(int categoryId);
+		Task<IEnumerable<FilterOptionDTO>> GetOptionsForParentFilterOption(int filterId);
+		Task<IEnumerable<FilterOptionDTO>> GetOptionsForCategory(int categoryId);
 		Task<FilterOptionDTO?> GetById(int id);
 		Task<IEnumerable<int>> AddOptions(FilterOptionDTO[] options);
 		Task<IEnumerable<int>> DeleteOptions(int[] ids);

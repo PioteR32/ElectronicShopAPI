@@ -47,7 +47,7 @@ namespace ElectronicShopApp.Services.Classes
 		{
 			try
 			{
-				var response = await _httpClient.GetAsync(baseEndpoint + "/filters");
+				var response = await _httpClient.GetAsync(baseEndpoint + "/filtersOptions");
 				if (response.IsSuccessStatusCode)
 				{
 					var content = await response.Content.ReadAsStringAsync();
@@ -70,6 +70,20 @@ namespace ElectronicShopApp.Services.Classes
 				}
 			}
 			catch (Exception ex) { Debug.WriteLine($"FilterOptionsService.GetOptionsForFilter Błąd: {ex.Message}"); }
+			return new List<FilterOptionDTO>();
+		}
+		public async Task<IEnumerable<FilterOptionDTO>> GetOptionsForParentFilterOption(int parentFilterOptionId)
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync(baseEndpoint + $"/ByFilterOption/{parentFilterOptionId}");
+				if (response.IsSuccessStatusCode)
+				{
+					var content = await response.Content.ReadAsStringAsync();
+					return JsonSerializer.Deserialize<List<FilterOptionDTO>>(content, _serializerOptions) ?? new List<FilterOptionDTO>();
+				}
+			}
+			catch (Exception ex) { Debug.WriteLine($"FilterOptionsService.GetOptionsForFilterOption Błąd: {ex.Message}"); }
 			return new List<FilterOptionDTO>();
 		}
 

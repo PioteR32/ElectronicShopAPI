@@ -24,10 +24,26 @@ namespace ElectronicShopAPI.Controllers
 		}
 
 		[AllowAnonymous]
+		[HttpGet("ByCategory/{categoryId}")]
+		public async Task<ActionResult<IEnumerable<FilterOptionDTO>>> GetOptionsByCategory(int categoryId)
+		{
+			var items = await _service.GetOptionsForCategory(categoryId);
+			return Ok(items);
+		}
+
+		[AllowAnonymous]
 		[HttpGet("ByFilter/{filterId}")]
 		public async Task<ActionResult<IEnumerable<FilterOptionDTO>>> GetByFilter(int filterId)
 		{
 			var items = await _service.GetOptionsForFilter(filterId);
+			return Ok(items);
+		}
+
+		[AllowAnonymous]
+		[HttpGet("ByFilterOption/{parentFilterOptionId}")]
+		public async Task<ActionResult<IEnumerable<FilterOptionDTO>>> GetByFilterOption(int parentFilterOptionId)
+		{
+			var items = await _service.GetOptionsForFilterOption(parentFilterOptionId);
 			return Ok(items);
 		}
 
