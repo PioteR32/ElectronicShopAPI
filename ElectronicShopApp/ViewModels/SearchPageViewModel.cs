@@ -136,8 +136,9 @@ namespace ElectronicShopApp.ViewModels
 
 		public ICommand SearchCommand => new Command(async () =>
 		{
-			_productFilter.SearchPhrase = SearchText;
+			 _productFilter.SearchPhrase = SearchText;
 			_productFilter.CategoryId = CategoryId;
+			CurrentState = SearchPageState.Products;
 			var tmp = await _productsService.GetFilteredProducts(_productFilter);
 			Products = new List<ProductDTO>(tmp);
 		});

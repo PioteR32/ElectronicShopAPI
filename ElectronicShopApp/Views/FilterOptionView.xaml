@@ -2,10 +2,12 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:ElectronicShopApp.Views"
+             xmlns:utils="clr-namespace:ElectronicShopApp.UtilsMaui.UtilsMaui.Utils"
              x:Class="ElectronicShopApp.Views.FilterOptionView"
-             x:Name="this">
+             x:Name="this"
+             >
     <Grid 
-        ColumnDefinitions="*,*,10*,10*" 
+        utils:GridHelpers.ColumnDefinitionsHelper ="{Binding GridColumnDefinitions,Source={x:Reference this}}"
         RowDefinitions="*,*" 
         BindingContext="{Binding FilterOption,Source={x:Reference this}}">
         
@@ -41,7 +43,8 @@
                     <views:FilterOptionView 
                         FilterOption="{Binding .}"    
                         ShowFilterOptionsCommand="{Binding ShowFilterOptionsCommand, Source={x:Reference this}}"
-                        ShowFilterOptionsCommandParameter="{Binding .}"/>
+                        ShowFilterOptionsCommandParameter="{Binding .}"
+                        GridColumnDefinitions="{Binding GridColumnDefinitionsToFilterOptions,Source={x:Reference this}}"/>
                         
                 </DataTemplate>
             </CollectionView.ItemTemplate>

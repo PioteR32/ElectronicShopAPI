@@ -109,11 +109,23 @@ namespace ElectronicShopAPI.Services.Classes
 			return products.Select(p => p.Id);
 		}
 		private static char[] splitChars = new char[] { ' ', ',', '.', ';', ':', '-', '_', '/', '\\', '|', '!', '?', '@', '#', '$', '%', '^', '&', '*', '(', ')', '[', ']', '{', '}', '<', '>', '=', '+', '~' };
+		int ConvertFromNullIntToInt(int?  value)
+		{
+			if(value == null)
+				return -1; 
+			return value.Value;
+		}
 		public async Task<IEnumerable<ProductDTO>> GetFilterProducts(ProductFilterDTO filter)
 		{
 			bool isInStock = filter.IsInStock.HasValue ? filter.IsInStock.HasValue : true;
+			//
+			if (filter.FilterOptionsIds.Count > 0)
+			{
+				var ParentsIds = _context.FilterOptions.Where(fo => filter.FilterOptionsIds.Contains(fo.Id)).Select(fo => ConvertFromNullIntToInt(fo.ParentId)).ToList();
+				ParentsIds.RemoveAll(pId => filter.FilterOptionsIds.Contains(pId));
+				filter.FilterOptionsIds = ParentsIds;
+			}
 
-			
 			var data = _context.Products.AsNoTracking().Where(p => isInStock ? p.NumOnStock > 0 : p.NumOnStock == 0);
 
 			if (filter.MinPrice.HasValue)
