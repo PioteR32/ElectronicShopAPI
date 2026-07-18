@@ -43,7 +43,12 @@ namespace ElectronicShopApp.ViewModels
 				}
 				else if (CurrentState == SearchPageState.Filters)
 				{
-					Filters = await GetFilters();
+					var actualFilters = await GetFilters();
+					var filtersIds = Filters.Select(f => f.Id);
+					if (actualFilters.Select(af => af.Id).Where(afId => !filtersIds.Any(fId => fId == afId)).Count() > 0 )
+					{
+						Filters = actualFilters;
+					}
 					OnPropertyChanged(nameof(Filters));
 				}
 			});
@@ -59,7 +64,7 @@ namespace ElectronicShopApp.ViewModels
 			set
 			{
 				_currentState = value;
-				
+
 				OnPropertyChanged();
 			}
 		}
@@ -136,7 +141,7 @@ namespace ElectronicShopApp.ViewModels
 
 		public ICommand SearchCommand => new Command(async () =>
 		{
-			 _productFilter.SearchPhrase = SearchText;
+			_productFilter.SearchPhrase = SearchText;
 			_productFilter.CategoryId = CategoryId;
 			CurrentState = SearchPageState.Products;
 			var tmp = await _productsService.GetFilteredProducts(_productFilter);
@@ -228,7 +233,7 @@ namespace ElectronicShopApp.ViewModels
 
 		async Task<List<FilterDTOViewModel>> GetFilters()
 		{
-			if(CategoryId != null)
+			if (CategoryId != null)
 			{
 				var filters = await _filterService.GetFiltersForCategory(CategoryId.Value);
 				return filters.Select(f => new FilterDTOViewModel(f)).ToList();
@@ -259,7 +264,7 @@ namespace ElectronicShopApp.ViewModels
 				var tmp = await _filterOptionService.GetOptionsForFilter(filter.Id);
 				filter.FilterOptions = tmp.Select(fo => new FilterOptionDTOViewModel(fo)).ToList();
 
-				FilterOptionSelected(filter.FilterOptions);
+				FilterOptionSelected(filter.FilterOptions, filter);
 			}
 		});
 		public ICommand FilterOptionClickCommand => new Command<FilterOptionDTOViewModel>(async (filterOption) =>
@@ -269,48 +274,52 @@ namespace ElectronicShopApp.ViewModels
 				if (filterOption.HaveOptions.HasValue && filterOption.HaveOptions.Value)
 				{
 					filterOption.ShowOptions = !filterOption.ShowOptions;
-					if(filterOption.ShowOptions)
+					if (filterOption.ShowOptions)
 					{
 						filterOption.FilterOptionValues = (await _filterOptionService.GetOptionsForParentFilterOption(filterOption.FilterOptionDTO.Id))
 							.Select(fo => new FilterOptionDTOViewModel(fo))
 							.ToList();
 
-						FilterOptionSelected(filterOption.FilterOptionValues);
+						FilterOptionSelected(filterOption.FilterOptionValues, Filters.Find(f => filterOption.FilterOptionDTO.FilterId == f.Id));
 					}
 				}
 			}
 		});
-		void FilterOptionSelected(List<FilterOptionDTOViewModel> filterOption)
+		void FilterOptionSelected(List<FilterOptionDTOViewModel> filterOption, FilterDTOViewModel filter)
 		{
-			foreach (var option in _productFilter.FilterOptionsIds)
+			if (filterOption == null && filter == null)
+				return;
+
+			foreach (var item in filter.SelectedFilterOptions)
 			{
-				var foundOption = filterOption.Find(fo => fo.FilterOptionDTO.Id == option);
-				if (foundOption != null)
+				var finded = filterOption.Find(fo => item.FilterOptionDTO.Id == fo.FilterOptionDTO.Id);
+				if (finded != null)
 				{
-					foundOption.IsSelected = true;
+					finded.IsSelected = true;
 				}
 			}
 		}
-		public List<FilterOptionDTOViewModel>  GetFilterOptions(List<FilterOptionDTOViewModel> filterOptions)
+		public List<FilterOptionDTOViewModel> GetFilterOptions(List<FilterOptionDTOViewModel> filterOptions)
 		{
 			var newList = filterOptions.ToList();
-			foreach(var option in filterOptions)
+			foreach (var option in filterOptions)
 			{
-				if(option.FilterOptionValues.Count > 0)
-				{
-					newList.AddRange(GetFilterOptions(option.FilterOptionValues));
-				}
+				if (option.FilterOptionValues != null)
+					if (option.FilterOptionValues.Count > 0)
+					{
+						newList.AddRange(GetFilterOptions(option.FilterOptionValues));
+					}
 			}
 			return newList;
 		}
-		public ICommand SaveFilterOptionsCommand => new Command(() =>
+		public ICommand SaveFilterOptionsCommand => new Command<FilterDTOViewModel>((filter) =>
 		{
-			var mainFiltersOptions = Filters.SelectMany(f => f.FilterOptions).ToList();
-			_productFilter.FilterOptionsIds = new List<int>(GetFilterOptions(mainFiltersOptions)
-				.Where(fo => fo.IsSelected)
-				.Select(fo => fo.FilterOptionDTO.Id));
+			var mainFiltersOptions = filter.FilterOptions;
+
+			filter.SelectedFilterOptions = new(GetFilterOptions(mainFiltersOptions)
+				.Where(fo => fo.IsSelected));
 		});
-		
+
 		#endregion
 	}
 }

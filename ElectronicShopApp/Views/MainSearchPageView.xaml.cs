@@ -82,14 +82,14 @@ public partial class MainSearchPageView : ContentView
 	}
 	public static readonly BindableProperty CategoryBackCommandProperty = BindableProperty.Create(
 		propertyName: nameof(CategoryBackCommand),
-		returnType: typeof(Command<CategoryDTO>),
+		returnType: typeof(Command),
 		declaringType: typeof(MainSearchPageView),
 		defaultValue: null,
 		defaultBindingMode: BindingMode.OneWay);
 
-	public Command<CategoryDTO> CategoryBackCommand
+	public Command CategoryBackCommand
 	{
-		get => (Command<CategoryDTO>)GetValue(CategoryBackCommandProperty);
+		get => (Command)GetValue(CategoryBackCommandProperty);
 		set => SetValue(CategoryBackCommandProperty, value);
 	}
 	public static readonly BindableProperty FilterClickedCommandProperty = BindableProperty.Create(
@@ -116,6 +116,18 @@ public partial class MainSearchPageView : ContentView
 	{
 		get => (Command<FilterOptionDTOViewModel>)GetValue(FilterOptionClickedCommandProperty);
 		set => SetValue(FilterOptionClickedCommandProperty, value);
+	}
+	public static readonly BindableProperty FilterSaveClickedCommandProperty = BindableProperty.Create(
+		propertyName: nameof(FilterSaveClickedCommand),
+		returnType: typeof(Command<FilterDTOViewModel>),
+		declaringType: typeof(MainSearchPageView),
+		defaultValue: null,
+		defaultBindingMode: BindingMode.OneWay);
+
+	public Command<FilterDTOViewModel> FilterSaveClickedCommand
+	{
+		get => (Command<FilterDTOViewModel>)GetValue(FilterSaveClickedCommandProperty);
+		set => SetValue(FilterSaveClickedCommandProperty, value);
 	}
 
 	public static readonly BindableProperty FilterOptionsGridColumnDefinitionsProperty = BindableProperty.Create(

@@ -4,140 +4,148 @@
              xmlns:views="clr-namespace:ElectronicShopApp.Views"
              x:Class="ElectronicShopApp.Views.MainSearchPageView"
              x:Name="this">
-    <ScrollView >
-        <VerticalStackLayout>
-            <CollectionView 
+
+    <VerticalStackLayout>
+        <CollectionView 
                 ItemsSource="{Binding Categories,Source={x:Reference this}}" 
                 IsVisible="False"
                 HeightRequest="400">
-                <CollectionView.Triggers>
-                    <DataTrigger TargetType="CollectionView" 
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView" 
          Binding="{Binding CurrentState,Source={x:Reference this}}" 
          Value="Categories">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </CollectionView.Triggers>
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
 
-                <CollectionView.Header>
-                    <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
-                        <Label Text="Categories" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
-                        <Button 
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
+                    <Label Text="Categories" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
+                    <Button 
                             Text="Wróć" 
                             FontAttributes="Bold" 
                             FontSize="Large" 
                             Grid.Column="0" 
                             Command="{Binding CategoryBackCommand,Source={x:Reference this}}"/>
-                    </Grid>
-                </CollectionView.Header>
+                </Grid>
+            </CollectionView.Header>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border>
-                            <Grid ColumnDefinitions="*"  >
-                                <Button Text="{Binding Name}" 
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border>
+                        <Grid ColumnDefinitions="*"  >
+                            <Button Text="{Binding Name}" 
                         FontAttributes="Bold" 
                         FontSize="Medium"
                         Command="{Binding CategoryClickCommand,Source={x:Reference this}}"
                         CommandParameter="{Binding .}"
                         />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            <CollectionView 
+        <CollectionView 
                 ItemsSource="{Binding Products,Source={x:Reference this}}" 
                 IsVisible="False"
-                HeightRequest="400">
-                <CollectionView.Triggers>
-                    <DataTrigger TargetType="CollectionView" 
+                >
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView" 
          Binding="{Binding CurrentState,Source={x:Reference this}}" 
          Value="Products">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </CollectionView.Triggers>
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="*"  >
-                            <Border 
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*"  >
+                        <Border 
                                 StrokeShape="RoundRectangle 8"
                                 BackgroundColor="Gray" 
                                 Padding="10" 
                                 Margin="5">
-                                <VerticalStackLayout>
-                                    <Label 
+                            <VerticalStackLayout>
+                                <Label 
                                         Text="{Binding Name}" 
                                         FontAttributes="Bold" 
                                         FontSize="Medium"/>
-                                    <Label 
+                                <Label 
                                         Text="{Binding Price, StringFormat='Price: {0:C}'}" 
                                         FontSize="Small"/>
-                                </VerticalStackLayout>
-                            </Border>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            <CollectionView 
+        <CollectionView 
                 ItemsSource="{Binding Filters,Source={x:Reference this}}" 
                 IsVisible="False"
-                HeightRequest="400">
-                <CollectionView.Triggers>
-                    <DataTrigger 
+                >
+            <CollectionView.Triggers>
+                <DataTrigger 
                     TargetType="CollectionView"       
                     Binding="{Binding CurrentState,Source={x:Reference this}}" 
                     Value="Filters">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </CollectionView.Triggers>
-                <CollectionView.Header>
-                    <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
-                        <Label Text="Filters" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
-                    </Grid>
-                </CollectionView.Header>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="*,*"
-              RowDefinitions="*,*"
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="*,7*" BackgroundColor="LightGray" Padding="10">
+                    <Label Text="Filters" FontAttributes="Bold" FontSize="Large" Grid.Column="1" />
+                </Grid>
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,*"
+              RowDefinitions="*,*,*"
               >
 
-                            <Label Text="{Binding Name}" 
+                        <Label Text="{Binding Name}" 
                            FontAttributes="Bold" 
                            FontSize="Medium" 
                            HorizontalOptions="Start"/>
 
-                            <Button Text="Rozwiń" 
+                        <Button Text="Rozwiń" 
                             FontAttributes="Bold" 
                             FontSize="Medium" Grid.Column="1" 
                             
                             Command="{Binding FilterClickedCommand,Source={x:Reference this}}"
                             CommandParameter="{Binding .}"
                             />
-                            <CollectionView 
+                        <CollectionView 
                                 ItemsSource="{Binding FilterOptions}"
                                 IsVisible="{Binding ShowOptions}"
                                 Grid.Column="0"
                                 Grid.Row="1"
-                                Grid.ColumnSpan="2"
-                                HeightRequest="300" >
+                                Grid.ColumnSpan="2">
 
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <views:FilterOptionView 
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <views:FilterOptionView 
                                             FilterOption="{Binding .}"                  
                                             ShowFilterOptionsCommand="{Binding FilterOptionClickedCommand,Source={x:Reference this}}"
                                             ShowFilterOptionsCommandParameter="{Binding .}"
                                             GridColumnDefinitions ="{Binding FilterOptionsGridColumnDefinitions,Source={x:Reference this}}"/>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+
+                        </CollectionView>
+                        <Button Text="Save Filter state" 
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                IsVisible="{Binding ShowOptions}"
+                                Command="{Binding FilterSaveClickedCommand,Source={x:Reference this}}"
+                                CommandParameter="{Binding .}"
+                                />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+
 </ContentView>

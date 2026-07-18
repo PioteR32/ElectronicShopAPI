@@ -27,7 +27,16 @@ namespace ElectronicShopApp.ViewModels.DTOs
 				OnPropertyChanged();
 			}
 		}
-
+		List<FilterOptionDTOViewModel> _selectedFilterOptions = new ();
+		public List<FilterOptionDTOViewModel> SelectedFilterOptions
+		{
+			get { return _selectedFilterOptions; }
+			set
+			{
+				_selectedFilterOptions = value;
+				OnPropertyChanged();
+			}
+		}
 		private bool _showOptions;
 		public bool ShowOptions
 		{

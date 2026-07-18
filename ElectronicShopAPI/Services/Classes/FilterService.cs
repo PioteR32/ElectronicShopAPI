@@ -26,13 +26,25 @@ namespace ElectronicShopAPI.Services.Classes
 		{
 			if (categoryID < 0)
 				return _context.Filters.ToListAsync().Result.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
-
-
-			var list = await _context.Filters.Include(f => f.CategoriesFilters)
+			var list = new List<Filter>();
+			do
+			{
+				list = await _context.Filters.Include(f => f.CategoriesFilters)
 				.Where(fo => fo.CategoriesFilters.Any(cf => cf.CategoryId == categoryID))
 				.ToListAsync();
+				if(list.Count == 0)
+				{
+					var category = await _context.Categories.Where(c => c.Id == categoryID).FirstAsync();
+					if (category.ParentId != null)
+					{
+						categoryID = _context.Categories.Where(c => c.Id == category.ParentId).First().Id;
+					}
+					else
+						break;
+				}
+			} while (list.Count == 0) ;
 
-			return list.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
+				return list.Select(fo => ElectronicShopAPI.Extensions.Extensions.ToDto(fo));
 		}
 		public async Task<FilterDTO?> GetFilterById(int id)
 		{
