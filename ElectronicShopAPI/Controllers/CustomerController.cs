@@ -46,7 +46,7 @@ namespace ElectronicShopAPI.Controllers
 			{
 				var token = await _customerService.LogIn(loginDTO.Login, loginDTO.Password);
 				if (token != null)
-					return Ok(new { message = "Login Success", Token = token });
+					return Ok(new { Message = "Succesfull", Token = token });
 				else
 					return BadRequest(new { message = "Login Failed", error = "Invalid Email, Phone Number, or Password" });
 			}

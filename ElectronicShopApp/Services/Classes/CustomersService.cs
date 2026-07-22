@@ -13,7 +13,7 @@ namespace ElectronicShopApp.Services.Classes
 	{
 		private readonly HttpClient _httpClient;
 		private readonly JsonSerializerOptions _serializerOptions;
-		private const string BaseEndpoint = "Customers";
+		private const string BaseEndpoint = "Customer";
 
 		public CustomersService(HttpClient httpClient)
 		{
@@ -48,7 +48,7 @@ namespace ElectronicShopApp.Services.Classes
 				var content = await resp.Content.ReadAsStringAsync();
 				using var doc = JsonDocument.Parse(content);
 
-				if (doc.RootElement.TryGetProperty("Token", out var t))
+				if (doc.RootElement.TryGetProperty("token", out var t))
 				{
 					var token = t.GetString();
 					if (!string.IsNullOrWhiteSpace(token)) Global.ApplyAuthHeader(_httpClient); // ensure header applied after login

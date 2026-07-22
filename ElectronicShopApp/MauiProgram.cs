@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using ElectronicShopApp.Services.Interfaces;
@@ -12,6 +13,7 @@ namespace ElectronicShopApp
 			var builder = MauiApp.CreateBuilder();
 			builder
 				.UseMauiApp<App>()
+				.UseMauiCommunityToolkit()
 				.ConfigureFonts(fonts =>
 				{
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -37,9 +39,11 @@ namespace ElectronicShopApp
 
 			builder.Services.AddSingleton<ElectronicShopApp.Views.MainPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.SearchPage>();
-
+			builder.Services.AddSingleton<ElectronicShopApp.Views.ProfilePage>();
+			
 			builder.Services.AddSingleton<MainPageViewModel>();
 			builder.Services.AddSingleton<SearchPageViewModel>();
+			builder.Services.AddSingleton<ProfilePageViewModel>();
 
 			return builder.Build();
 

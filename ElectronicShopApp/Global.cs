@@ -7,14 +7,19 @@ namespace ElectronicShopApp
 	internal class Global
 	{
 
-		//
 		public static string baseUrl = "https://localhost:7276/api/";
 		public static string authorizeToken = "";
-
-		public static void ApplyAuthHeader(System.Net.Http.HttpClient client)
+		public static void Login(string? auth)
+		{
+			if (auth != null)
+			{
+				authorizeToken = auth;
+			}
+		}
+		public static void ApplyAuthHeader(System.Net.Http.HttpClient client,bool authNeeded = false)
 		{
 			if (client == null) return;
-			if (!string.IsNullOrWhiteSpace(authorizeToken))
+			if (!string.IsNullOrWhiteSpace(authorizeToken) && authNeeded)
 			{
 				client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorizeToken);
 			}

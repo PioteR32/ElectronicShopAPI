@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
+             x:DataType="vm:ProfileDataViewModel"
+             x:Class="ElectronicShopApp.Views.ProfilePageViews.ProfileDataView">
+    <Border Stroke="#512BD4" StrokeThickness="2" Padding="20" Margin="10">
+        <VerticalStackLayout Spacing="15">
+            <Button Text="Back" Command="{Binding BackCommand}"/>
+            <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold" TextColor="#512BD4" />
+
+            <Entry Text="{Binding UserName}" Placeholder="Wpisz swoje imię..." />
+
+            <Button Text="Wyczyść imię" Command="{Binding ClearCommand}" HorizontalOptions="Start" />
+        </VerticalStackLayout>
+    </Border>
+</ContentView>
