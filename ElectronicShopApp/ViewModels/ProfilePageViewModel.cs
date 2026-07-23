@@ -17,17 +17,13 @@ namespace ElectronicShopApp.ViewModels
 			{
 				await _customerService.LogIn(EntryName, EntryPassword);
 				OnPropertyChanged(nameof(IsUserLoggedIn));
-				OnAppearingCommand.Execute(null);
+				
 
 			});
-			OnAppearingCommand = new Command(async () =>
-			{
-				Profile = await _customerService.GetProfile();
-
-			});
+			
 			SubViewModels = new IProfileSubViewModel[]
 			{
-				new ProfileDataViewModel(),
+				new ProfileDataViewModel(_customerService),
 				new ProfileListsViewModel()
 			};
 			for(int i =0; i < SubViewModels.Length; i++)
@@ -37,16 +33,7 @@ namespace ElectronicShopApp.ViewModels
 				subViewModel.BackCommand = new Command(() => OnBackButtonClicked());
 			}
 		}
-		CustomerDTO? _profile;
-		CustomerDTO? Profile
-		{
-			get { return _profile; }
-			set
-			{
-				_profile = value;
-				OnPropertyChanged();
-			}
-		}
+		
 		
 		public bool IsUserLoggedIn
 		{
@@ -76,7 +63,7 @@ namespace ElectronicShopApp.ViewModels
 		}
 		public ICommand LogInCommand { get; set;  }
 		public ICommand LogOutCommand { get; set; }
-		public ICommand OnAppearingCommand { get; set; }
+		
 
 
 		#region UserAbilities
@@ -100,12 +87,14 @@ namespace ElectronicShopApp.ViewModels
 			{
 				IsUserInAbility = true;
 				CurrentSubViewModel = _subViewModels[index];
+				CurrentSubViewModel.AppearingCommand.Execute(this);
 			}
 		}
 		[RelayCommand]
 		private void OnBackButtonClicked()
 		{
 			IsUserInAbility = false;
+			
 		}
 
 		// Called by CommunityToolkit when CurrentSubViewModel changes

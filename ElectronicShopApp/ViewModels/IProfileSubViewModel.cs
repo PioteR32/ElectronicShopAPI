@@ -10,5 +10,6 @@ namespace ElectronicShopApp.ViewModels
 		int Index { get; set; }
 
 		Command BackCommand { get; set; }
+		Command AppearingCommand { get; set; }
 	}
 }

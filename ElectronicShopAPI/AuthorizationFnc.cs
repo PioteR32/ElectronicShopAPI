@@ -23,24 +23,33 @@ namespace ElectronicShopAPI
 	}
 	public static class AuthorizationFnc
 	{
-		public static string GenerateToken(int userId, string username, string role, IConfiguration configuration, params string[] customPermission )
+		public static string GenerateToken(int userId, string username, string role, IConfiguration configuration, params string[] customPermission)
 		{
 			var tokenHandler = new JwtSecurityTokenHandler();
 			var key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+			var claims = new List<Claim>
+			{
+				new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+				new Claim(ClaimTypes.Name, username),
+				new Claim(ClaimTypes.Role, role)
+			};
+			if (customPermission != null)
+			{
+				foreach (var permission in customPermission)
+				{
+					claims.Add(new Claim("Permission", permission));
+				}
+			}
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
-				Subject = new ClaimsIdentity(new[]
-				{
-					new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-					new Claim(ClaimTypes.Name, username),
-					new Claim(ClaimTypes.Role, role),
-					new Claim("Permission", string.Join(",", customPermission))
-				}),
+				Subject = new ClaimsIdentity(claims),
+
 				Expires = DateTime.UtcNow.AddDays(30),
 				Issuer = configuration["Jwt:Issuer"],
 				Audience = configuration["Jwt:Audience"],
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
+			
 			var token = tokenHandler.CreateToken(tokenDescriptor);
 			return tokenHandler.WriteToken(token);
 		}

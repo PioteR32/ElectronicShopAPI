@@ -56,8 +56,8 @@ namespace ElectronicShopAPI.Controllers
 			}
 
 		}
-		
-		[Authorize(Policy = "Read")]
+
+		[Authorize(Policy ="Read")]
 		[HttpGet("Profile")]
 		public async Task<IActionResult> GetUser()
 		{
@@ -65,6 +65,51 @@ namespace ElectronicShopAPI.Controllers
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				var user = await _customerService.GetUser(userId);
+				if (user != null)
+				{
+					return Ok(user);
+				}
+				else
+				{
+					return NotFound(new { message = "User not found" });
+				}
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Get User Failed", error = ex.Message });
+			}
+		}
+		[Authorize(Policy = "Write")]
+		[HttpPost("ProfileChange")]
+		public async Task<IActionResult> ChangeUser([FromBody]ChangeUserNamesDTO change)
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var user = await _customerService.ChangeUserNames(userId, change.FirstName, change.LastName);
+				if (user != null)
+				{
+					return Ok(user);
+				}
+				else
+				{
+					return NotFound(new { message = "User not found" });
+				}
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Get User Failed", error = ex.Message });
+			}
+		}
+
+		[Authorize(Policy = "Write")]
+		[HttpPost("ProfilePasswordChange")]
+		public async Task<IActionResult> ChangeUserPassword([FromBody]string newPassword)
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var user = await _customerService.ChangeUserPassword(userId, newPassword);
 				if (user != null)
 				{
 					return Ok(user);

@@ -143,6 +143,8 @@ namespace ElectronicShopApp.ViewModels
 		{
 			_productFilter.SearchPhrase = SearchText;
 			_productFilter.CategoryId = CategoryId;
+			_productFilter.FilterOptionsIds = Filters.SelectMany(f => GetFilterOptions(f.FilterOptions).Select(fo => fo.FilterOptionDTO.Id)).ToList();
+
 			CurrentState = SearchPageState.Products;
 			var tmp = await _productsService.GetFilteredProducts(_productFilter);
 			Products = new List<ProductDTO>(tmp);

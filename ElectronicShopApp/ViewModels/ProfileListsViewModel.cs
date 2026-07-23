@@ -11,7 +11,7 @@ namespace ElectronicShopApp.ViewModels
 		public string Title { get => "Krok 2: Adres Dostawy"; }
 		public int Index { get; set; }
 		public Command BackCommand { get; set; }
-		
+		public Command AppearingCommand { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 		[ObservableProperty]
 		private string _city;

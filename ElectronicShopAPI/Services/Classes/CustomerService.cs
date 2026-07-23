@@ -60,5 +60,22 @@ namespace ElectronicShopAPI.Services.Classes
 		{
 			return await GetUser(userId);
 		}
+
+		public async Task<CustomerDTO?> ChangeUserNames(int id,string firstName, string lastName)
+		{
+			var c = await _context.Customers.Where(cu => cu.Id == id).FirstOrDefaultAsync();
+			c.FirstName = firstName;
+			c.LastName = lastName;
+			await _context.SaveChangesAsync();
+			return Extensions.Extensions.ToDto(c);
+		}
+
+		public async Task<CustomerDTO?> ChangeUserPassword(int id, string newPassword)
+		{
+			var c = await _context.Customers.Where(cu => cu.Id == id).FirstOrDefaultAsync();
+			c.Password = newPassword;
+			await _context.SaveChangesAsync();
+			return Extensions.Extensions.ToDto(c);
+		}
 	}
 }

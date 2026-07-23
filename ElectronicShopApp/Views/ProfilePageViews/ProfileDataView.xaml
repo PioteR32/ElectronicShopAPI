@@ -1,17 +1,92 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
+             xmlns:dto="clr-namespace:Shared.DTO;assembly=Shared"
              x:DataType="vm:ProfileDataViewModel"
-             x:Class="ElectronicShopApp.Views.ProfilePageViews.ProfileDataView">
-    <Border Stroke="#512BD4" StrokeThickness="2" Padding="20" Margin="10">
-        <VerticalStackLayout Spacing="15">
+             x:Class="ElectronicShopApp.Views.ProfilePageViews.ProfileDataView"
+             x:Name="ProfileViewRoot">
+    <ContentView.Behaviors>
+        <toolkit:EventToCommandBehavior 
+        EventName="Loaded"
+        Command="{Binding AppearingCommand}"
+        BindingContext="{Binding BindingContext, Source={x:Reference ProfileViewRoot}}" />
+
+    </ContentView.Behaviors>
+    <Border Stroke="#512BD4" StrokeThickness="2" Padding="20" Margin="10" BackgroundColor="Transparent">
+        <VerticalStackLayout Spacing="15" >
             <Button Text="Back" Command="{Binding BackCommand}"/>
-            <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold" TextColor="#512BD4" />
+            <Grid ColumnDefinitions="*,*,*,*" 
+                  RowDefinitions="*,*" 
+                  BindingContext="{Binding Profile}"
+                  x:DataType="dto:CustomerDTO"
+                  BackgroundColor="Black"
+                  >
+                <Label Text="First Name" />
+                <Label Text="{Binding FirstName}"  Grid.Row="1"/>
+                <Label Text="Last Name" Grid.Column="1"/>
+                <Label Text="{Binding LastName}" Grid.Row="1" Grid.Column="1"/>
+
+                <Label Text="Email" Grid.Column="2" />
+                <Label Text="{Binding Email}" Grid.Row="1" Grid.Column="2"/>
+                <Label Text="Phone" Grid.Column="3" />
+                <Label Text="{Binding PhoneNumber}" Grid.Row="1" Grid.Column="3"/>
+            </Grid>
+            
+            <VerticalStackLayout  IsVisible="{Binding IsNameChanging}">
+                <Grid ColumnDefinitions="*,*,*,*" 
+                  RowDefinitions="*,*" 
+                 
+                  BindingContext="{Binding Profile}"
+                  x:DataType="dto:CustomerDTO"
+                  BackgroundColor="Black"
+                 >
+                    <Label Text="First Name" />
+                    <Entry Text="{Binding FirstName}"  Grid.Row="1"/>
+                    <Label Text="Last Name" Grid.Column="1"/>
+                    <Entry Text="{Binding LastName}" Grid.Row="1" Grid.Column="1"/>
+                </Grid>
+            </VerticalStackLayout>
+            
+            <VerticalStackLayout  IsVisible="{Binding IsPasswordChanging}">
+                <Grid ColumnDefinitions="*" 
+                  RowDefinitions="*,*,*" 
+                  BackgroundColor="Black"
+                 >
+                    <Label Text="Write Actual Password" />
+                    <Entry Text="{Binding PasswordToCheck}"  Grid.Row="1"/>
+                    <Button Text="Check Password" Command="{Binding CheckPasswordCommand}"  Grid.Row="2"/>
+                    
+                </Grid>
+            </VerticalStackLayout>
+            <VerticalStackLayout  IsVisible="{Binding IsCorrectPassword}">
+                <Grid ColumnDefinitions="*" 
+                  RowDefinitions="*,*,*" 
+                  BackgroundColor="Black"
+                 >
+                    <Label Text="Write new password" />
+                    <Entry Text="{Binding PasswordToCheck}"  Grid.Row="1"/>
+                    <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" Grid.Row="2"/>
+                    
+                </Grid>
+            </VerticalStackLayout>
+            <Button Text="Change Name" Command="{Binding ChangeNameCommand}"/>
+            <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" IsVisible="True">
+                <Button.Triggers>
+                    <DataTrigger 
+                        TargetType="Button"
+                        Value="True"
+                        Binding="{Binding IsCorrectPassword }">
+                        <Setter Property="IsVisible" Value="False"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <!--<Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold" TextColor="#512BD4" />
 
             <Entry Text="{Binding UserName}" Placeholder="Wpisz swoje imię..." />
 
-            <Button Text="Wyczyść imię" Command="{Binding ClearCommand}" HorizontalOptions="Start" />
+            <Button Text="Wyczyść imię" Command="{Binding ClearCommand}" HorizontalOptions="Start" />-->
         </VerticalStackLayout>
     </Border>
 </ContentView>
