@@ -89,56 +89,6 @@ namespace ElectronicShopApp.ViewModels
 		}
 
 		public ICommand ChangeView { get; set; }
-
-		//public decimal? MinPrice
-		//{
-		//	get { return _productFilter.MinPrice; }
-		//	set
-		//	{
-		//	}
-		//}
-		//public decimal? MaxPrice
-		//{
-		//	get { return _productFilter.MaxPrice; }
-		//	set
-		//	{
-		//	}
-		//}
-		//public bool? IsInStock
-		//{
-		//	get { return _productFilter.IsInStock; }
-		//	set
-		//	{
-		//	}
-		//}
-		//public int PageIndex
-		//{
-		//	get { return _productFilter.PageIndex; }
-		//	set
-		//	{
-		//	}
-		//}
-		//public int PageSize
-		//{
-		//	get { return _productFilter.PageSize; }
-		//	set
-		//	{
-		//	}
-		//}
-
-		//public OrderByOptions OrderByOptions
-		//{
-		//	get { return _productFilter.OrderByOptions; }
-		//	set
-		//	{
-		//	}
-		//}
-
-		//int? _selectedCategoryId = null;
-
-
-
-
 		public ICommand SearchCommand => new Command(async () =>
 		{
 			_productFilter.SearchPhrase = SearchText;
