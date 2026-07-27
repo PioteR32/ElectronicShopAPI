@@ -33,7 +33,7 @@ namespace ElectronicShopAPI.Controllers
 			}
 		}
 		[Authorize(Policy = "Write")]
-		[HttpPost]
+		[HttpPost("AddList")]
 		public async Task<IActionResult> AddAllUserList([FromBody] UserListDTO userListDto)
 		{
 			try

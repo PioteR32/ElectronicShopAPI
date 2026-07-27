@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services.Interfaces;
+using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -10,9 +12,13 @@ namespace ElectronicShopApp.ViewModels
 	public partial class ProfilePageViewModel:ObservableObject
 	{
 		readonly ICustomersService _customerService;
-		public ProfilePageViewModel(ICustomersService customersService)
+		readonly IUserListsService _userListsService;
+		readonly IPopupService _addUserListPopup;
+		public ProfilePageViewModel(ICustomersService customersService, IUserListsService userListsService, IPopupService popupService)
 		{
 			_customerService = customersService;
+			_userListsService = userListsService;
+			_addUserListPopup = popupService;
 			LogInCommand = new Command(async () =>
 			{
 				await _customerService.LogIn(EntryName, EntryPassword);
@@ -24,7 +30,7 @@ namespace ElectronicShopApp.ViewModels
 			SubViewModels = new IProfileSubViewModel[]
 			{
 				new ProfileDataViewModel(_customerService),
-				new ProfileListsViewModel()
+				new ProfileListsViewModel(_userListsService,_addUserListPopup)
 			};
 			for(int i =0; i < SubViewModels.Length; i++)
 			{

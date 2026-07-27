@@ -115,7 +115,7 @@ namespace ElectronicShopApp.Services.Classes
 				Global.ApplyAuthHeader(_httpClient, true);
 
 				// 1. Przygotowanie obiektu do wysłania w JSON
-				var requestPayload = password;
+				var requestPayload = new string(password);
 				string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
 				using var contentPayload = new StringContent(json, Encoding.UTF8, "application/json");
 

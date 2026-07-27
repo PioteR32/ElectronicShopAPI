@@ -1,8 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services;
 using ElectronicShopApp.Services.Classes;
 using ElectronicShopApp.Services.Interfaces;
+using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
@@ -11,6 +14,9 @@ namespace ElectronicShopApp.ViewModels
 {
 	public partial class ProfileDataViewModel : ObservableObject, IProfileSubViewModel
 	{
+		private readonly IPopupService _addUserListPopup;
+		private readonly ICustomersService customersService;
+
 		public ProfileDataViewModel(ICustomersService customersService)
 		{
 			this.customersService = customersService;
@@ -19,7 +25,7 @@ namespace ElectronicShopApp.ViewModels
 				Profile = await customersService.GetProfile();
 			});
 		}
-		private readonly ICustomersService customersService;
+		
 		public string Title { get => "Krok 1: Dane Osobowe"; }
 		public int Index { get; set; }
 		public Command BackCommand { get; set; }
@@ -64,9 +70,10 @@ namespace ElectronicShopApp.ViewModels
 		{
 			if (IsCorrectPassword)
 			{
+				Profile = await customersService.ChangeUserPassword(_passwordToCheck);
 				IsCorrectPassword = false;
 				PasswordToCheck = "";
-				Profile = await customersService.ChangeUserPassword(_passwordToCheck);
+				
 			}
 			IsPasswordChanging = !IsPasswordChanging;
 		}
@@ -74,11 +81,19 @@ namespace ElectronicShopApp.ViewModels
 		[RelayCommand]
 		private async void CheckPassword()
 		{
-			if(PasswordToCheck == Profile.Password)
+			try
 			{
-				IsCorrectPassword = true;
-				_passwordToCheck = "";
+				if (PasswordToCheck == Profile.Password)
+				{
+					IsCorrectPassword = true;
+					_passwordToCheck = "";
+				}
+			}
+			catch (Exception ex)
+			{
+
 			}
 		}
+
 	}
 }

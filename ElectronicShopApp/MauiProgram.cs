@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
+﻿using CommunityToolkit.Maui;
 using ElectronicShopApp.Services.Interfaces;
 using ElectronicShopApp.ViewModels;
+using ElectronicShopApp.Views.ProfilePageViews;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
 namespace ElectronicShopApp
 {
 	public static class MauiProgram
@@ -37,13 +38,22 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<IFilterService, Services.Classes.FiltersService>();
 			builder.Services.AddHttpClient<IFilterOptionService, Services.Classes.FilterOptionsService>();
 
+			builder.Services.AddTransientPopup<AddUserListPopup, AddUserListPopupViewModel>();
+
 			builder.Services.AddSingleton<ElectronicShopApp.Views.MainPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.SearchPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.ProfilePage>();
-			
+			builder.Services.AddTransient<ElectronicShopApp.Views.ProfilePageViews.AddUserListPopup>();
+
 			builder.Services.AddSingleton<MainPageViewModel>();
+
 			builder.Services.AddSingleton<SearchPageViewModel>();
+
 			builder.Services.AddSingleton<ProfilePageViewModel>();
+			builder.Services.AddTransient<ProfileDataViewModel>();
+			builder.Services.AddTransient<ProfileListsViewModel>();
+			builder.Services.AddTransient<AddUserListPopupViewModel>();
+			
 
 			return builder.Build();
 

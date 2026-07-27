@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace ElectronicShopApp.Services.Classes
@@ -22,12 +23,12 @@ namespace ElectronicShopApp.Services.Classes
 			_serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 		}
 
-		public async Task<IEnumerable<UserListDTO>> GetUserLists(int customerId)
+		public async Task<IEnumerable<UserListDTO>> GetUserLists()
 		{
 			try
 			{
-			Global.ApplyAuthHeader(_httpClient);
-				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetUserLists/{customerId}");
+				Global.ApplyAuthHeader(_httpClient);
+				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/UserLists");
 				if (!resp.IsSuccessStatusCode) return new List<UserListDTO>();
 				var content = await resp.Content.ReadAsStringAsync();
 				return JsonSerializer.Deserialize<List<UserListDTO>>(content, _serializerOptions) ?? new List<UserListDTO>();
@@ -36,6 +37,25 @@ namespace ElectronicShopApp.Services.Classes
 			{
 				Debug.WriteLine(ex.Message);
 				return new List<UserListDTO>();
+			}
+		}
+		public async Task<bool> AddUserList(UserListDTO userList)
+		{
+			try
+			{
+				Global.ApplyAuthHeader(_httpClient,true);
+				var requestPayload = userList;
+				string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
+				using var contentPayload = new StringContent(json, Encoding.UTF8, "application/json");
+				var resp = await _httpClient.PostAsync($"{BaseEndpoint}/AddList", contentPayload);
+				if (!resp.IsSuccessStatusCode) return false;
+				
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return false;
 			}
 		}
 

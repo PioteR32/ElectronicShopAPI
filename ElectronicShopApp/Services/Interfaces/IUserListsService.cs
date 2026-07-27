@@ -6,6 +6,7 @@ namespace ElectronicShopApp.Services.Interfaces
 {
 	public interface IUserListsService
 	{
-		Task<IEnumerable<UserListDTO>> GetUserLists(int customerId);
+		Task<IEnumerable<UserListDTO>> GetUserLists();
+		Task<bool> AddUserList(UserListDTO userList);
 	}
 }

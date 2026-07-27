@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:DataType="vm:AddUserListPopupViewModel"
+               x:Class="ElectronicShopApp.Views.ProfilePageViews.AddUserListPopup"
+               xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
+             >
+    <Grid RowDefinitions="8*,2*"
+          HorizontalOptions="Center"
+          VerticalOptions="Center"
+          MinimumHeightRequest="500">
+        <Border
+            StrokeShape="RoundRectangle 16"
+            BackgroundColor="{AppThemeBinding Light=White, Dark=#212121}"
+            VerticalOptions="Fill"
+            Padding="24">
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+                <Label 
+                Text="{Binding Title}"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Grid.ColumnSpan="2"/>
+                <Button Text="Cancel" 
+                    Command="{Binding CancelCommand}" 
+                    Grid.Row="1"/>
+                <Button Text="Cancel" 
+                    Command="{Binding ConfirmCommand}" 
+                    Grid.Row="1"
+                    Grid.Column="1"/>
+            </Grid>
+        </Border>
+    </Grid>
+</toolkit:Popup>

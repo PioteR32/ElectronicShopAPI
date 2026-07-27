@@ -87,6 +87,9 @@
 	  <MauiXaml Update="Views\ProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\ProfilePageViews\AddUserListPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\ProfilePageViews\ProfileDataView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
