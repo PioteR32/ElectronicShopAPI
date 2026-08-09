@@ -22,7 +22,7 @@ namespace ElectronicShopApp.ViewModels
 			AppearingCommand = new Command(async () =>
 			{
 				var tmp = await _userListsService.GetUserLists();
-				UserLists = tmp.ToList();
+				 UserLists = tmp.ToList();
 			});
 
 
@@ -48,13 +48,13 @@ namespace ElectronicShopApp.ViewModels
 		[RelayCommand]
 		public async Task AddList()
 		{
-			//var newList = await ShowCustomPopupAsync();
-			//if(newList != null) 
-			//	_userListsService.AddUserList(newList);
-			if(await _userListsService.AddUserList(new UserListDTO() { Name = "Testowa", Description = "Testowa" }))
-			{
-				UserLists = (await _userListsService.GetUserLists()).ToList();
-			}
+			var newList = await ShowCustomPopupAsync();
+			if (newList != null && newList.Name != null && newList.Description != null)
+				_userListsService.AddUserList(newList);
+			//if (await _userListsService.AddUserList(new UserListDTO() { Name = "Testowa", Description = "Testowa" }))
+			//{
+			//	UserLists = (await _userListsService.GetUserLists()).ToList();
+			//}
 		}
 
 		

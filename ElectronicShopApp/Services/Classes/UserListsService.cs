@@ -27,8 +27,8 @@ namespace ElectronicShopApp.Services.Classes
 		{
 			try
 			{
-				Global.ApplyAuthHeader(_httpClient);
-				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/UserLists");
+				Global.ApplyAuthHeader(_httpClient,true);
+				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetUserLists");
 				if (!resp.IsSuccessStatusCode) return new List<UserListDTO>();
 				var content = await resp.Content.ReadAsStringAsync();
 				return JsonSerializer.Deserialize<List<UserListDTO>>(content, _serializerOptions) ?? new List<UserListDTO>();

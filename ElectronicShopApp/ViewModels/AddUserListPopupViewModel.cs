@@ -2,6 +2,7 @@
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,10 +19,14 @@ namespace ElectronicShopApp.ViewModels
 		}
 
 		[ObservableProperty]
-		private string _title = "Title";
+		private string _title = "Add List";
+
+		[ObservableProperty]
+		private string _name;
 
 		[ObservableProperty]
 		private string _description;
+		
 		
 
 		[RelayCommand]
@@ -30,7 +35,7 @@ namespace ElectronicShopApp.ViewModels
 			if (Shell.Current?.CurrentPage is Page currentPage)
 			{
 				// Przekazujemy stronę ORAZ wynik (true)
-				await _popupService.ClosePopupAsync(currentPage, true);
+				await _popupService.ClosePopupAsync(currentPage, new UserListDTO() { Description=_description,Name=_name});
 			}
 		}
 
@@ -40,7 +45,7 @@ namespace ElectronicShopApp.ViewModels
 			if (Shell.Current?.CurrentPage is Page currentPage)
 			{
 				// Przekazujemy stronę ORAZ wynik (true)
-				await _popupService.ClosePopupAsync(currentPage, false);
+				await _popupService.ClosePopupAsync<UserListDTO>(currentPage, null);
 			}
 		}
 	}

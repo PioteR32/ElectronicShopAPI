@@ -16,18 +16,24 @@
             VerticalOptions="Fill"
             Padding="24">
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+            <Grid ColumnDefinitions="*,*" 
+                  RowDefinitions="*,*,*"
+                  ColumnSpacing="10">
                 <Label 
                 Text="{Binding Title}"
                 VerticalOptions="Center" 
                 HorizontalOptions="Center"
                 Grid.ColumnSpan="2"/>
+                <Entry Text="{Binding Name}" Placeholder="Name" Grid.Row="1"/>
+                <Entry Text="{Binding Description}" Placeholder="Description" Grid.Row="1" Grid.Column="1"/>
+
+
                 <Button Text="Cancel" 
                     Command="{Binding CancelCommand}" 
-                    Grid.Row="1"/>
-                <Button Text="Cancel" 
+                    Grid.Row="2"/>
+                <Button Text="Confirm" 
                     Command="{Binding ConfirmCommand}" 
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="1"/>
             </Grid>
         </Border>

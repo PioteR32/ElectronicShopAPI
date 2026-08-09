@@ -17,12 +17,12 @@ namespace ElectronicShopAPI.Controllers
 			_userListService = userListService;
 		}
 		[Authorize(Policy = "Read")]
-		[HttpGet("UserLists")]
+		[HttpGet("GetUserLists")]
 		public async Task<IActionResult> GetAllUserLists()
 		{
 			try
 			{
-				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 				var userLists = await _userListService.GetAllUserLists(userId);
 
 				return Ok(userLists);
