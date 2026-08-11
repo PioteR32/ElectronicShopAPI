@@ -14,12 +14,4 @@ public partial class AddUserListPopup : Popup
 		BindingContext = _addUserListPopupViewModel;
 
 	}
-	private async void OnConfirmClicked(object sender, EventArgs e)
-	{
-		// Postaw tutaj Breakpoint!
-		if (Shell.Current?.CurrentPage is Page currentPage)
-		{
-			await currentPage.ClosePopupAsync(true);
-		}
-	}
 }

@@ -87,5 +87,26 @@ namespace ElectronicShopAPI.Controllers
 				return BadRequest(new { message = "Failed to add user list", error = ex.Message });
 			}
 		}
+        [Authorize(Policy = "Delete")]
+		[HttpDelete("DeleteLists")]
+		public async Task<IActionResult> DeleteUserLists([FromBody] List<int> listIds)
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var id = await _userListService.DeleteUserLists(userId, listIds);
+				
+				return Ok(id);
+               
+			}
+			catch (KeyNotFoundException knf)
+			{
+				return BadRequest(new { message = knf.Message });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Failed to add user list", error = ex.Message });
+			}
+		}
 	}
 }

@@ -117,6 +117,9 @@ namespace ElectronicShopAPI.Extensions
 			FilterId = fo.FilterId,
 			ParentId = fo.ParentId
 		};
+
+
+
 		public static Shared.DTO.Filters.FilterOptionDTO ToDto(this FilterOption fo, bool? hasOptions) => new Shared.DTO.Filters.FilterOptionDTO
 		{
 			Id = fo.Id,

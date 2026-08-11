@@ -44,6 +44,19 @@ namespace ElectronicShopAPI.Controllers
 			return Ok(product);
 		}
 
+        [AllowAnonymous]
+        [HttpGet("GetProductSpecsById/{id}")]
+        public async Task<ActionResult<List<ProductSpecificationDTO>>> GetProductSpecsById(int id)
+		{
+			// FindAsync szuka rekordu bezpośrednio po kluczu głównym (Primary Key)
+			var productSpecifications = await _productService.GetProductSpecsById(id);
+			if (productSpecifications == null)
+			{
+				return NotFound($"Produkt o podanym ID ({id}) nie istnieje w sklepie.");
+			}
+			return Ok(productSpecifications);
+		}
+
 		// 3. NOWA FUNKCJA: Filtrowanie produktów po cenie maksymalnej
 		// URL: api/products/filter?maxPrice=150
 		[AllowAnonymous]

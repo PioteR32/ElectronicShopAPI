@@ -8,10 +8,28 @@
     <Border Stroke="#008000" StrokeThickness="2" Padding="20" Margin="10">
         <VerticalStackLayout Spacing="15">
             
-            <Grid ColumnDefinitions="*,*,*">
-                <Button Text="Back" Command="{Binding BackCommand}"/>
-                <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold" TextColor="#008000" />
-                <Button Text="+" FontSize="20" FontAttributes="Bold" TextColor="#008000" Command="{Binding AddListCommand}" />
+            <Grid ColumnDefinitions="*,*,*,*">
+                <Button Text="Back" 
+                        Command="{Binding BackCommand}"/>
+                <Label Text="{Binding Title}" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       TextColor="#008000" 
+                       Grid.Column="1"/>
+
+                <Button Text="+" 
+                        FontSize="20" 
+                        FontAttributes="Bold" 
+                        TextColor="#008000" 
+                        Command="{Binding AddListCommand}"
+                        Grid.Column="2"/>
+
+                <Button Text="-" 
+                        FontSize="20" 
+                        FontAttributes="Bold" 
+                        TextColor="#008000" 
+                        Command="{Binding RemoveListCommand}"
+                        Grid.Column="3"/>
             </Grid>
             <Grid BackgroundColor="Black">
                 <CollectionView ItemsSource="{Binding UserLists}"

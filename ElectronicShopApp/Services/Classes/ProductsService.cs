@@ -70,5 +70,19 @@ namespace ElectronicShopApp.Services.Classes
 			return new List<ProductDTO>();
 		}
 
-	}
+        public async Task<List<ProductSpecificationDTO>> GetProductSpecsById(int id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(baseEndpoint + @"/GetProductSpecsById/" + id);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<List<ProductSpecificationDTO>>(content, _serializerOptions) ?? new List<ProductSpecificationDTO>();
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine($"ProductsService.GetProductSpecsById Błąd: {ex.Message}"); }
+            return new List<ProductSpecificationDTO>();
+        }
+    }
 }

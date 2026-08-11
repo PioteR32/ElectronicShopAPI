@@ -19,14 +19,14 @@ namespace ElectronicShopApp.ViewModels
 		}
 
 		[ObservableProperty]
-		private string _title = "Add List";
+		private string _title = "Remove Lists";
 
 		[ObservableProperty]
 		private string _name;
 
 		[ObservableProperty]
 		private string _description;
-		
+
 		
 
 		[RelayCommand]

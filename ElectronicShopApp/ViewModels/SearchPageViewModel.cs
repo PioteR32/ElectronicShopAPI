@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
+using ElectronicShopApp.Views;
 
 namespace ElectronicShopApp.ViewModels
 {
@@ -19,12 +20,14 @@ namespace ElectronicShopApp.ViewModels
 	}
 	public class SearchPageViewModel : BindableObject
 	{
-		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService, IFilterService filterService, IFilterOptionService filterOptionService)
+		readonly IServiceProvider _serviceProvider;
+		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService, IFilterService filterService, IFilterOptionService filterOptionService, IServiceProvider serviceProvider)
 		{
 			_categoriesService = categoriesService;
 			this._productsService = _productsService;
 			_filterService = filterService;
 			_filterOptionService = filterOptionService;
+			this._serviceProvider = serviceProvider;
 			ChangeView = new Command<string>(async (state) =>
 			{
 				CurrentState = (SearchPageState)int.Parse(state);
@@ -52,7 +55,12 @@ namespace ElectronicShopApp.ViewModels
 					OnPropertyChanged(nameof(Filters));
 				}
 			});
-		}
+            ProductClickedCommand = new Command<int>(async (productId) =>
+            {
+                await ProductClicked(productId);
+            });
+
+        }
 		readonly ProductFilterDTO _productFilter = new ProductFilterDTO();
 
 		#region ContentPageProperties
@@ -116,6 +124,24 @@ namespace ElectronicShopApp.ViewModels
 			}
 		}
 
+        private ICommand _productClickedCommand;
+        public ICommand ProductClickedCommand
+        {
+            get => _productClickedCommand;
+            set
+            {
+                _productClickedCommand = value;
+				OnPropertyChanged();
+            }
+        }
+
+        public Task ProductClicked(int productId)
+        {
+            var pageViewModel = _serviceProvider.GetRequiredService<ProductPageViewModel>();
+
+            Application.Current?.MainPage?.Navigation.PushAsync(new ProductPage(pageViewModel, productId));
+            return Task.CompletedTask;
+        }
 		#endregion
 
 		#region Categories

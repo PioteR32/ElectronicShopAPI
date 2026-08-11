@@ -57,6 +57,30 @@ namespace ElectronicShopApp.Services.Classes
 				Debug.WriteLine(ex.Message);
 				return false;
 			}
+		}public async Task<bool> RemoveUserLists(List<int> userRemoveListIds)
+		{
+			try
+			{
+				Global.ApplyAuthHeader(_httpClient,true);
+				var requestPayload = userRemoveListIds;
+				string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
+                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseEndpoint}/DeleteLists")
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
+                };
+
+               
+                using var resp = await _httpClient.SendAsync(request);
+                
+				if (!resp.IsSuccessStatusCode) return false;
+				
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return false;
+			}
 		}
 
 		// auth header applied from Global.ApplyAuthHeader

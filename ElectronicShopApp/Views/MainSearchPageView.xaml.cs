@@ -1,8 +1,10 @@
-using System.Collections.Generic;
-using Microsoft.Maui.Controls;
-using Shared.DTO;
+
 using ElectronicShopApp.ViewModels;
 using ElectronicShopApp.ViewModels.DTOs;
+using Microsoft.Maui.Controls;
+using Shared.DTO;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace ElectronicShopApp.Views;
 
@@ -68,7 +70,20 @@ public partial class MainSearchPageView : ContentView
 		get => (SearchPageState)GetValue(CurrentStateProperty);
 		set => SetValue(CurrentStateProperty, value);
 	}
-	public static readonly BindableProperty CategoryClickCommandProperty = BindableProperty.Create(
+    public static readonly BindableProperty ProductClickCommandProperty = BindableProperty.Create(
+        propertyName: nameof(ProductClickedCommand),
+        returnType: typeof(ICommand),
+        declaringType: typeof(MainSearchPageView),
+        defaultValue: null,
+        defaultBindingMode: BindingMode.OneWay);
+
+    public ICommand ProductClickedCommand
+    {
+        get => (ICommand)GetValue(ProductClickCommandProperty);
+        set => SetValue(ProductClickCommandProperty, value);
+    }
+
+    public static readonly BindableProperty CategoryClickCommandProperty = BindableProperty.Create(
 		propertyName: nameof(CategoryClickCommand),
 		returnType: typeof(Command<CategoryDTO>),
 		declaringType: typeof(MainSearchPageView),

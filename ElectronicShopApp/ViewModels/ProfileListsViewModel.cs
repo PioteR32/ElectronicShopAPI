@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using ElectronicShopApp.ViewModels.DTOs;
 
 namespace ElectronicShopApp.ViewModels
 {
@@ -48,7 +49,7 @@ namespace ElectronicShopApp.ViewModels
 		[RelayCommand]
 		public async Task AddList()
 		{
-			var newList = await ShowCustomPopupAsync();
+			var newList = await ShowAddListPopupAsync();
 			if (newList != null && newList.Name != null && newList.Description != null)
 				_userListsService.AddUserList(newList);
 			//if (await _userListsService.AddUserList(new UserListDTO() { Name = "Testowa", Description = "Testowa" }))
@@ -56,14 +57,49 @@ namespace ElectronicShopApp.ViewModels
 			//	UserLists = (await _userListsService.GetUserLists()).ToList();
 			//}
 		}
+        [RelayCommand]
+		public async Task RemoveList()
+		{
+			var newList = await ShowRemoveListPopupAsync();
+			if(newList == null) return;
+			var idToRemoveList = newList.Where(l => l.IsToRemove )
+                .Select(l => l.UserListDto.Id )
+                .ToList();
+			if (idToRemoveList.Any())
+			{
+				await _userListsService.RemoveUserLists(idToRemoveList);
+			}
+
+            AppearingCommand.Execute(null);
+
+        }
 
 		
-		private async Task<UserListDTO> ShowCustomPopupAsync()
+		private async Task<UserListDTO> ShowAddListPopupAsync()
 		{
 			if (Shell.Current?.CurrentPage is Page currentPage)
 			{
 				// Otwiera popup i czeka na odpowiedź (bool) z MyCustomPopupViewModel
 				var result = await _addUserListPopup.ShowPopupAsync<AddUserListPopupViewModel, UserListDTO>(currentPage);
+
+				if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
+				{
+					return result.Result;
+				}
+				else
+				{
+					return null;
+				}
+				
+			}
+			return null;
+		}
+        private async Task<List<RemoveUserListDTOViewModel>> ShowRemoveListPopupAsync()
+		{
+			if (Shell.Current?.CurrentPage is Page currentPage)
+			{
+				// Otwiera popup i czeka na odpowiedź (bool) z MyCustomPopupViewModel
+				var result = await _addUserListPopup.ShowPopupAsync<RemoveUserListsPopupViewModel,List<RemoveUserListDTOViewModel>>(currentPage);
 
 				if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
 				{

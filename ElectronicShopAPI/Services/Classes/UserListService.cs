@@ -23,7 +23,6 @@ namespace ElectronicShopAPI.Services.Classes
 		{
 			if (_context.UserLists.Count(ul => ul.CustomerId == userId) >= 30)
 			{
-				throw new Exception("User cannot have more than 30 lists");
 			}
 
 			var entity = new UserList() { CustomerId = userId, Name = dto.Name, Description = dto.Description };
@@ -52,6 +51,15 @@ namespace ElectronicShopAPI.Services.Classes
 			_context.UserLists.Remove(userList);
 			await _context.SaveChangesAsync();
 			return listId;
+		}
+        public async Task<int> DeleteUserLists(int userId, List<int> listIds)
+		{
+			var userLists = await _context.UserLists.Where(ul => listIds.Contains(ul.Id) && ul.CustomerId == userId).ToListAsync();
+			if (userLists == null || userLists.Count != listIds.Count) throw new KeyNotFoundException("One or more user lists not found or do not belong to the user");
+
+			_context.UserLists.RemoveRange(userLists);
+			await _context.SaveChangesAsync();
+			return userLists.Count;
 		}
 	}
 }

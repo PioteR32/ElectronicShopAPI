@@ -9,5 +9,6 @@ namespace ElectronicShopApp.Services.Interfaces
 	{
 		Task<IEnumerable<ProductDTO>> GetProducts(int pageNumber, int pageSize);
 		Task<IEnumerable<ProductDTO>> GetFilteredProducts(ProductFilterDTO filter);
+		Task<List<ProductSpecificationDTO>> GetProductSpecsById(int id);
 	}
 }

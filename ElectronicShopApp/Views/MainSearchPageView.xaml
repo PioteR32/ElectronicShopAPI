@@ -61,20 +61,28 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*"  >
+
                         <Border 
-                                StrokeShape="RoundRectangle 8"
-                                BackgroundColor="Gray" 
-                                Padding="10" 
-                                Margin="5">
-                            <VerticalStackLayout>
+                            StrokeShape="RoundRectangle 8"
+                            BackgroundColor="Gray" 
+                            Padding="10" 
+                            Margin="5">
+                            <Grid RowDefinitions="*,*">
+
                                 <Label 
-                                        Text="{Binding Name}" 
-                                        FontAttributes="Bold" 
-                                        FontSize="Medium"/>
+                                    Text="{Binding Name}" 
+                                    FontAttributes="Bold" 
+                                    FontSize="Medium"/>
                                 <Label 
-                                        Text="{Binding Price, StringFormat='Price: {0:C}'}" 
-                                        FontSize="Small"/>
-                            </VerticalStackLayout>
+                                    Text="{Binding Price, StringFormat='Price: {0:C}'}" 
+                                    FontSize="Small"
+                                    Grid.Row="1"/>
+                                <Button
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding ProductClickedCommand, Source={x:Reference this}}"
+                                    CommandParameter="{Binding Id}"
+                                    Grid.RowSpan="2"></Button>
+                            </Grid>
                         </Border>
                     </Grid>
                 </DataTemplate>

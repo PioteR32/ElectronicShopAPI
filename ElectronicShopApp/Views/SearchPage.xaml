@@ -41,6 +41,7 @@
         </Grid>
         <ScrollView Grid.Row="2">
         <views:MainSearchPageView 
+            ProductClickCommand="{Binding ProductClickedCommand}"
             CategoryBackCommand="{Binding CategoryBackCommand}"
             CategoryClickCommand="{Binding CategoryClickCommand}"                   
             FilterClickedCommand="{Binding FilterClickedCommand}"

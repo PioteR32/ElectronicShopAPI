@@ -14,5 +14,7 @@ namespace ElectronicShopAPI.Services
 		Task<IEnumerable<int>> DeleteProducts(int[] ids);
 		Task<IEnumerable<int>> ModifyProducts(ProductDTO[] productsDto);
 		Task<IEnumerable<ProductDTO>> GetFilterProducts(ProductFilterDTO filter);
-	}
+        Task<List<ProductSpecificationDTO>> GetProductSpecsById(int id);
+
+    }
 }
