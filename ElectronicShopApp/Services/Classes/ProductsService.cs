@@ -45,7 +45,19 @@ namespace ElectronicShopApp.Services.Classes
 			catch (Exception ex) { Debug.WriteLine($"Błąd: {ex.Message}"); }
 			return new List<ProductDTO>();
 		}
-		public async Task<IEnumerable<ProductDTO>> GetFilteredProducts(ProductFilterDTO filter)
+
+        public async Task<ProductDTO> GetProductById(int id)
+        {
+            var response = await _httpClient.GetAsync(baseEndpoint + "/"+id);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<ProductDTO>(content, _serializerOptions) ?? new ProductDTO();
+            }
+            return new ProductDTO();
+        }
+
+        public async Task<IEnumerable<ProductDTO>> GetFilteredProducts(ProductFilterDTO filter)
 		{
 			string queryString = $"?pageIndex={filter.PageIndex}" +
 				$"&pageSize={filter.PageSize}" +

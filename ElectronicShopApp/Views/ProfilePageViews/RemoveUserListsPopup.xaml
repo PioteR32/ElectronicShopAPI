@@ -22,14 +22,14 @@
                     HorizontalOptions="Center"
                     Grid.ColumnSpan="2"/>
             <CollectionView 
-                    ItemsSource="{Binding UserListsViewModels}"
+                    ItemsSource="{Binding CheckedUserLists}"
                     Grid.ColumnSpan="3"
                     Grid.Row="1">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid x:DataType="vmDto:RemoveUserListDTOViewModel" ColumnDefinitions="*,*">
+                        <Grid x:DataType="vmDto:CheckedUserListDTOViewModel" ColumnDefinitions="*,*">
                             <Label Text="{Binding UserListDto.Name}" />
-                            <CheckBox IsChecked="{Binding IsToRemove}" Grid.Column="1" HorizontalOptions="End"/>
+                            <CheckBox IsChecked="{Binding IsChecked}" Grid.Column="1" HorizontalOptions="End"/>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -10,7 +10,7 @@ namespace ElectronicShopApp.Views.ProfilePageViews;
 
 public partial class RemoveUserListsPopup : Popup
 {
-    public RemoveUserListsPopup(RemoveUserListsPopupViewModel viewModel)
+    public RemoveUserListsPopup(ICheckedUserListsPopupViewModel viewModel)
     {
         InitializeComponent();
 

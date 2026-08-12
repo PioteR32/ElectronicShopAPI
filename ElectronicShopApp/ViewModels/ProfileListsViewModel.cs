@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using CommunityToolkit.Maui.Extensions;
 using ElectronicShopApp.ViewModels.DTOs;
 
 namespace ElectronicShopApp.ViewModels
@@ -16,11 +17,13 @@ namespace ElectronicShopApp.ViewModels
 	{
 		readonly IUserListsService _userListsService;
 		private readonly IPopupService _addUserListPopup;
-		public ProfileListsViewModel(IUserListsService userListsService, IPopupService addUserListPopup)
+		private readonly IServiceProvider _serviceProvider;
+		public ProfileListsViewModel(IUserListsService userListsService, IPopupService addUserListPopup,IServiceProvider serviceProvider)
 		{
 			_userListsService = userListsService;
 			_addUserListPopup = addUserListPopup;
-			AppearingCommand = new Command(async () =>
+            _serviceProvider = serviceProvider;
+            AppearingCommand = new Command(async () =>
 			{
 				var tmp = await _userListsService.GetUserLists();
 				 UserLists = tmp.ToList();
@@ -51,18 +54,18 @@ namespace ElectronicShopApp.ViewModels
 		{
 			var newList = await ShowAddListPopupAsync();
 			if (newList != null && newList.Name != null && newList.Description != null)
-				_userListsService.AddUserList(newList);
-			//if (await _userListsService.AddUserList(new UserListDTO() { Name = "Testowa", Description = "Testowa" }))
-			//{
-			//	UserLists = (await _userListsService.GetUserLists()).ToList();
-			//}
+                if (await _userListsService.AddUserList(newList))
+                {
+                    UserLists = (await _userListsService.GetUserLists()).ToList();
+                }
+			
 		}
         [RelayCommand]
 		public async Task RemoveList()
 		{
 			var newList = await ShowRemoveListPopupAsync();
 			if(newList == null) return;
-			var idToRemoveList = newList.Where(l => l.IsToRemove )
+			var idToRemoveList = newList.Where(l => l.IsChecked )
                 .Select(l => l.UserListDto.Id )
                 .ToList();
 			if (idToRemoveList.Any())
@@ -94,15 +97,17 @@ namespace ElectronicShopApp.ViewModels
 			}
 			return null;
 		}
-        private async Task<List<RemoveUserListDTOViewModel>> ShowRemoveListPopupAsync()
+        private async Task<List<CheckedUserListDTOViewModel>> ShowRemoveListPopupAsync()
 		{
 			if (Shell.Current?.CurrentPage is Page currentPage)
 			{
-				// Otwiera popup i czeka na odpowiedź (bool) z MyCustomPopupViewModel
-				var result = await _addUserListPopup.ShowPopupAsync<RemoveUserListsPopupViewModel,List<RemoveUserListDTOViewModel>>(currentPage);
+                
+                var viewModel = _serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
+                var popup = new RemoveUserListsPopup(viewModel);
+                var result =  await Shell.Current.CurrentPage.ShowPopupAsync<List<CheckedUserListDTOViewModel>>(popup);
 
 				if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
-				{
+				{ 
 					return result.Result;
 				}
 				else

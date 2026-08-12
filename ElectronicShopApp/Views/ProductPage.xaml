@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
              x:Class="ElectronicShopApp.Views.ProductPage"
              Title="ProductPage">
+
+    <!--<ContentPage.BindingContext>
+        <vm:ProductPageViewModel/>
+    </ContentPage.BindingContext>-->
+
+
     <VerticalStackLayout>
-        
+        <Grid BindingContext="{Binding Product}"
+              RowDefinitions="Auto,Auto"
+              RowSpacing="20">
+              
+              <Label FontSize="Header" Text="{Binding Name}"/>
+
+              <Label Text="{Binding Description}" 
+                     FontSize="Body"
+                     Grid.Row="1"/>
+        </Grid>
+        <CollectionView ItemsSource="{Binding ProductSpecifications}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,*">
+                        <Label Text="{Binding FilterName,StringFormat='{0} |'}" 
+                                FontSize="Body"
+                                Grid.Column="0"/>
+                        <Label Text="{Binding Name}" 
+                                FontSize="Body"
+                                Grid.Column="1"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>

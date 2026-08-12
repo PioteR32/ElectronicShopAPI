@@ -12,6 +12,7 @@ namespace ElectronicShopApp.ViewModels
         readonly IProductsService _productsService;
 
         [ObservableProperty] private int _productID;
+        [ObservableProperty] private ProductDTO _product;
 
         [ObservableProperty] private List<ProductSpecificationDTO> _productSpecifications;
 
@@ -27,6 +28,7 @@ namespace ElectronicShopApp.ViewModels
             if (ProductID > 0)
             {
                 ProductSpecifications = await _productsService.GetProductSpecsById(ProductID);
+                Product = await _productsService.GetProductById(ProductID);
             }
         }
     }

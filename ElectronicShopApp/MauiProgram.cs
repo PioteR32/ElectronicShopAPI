@@ -39,13 +39,15 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<IFilterOptionService, Services.Classes.FilterOptionsService>();
 
 			builder.Services.AddTransientPopup<AddUserListPopup, AddUserListPopupViewModel>();
-			builder.Services.AddTransientPopup<RemoveUserListsPopup, RemoveUserListsPopupViewModel>();
+			//builder.Services.AddTransientPopup<RemoveUserListsPopup, ICheckedUserListsPopupViewModel>();
             builder.Services.AddTransientPopup<AddUserListPopup, AddUserListPopupViewModel>();
            
             builder.Services.AddSingleton<ElectronicShopApp.Views.MainPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.SearchPage>();
 			builder.Services.AddSingleton<ElectronicShopApp.Views.ProfilePage>();
+            builder.Services.AddTransient< RemoveUserListsPopup>();
 			
+
 
 			builder.Services.AddSingleton<MainPageViewModel>();
 			builder.Services.AddSingleton<SearchPageViewModel>();
@@ -54,7 +56,10 @@ namespace ElectronicShopApp
 			builder.Services.AddTransient<ProfileDataViewModel>();
 			builder.Services.AddTransient<ProfileListsViewModel>();
 			builder.Services.AddTransient<ProductPageViewModel>();
-
+			builder.Services.AddTransient<ProductPageViewModel>();
+            
+            builder.Services.AddKeyedTransient<ICheckedUserListsPopupViewModel, MenageProductsOnUserListsViewModel>("MenageProductsOnUserListsViewModel");
+			builder.Services.AddKeyedTransient<ICheckedUserListsPopupViewModel, RemoveUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
 			
 
 			return builder.Build();

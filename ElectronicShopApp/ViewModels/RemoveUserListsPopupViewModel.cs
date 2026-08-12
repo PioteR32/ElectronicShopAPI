@@ -12,7 +12,7 @@ using ElectronicShopApp.ViewModels.DTOs;
 
 namespace ElectronicShopApp.ViewModels
 {
-    public partial class RemoveUserListsPopupViewModel : ObservableObject
+    public partial class RemoveUserListsPopupViewModel : ObservableObject,ICheckedUserListsPopupViewModel
     {
         private readonly IPopupService _popupService;
         private readonly IUserListsService _userListsService;
@@ -25,18 +25,18 @@ namespace ElectronicShopApp.ViewModels
         }
 
         [RelayCommand]
-        private async Task Initialize()
+        public async Task Initialize()
         {
             var userLists = await _userListsService.GetUserLists();
-            List<RemoveUserListDTOViewModel> userListsViewModels = new List<RemoveUserListDTOViewModel>();
+            List<CheckedUserListDTOViewModel> userListsViewModels = new List<CheckedUserListDTOViewModel>();
             foreach (var userListDto in userLists)
             {
-                userListsViewModels.Add(new RemoveUserListDTOViewModel(userListDto));
+                userListsViewModels.Add(new CheckedUserListDTOViewModel(userListDto));
             }
-            UserListsViewModels = userListsViewModels;  
+            CheckedUserLists = userListsViewModels;  
         }
         [ObservableProperty]
-        private List<RemoveUserListDTOViewModel> _userListsViewModels = new List<RemoveUserListDTOViewModel>();
+        private List<CheckedUserListDTOViewModel> _checkedUserLists = new List<CheckedUserListDTOViewModel>();
 
         [ObservableProperty]
         private string _title = "Choose list to remove ";
@@ -46,7 +46,7 @@ namespace ElectronicShopApp.ViewModels
             if (Shell.Current?.CurrentPage is Page currentPage)
             {
                 // Przekazujemy stronę ORAZ wynik (true)
-                await _popupService.ClosePopupAsync(currentPage, UserListsViewModels);
+                await _popupService.ClosePopupAsync(currentPage, CheckedUserLists);
             }
         }
 

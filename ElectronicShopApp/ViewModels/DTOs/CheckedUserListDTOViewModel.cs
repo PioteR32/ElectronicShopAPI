@@ -7,9 +7,9 @@ using System.Text;
 
 namespace ElectronicShopApp.ViewModels.DTOs
 {
-    public partial class RemoveUserListDTOViewModel : ObservableObject
+    public partial class CheckedUserListDTOViewModel : ObservableObject
     {
-        public RemoveUserListDTOViewModel(UserListDTO userListDto)
+        public CheckedUserListDTOViewModel(UserListDTO userListDto)
         {
             _userListDto = userListDto;
         }
@@ -17,7 +17,7 @@ namespace ElectronicShopApp.ViewModels.DTOs
         private UserListDTO _userListDto;
 
         [ObservableProperty]
-        private bool _isToRemove = false;
+        private bool _isChecked = false;
 
     }
 }

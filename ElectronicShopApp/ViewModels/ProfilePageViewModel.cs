@@ -14,11 +14,13 @@ namespace ElectronicShopApp.ViewModels
 		readonly ICustomersService _customerService;
 		readonly IUserListsService _userListsService;
 		readonly IPopupService _addUserListPopup;
-		public ProfilePageViewModel(ICustomersService customersService, IUserListsService userListsService, IPopupService popupService)
+		readonly IServiceProvider _serviceProvider;
+		public ProfilePageViewModel(ICustomersService customersService, IUserListsService userListsService, IPopupService popupService, IServiceProvider serviceProvider)
 		{
 			_customerService = customersService;
 			_userListsService = userListsService;
 			_addUserListPopup = popupService;
+			_serviceProvider = serviceProvider;
 			LogInCommand = new Command(async () =>
 			{
 				await _customerService.LogIn(EntryName, EntryPassword);
@@ -30,7 +32,7 @@ namespace ElectronicShopApp.ViewModels
 			SubViewModels = new IProfileSubViewModel[]
 			{
 				new ProfileDataViewModel(_customerService),
-				new ProfileListsViewModel(_userListsService,_addUserListPopup)
+				new ProfileListsViewModel(_userListsService,_addUserListPopup,_serviceProvider)
 			};
 			for(int i =0; i < SubViewModels.Length; i++)
 			{
