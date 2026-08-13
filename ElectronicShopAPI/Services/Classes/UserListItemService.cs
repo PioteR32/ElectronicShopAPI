@@ -29,25 +29,55 @@ namespace ElectronicShopAPI.Services.Classes
 			return items.Select(x => Extensions.Extensions.ToDetailDto(x.Uli, x.P));
 		}
 
-		public async Task AddUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos)
+        public async Task AddUserListItem(UserListItemDTO userListItemDto)
+        {
+            if (!_context.UserLists.Any(ul => ul.Id == userListItemDto.UserListId))
+            {
+                throw new KeyNotFoundException("User list not found or does not belong to the user");
+            }
+            if (userListItemDto.Quantity <= 0)
+            {
+                throw new ArgumentException("Invalid quantity for one or more items");
+            }
+
+            if (_context.UserListItems.Any(uli =>
+                    uli.UserListId == userListItemDto.UserListId && uli.ProductId == userListItemDto.ProductId))
+            {
+               (await _context.UserListItems.FindAsync(userListItemDto.UserListId, userListItemDto.ProductId)).Quantity += userListItemDto.Quantity;
+			   await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var userListItem = new UserListItem()
+                {
+                    UserListId = userListItemDto.UserListId.Value,
+                    ProductId = userListItemDto.ProductId.Value,
+                    Quantity = userListItemDto.Quantity
+                };
+                _context.UserListItems.Add(userListItem);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddUserListItems(IEnumerable<UserListItemDTO> userListItemsDto)
 		{
-			if (!_context.UserLists.Any(ul => ul.Id == listId && ul.CustomerId == userId))
+			if (!_context.UserLists.Any(ul =>  !userListItemsDto.Any(ulid => ulid.UserListId == ul.Id)))
 			{
 				throw new KeyNotFoundException("User list not found or does not belong to the user");
 			}
 
-			if (userListItemDtos.Any(uli => uli.Quantity <= 0))
+			if (userListItemsDto.Any(uli => uli.Quantity <= 0))
 			{
 				throw new ArgumentException("Invalid quantity for one or more items");
 			}
 
 			// Validate product existence
-			foreach (var dto in userListItemDtos)
+			foreach (var dto in userListItemsDto)
 			{
 				if (await _context.Products.FindAsync(dto.ProductId) == null)
 					throw new KeyNotFoundException("ProductId is bad one of the provided items");
 			}
-			var grouped = userListItemDtos.GroupBy(i => new { i.ProductId, i.UserListId });
+			var grouped = userListItemsDto.GroupBy(i => new { i.ProductId, i.UserListId });
 			var reapatedItems = grouped.Where(g => g.Count() > 1);
 			var notReapetedItems = grouped.Where(g => g.Count() == 1).SelectMany(g => g);
 
@@ -62,7 +92,7 @@ namespace ElectronicShopAPI.Services.Classes
 				notReapetedItems = notReapetedItemsList;
 			}
 			
-			var userListItems = notReapetedItems.Select(dto => new UserListItem() { UserListId = listId, ProductId = dto.ProductId, Quantity = dto.Quantity }).ToList();
+			var userListItems = notReapetedItems.Select(dto => new UserListItem() { UserListId = userListItemsDto.First().UserListId, ProductId = dto.ProductId, Quantity = dto.Quantity }).ToList();
 			
 			_context.UserListItems.AddRange(userListItems);
 

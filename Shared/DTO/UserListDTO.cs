@@ -2,6 +2,15 @@
 {
 	public class UserListDTO
 	{
+        public UserListDTO() { }
+        public UserListDTO(UserListDTO other)
+		{
+			this.Id = other.Id;
+			this.CustomerId = other.CustomerId;
+			this.Name = other.Name;
+			this.Description = other.Description;
+		}
+
 		public int Id { get; set; }
 		public int? CustomerId { get; set; }
 

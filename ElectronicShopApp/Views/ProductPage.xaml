@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
              x:Class="ElectronicShopApp.Views.ProductPage"
+             x:Name="ContentPage"
              Title="ProductPage">
 
     <!--<ContentPage.BindingContext>
@@ -12,7 +13,7 @@
 
     <VerticalStackLayout>
         <Grid BindingContext="{Binding Product}"
-              RowDefinitions="Auto,Auto"
+              RowDefinitions="Auto,Auto,*"
               RowSpacing="20">
               
               <Label FontSize="Header" Text="{Binding Name}"/>
@@ -20,6 +21,7 @@
               <Label Text="{Binding Description}" 
                      FontSize="Body"
                      Grid.Row="1"/>
+            <Button Text="Add to List" Command="{Binding Source={x:Reference Name=ContentPage},Path=BindingContext.MenageProductOnUserListsCommand}"/>
         </Grid>
         <CollectionView ItemsSource="{Binding ProductSpecifications}">
             <CollectionView.ItemTemplate>

@@ -47,8 +47,32 @@ namespace ElectronicShopAPI.Controllers
 				return BadRequest(new { message = "Failed to add user list", error = ex.Message });
 			}
 		}
+        
+        [Authorize(Policy = "Read")]
+		[HttpGet("GetAllUserListWithCheckedProduct/{productId}")]
+		public async Task<IActionResult> GetAllUserListWithCheckedProduct(int productId)
+		{
+			try
+			{
+				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+				var id = await _userListService.GetAllUserListWithCheckedProduct(productId, userId);
+				return Ok(id);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = "Failed to add user list", error = ex.Message });
+			}
+		}
+        [Authorize(Policy = "Write")]
+        [HttpPost("MenageUserListsProduct/{productId}")]
+        public async Task<IActionResult> MenageUserListsProduct(int productId, [FromBody] IEnumerable<CheckedUserListDTO> checkedLists)
+        {
+            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var id = await _userListService.MenageUserListsProduct(checkedLists, productId);
+            return Ok(id);
+        }
 
-		[Authorize(Policy = "Write")]
+        [Authorize(Policy = "Write")]
 		[HttpPatch]
 		public async Task<IActionResult> ModifyUserList(int listId, [FromBody] UserListDTO userListDto)
 		{

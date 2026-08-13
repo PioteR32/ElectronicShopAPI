@@ -12,7 +12,13 @@ namespace ElectronicShopApp.ViewModels.DTOs
         public CheckedUserListDTOViewModel(UserListDTO userListDto)
         {
             _userListDto = userListDto;
-        }
+        }  
+        public CheckedUserListDTOViewModel(CheckedUserListDTO checkedUserListDto)
+        {
+            _userListDto = checkedUserListDto;
+            _isChecked = checkedUserListDto.IsChecked;
+        } 
+        
         [ObservableProperty]
         private UserListDTO _userListDto;
 

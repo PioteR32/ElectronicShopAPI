@@ -39,12 +39,12 @@ namespace ElectronicShopAPI.Controllers
 
 		[Authorize(Policy = "Write")]
 		[HttpPost]
-		public async Task<IActionResult> AddUserListItems(int listId, [FromBody] IEnumerable<UserListItemDTO> userListItemDtos)
+		public async Task<IActionResult> AddUserListItems([FromBody] IEnumerable<UserListItemDTO> userListItemDtos)
 		{
 			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
 			try
 			{
-				await _userListItemService.AddUserListItems(userId, listId, userListItemDtos);
+				await _userListItemService.AddUserListItems(userListItemDtos);
 				return Ok(true);
 			}
 			catch (KeyNotFoundException knf)
@@ -60,7 +60,7 @@ namespace ElectronicShopAPI.Controllers
 				return BadRequest(new { message = "Failed to retrieve user list items", error = ex.Message });
 			}
 		}
-
+       
 
 		[Authorize(Policy = "Delete")]
 		[HttpDelete]

@@ -39,6 +39,39 @@ namespace ElectronicShopApp.Services.Classes
 				return new List<UserListDTO>();
 			}
 		}
+        public async Task<IEnumerable<CheckedUserListDTO>> GetCheckedUserLists(int productId)
+		{
+			try
+			{
+				Global.ApplyAuthHeader(_httpClient,true);
+				var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetAllUserListWithCheckedProduct/{productId}");
+				if (!resp.IsSuccessStatusCode) return new List<CheckedUserListDTO>();
+				var content = await resp.Content.ReadAsStringAsync();
+				return JsonSerializer.Deserialize<List<CheckedUserListDTO>>(content, _serializerOptions) ?? new List<CheckedUserListDTO>();
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return new List<CheckedUserListDTO>();
+			}
+		}
+
+        public async Task<IEnumerable<CheckedUserListDTO>> MenageUserListsProduct(int productId,IEnumerable<CheckedUserListDTO> checkedUserLists)
+		{
+			try
+			{
+				Global.ApplyAuthHeader(_httpClient,true);
+				var resp = await _httpClient.PostAsync($"{BaseEndpoint}/MenageUserListsProduct/{productId}", new StringContent(JsonSerializer.Serialize(checkedUserLists), Encoding.UTF8, "application/json"));
+				if (!resp.IsSuccessStatusCode) return new List<CheckedUserListDTO>();
+				var content = await resp.Content.ReadAsStringAsync();
+				return JsonSerializer.Deserialize<List<CheckedUserListDTO>>(content, _serializerOptions) ?? new List<CheckedUserListDTO>();
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return new List<CheckedUserListDTO>();
+			}
+		}
 		public async Task<bool> AddUserList(UserListDTO userList)
 		{
 			try

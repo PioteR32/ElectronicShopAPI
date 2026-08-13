@@ -7,7 +7,8 @@ namespace ElectronicShopAPI.Services
 	public interface IUserListItemService
 	{
 		Task<IEnumerable<UserListItemDetailDTO>> GetAllUserListItems(int userId, int listId);
-		Task AddUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos);
+		Task AddUserListItems( IEnumerable<UserListItemDTO> userListItemsDto);
+		Task AddUserListItem( UserListItemDTO userListItemsDto);
 		Task DeleteUserListItems(int userId, int listId, IEnumerable<UserListItemDTO> userListItemDtos);
 		Task ModifyUserListItemsQuantity(int userId, int listId, UserListItemDTO userListItemDTO);
 	}

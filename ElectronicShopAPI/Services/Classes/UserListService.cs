@@ -2,6 +2,7 @@ using ElectronicShopAPI.Data;
 using Shared.DTO;
 using ElectronicShopAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ElectronicShopAPI.Services.Classes
 {
@@ -18,8 +19,45 @@ namespace ElectronicShopAPI.Services.Classes
 			var lists = await _context.UserLists.Where(ul => ul.CustomerId == userId).ToListAsync();
 			return lists.Select(ul => Extensions.Extensions.ToDto(ul));
 		}
+        public async Task<IEnumerable<CheckedUserListDTO>> GetAllUserListWithCheckedProduct(int productId,int userId)
+        {
+            bool tmp = _context.UserListItems.Any(uli => uli.ProductId == productId && 1004 == uli.UserListId);
 
-		public async Task<int> AddUserList(int userId, UserListDTO dto)
+            var lists = await _context.UserLists.Where(ul => ul.CustomerId == userId)
+                .Select(x => new CheckedUserListDTO(){CustomerId = userId,Description = x.Description,Name = x.Name,Id = x.Id, ProductId = productId 
+                    , IsChecked = _context.UserListItems.Any(uli => uli.ProductId == productId && x.Id == uli.UserListId) }).ToListAsync();
+			return lists;
+		}
+		public async Task<IEnumerable<CheckedUserListDTO>> MenageUserListsProduct(IEnumerable<CheckedUserListDTO> checkedLists,int productId)
+        {
+           var baseCheckedList =  await GetAllUserListWithCheckedProduct(productId, checkedLists.FirstOrDefault()?.CustomerId ?? 0);
+           var changedLists = checkedLists.Where(bcl => baseCheckedList.Any(cl => cl.Id == bcl.Id && cl.IsChecked != bcl.IsChecked));
+           
+           var added = changedLists.Where(cl => cl.IsChecked).Select(cl => new UserListItem
+           {
+			   ProductId = productId,
+               UserListId = cl.Id,
+			   Quantity = 1
+           }).ToList();
+           var removed = changedLists.Where(cl => !cl.IsChecked).Select(cl => 
+           
+             cl.Id
+           ).ToList();
+			
+			if(added.Count > 0)
+			    await _context.UserListItems.AddRangeAsync(added);
+			if(removed.Count > 0)
+            {
+                var itemsToRemove = await _context.UserListItems
+                    .Where(uli => uli.ProductId == productId && removed.Contains((int)uli.UserListId))
+                    .ToListAsync();
+                _context.UserListItems.RemoveRange(
+                    itemsToRemove);
+            }
+            await _context.SaveChangesAsync();
+           return await GetAllUserListWithCheckedProduct(productId, checkedLists.FirstOrDefault()?.CustomerId ?? 0);
+        }
+        public async Task<int> AddUserList(int userId, UserListDTO dto)
 		{
 			if (_context.UserLists.Count(ul => ul.CustomerId == userId) >= 30)
 			{
