@@ -110,12 +110,11 @@ namespace ElectronicShopAPI.Services.Classes
 			{
 				throw new ArgumentException("Invalid quantity for one or more items");
 			}
-
-			foreach (var dto in userListItemDtos)
+			if(_context.UserListItems.Where(uli => userListItemDtos.Any(ulid => ulid.Id == uli.Id && ulid.UserListId == uli.UserListId && ulid.ProductId == uli.ProductId)).Count() != userListItemDtos.Count())
 			{
-				if (await _context.Products.FindAsync(dto.ProductId) == null)
-					throw new KeyNotFoundException("ProductId is bad one of the provided items");
+				throw new KeyNotFoundException("One or more items not found in the user list");
 			}
+			
 
 			var userListItems = userListItemDtos.Select(dto => new UserListItem() { UserListId = listId, ProductId = dto.ProductId, Quantity = dto.Quantity }).ToList();
 			_context.UserListItems.RemoveRange(userListItems);

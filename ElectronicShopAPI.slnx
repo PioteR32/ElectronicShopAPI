@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/" />
   <Project Path="ElectronicShopAPI/ElectronicShopAPI.csproj" />
+  <Project Path="ElectronicShopApp.Services/ElectronicShopApp.Services.csproj" Id="92a73e1b-63ce-4174-a724-a74466805950" />
+  <Project Path="ElectronicShopApp.ViewModels/ElectronicShopApp.ViewModels.csproj" Id="bb55324e-9a6b-4810-b15f-e8a14b002279" />
   <Project Path="ElectronicShopApp/ElectronicShopApp.csproj" Id="38212794-dea0-43be-8a0a-057705e20aa6">
     <Deploy Solution="Debug|*" />
   </Project>

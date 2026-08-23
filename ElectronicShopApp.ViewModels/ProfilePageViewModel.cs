@@ -3,10 +3,10 @@ using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services.Interfaces;
-using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using ElectronicShopApp.Services;
 namespace ElectronicShopApp.ViewModels
 {
 	public partial class ProfilePageViewModel:ObservableObject
@@ -32,7 +32,7 @@ namespace ElectronicShopApp.ViewModels
 			SubViewModels = new IProfileSubViewModel[]
 			{
 				new ProfileDataViewModel(_customerService),
-				new ProfileListsViewModel(_userListsService,_addUserListPopup,_serviceProvider)
+				new ProfileListsViewModel(_userListsService,_addUserListPopup,_serviceProvider,_serviceProvider.GetRequiredService<ICommunicateWithView>())
 			};
 			for(int i =0; i < SubViewModels.Length; i++)
 			{

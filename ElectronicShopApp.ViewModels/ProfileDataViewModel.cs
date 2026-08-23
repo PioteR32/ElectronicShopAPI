@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services;
 using ElectronicShopApp.Services.Classes;
 using ElectronicShopApp.Services.Interfaces;
-using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;

@@ -1,0 +1,148 @@
+using ElectronicShopApp.Services.Interfaces;
+using Shared.DTO;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace ElectronicShopApp.Services.Classes
+{
+    public class UserListService : IUserListService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _serializerOptions;
+        private const string BaseEndpoint = "UserLists";
+
+        public UserListService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(Global.baseUrl);
+            _serializerOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        }
+
+        public async Task<IEnumerable<UserListDTO>> GetUserLists()
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetUserLists");
+                if (!resp.IsSuccessStatusCode) return new List<UserListDTO>();
+                var content = await resp.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<UserListDTO>>(content, _serializerOptions) ?? new List<UserListDTO>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return new List<UserListDTO>();
+            }
+        }
+
+        public async Task<IEnumerable<CheckedUserListDTO>> GetCheckedUserLists(int productId)
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var resp = await _httpClient.GetAsync($"{BaseEndpoint}/GetAllUserListWithCheckedProduct/{productId}");
+                if (!resp.IsSuccessStatusCode) return new List<CheckedUserListDTO>();
+                var content = await resp.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<CheckedUserListDTO>>(content, _serializerOptions) ?? new List<CheckedUserListDTO>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return new List<CheckedUserListDTO>();
+            }
+        }
+
+        public async Task<IEnumerable<CheckedUserListDTO>> ManageUserListsProduct(int productId, IEnumerable<CheckedUserListDTO> checkedUserLists)
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var resp = await _httpClient.PostAsync($"{BaseEndpoint}/ManageUserListsProduct/{productId}", new StringContent(JsonSerializer.Serialize(checkedUserLists), Encoding.UTF8, "application/json"));
+                if (!resp.IsSuccessStatusCode) return new List<CheckedUserListDTO>();
+                var content = await resp.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<CheckedUserListDTO>>(content, _serializerOptions) ?? new List<CheckedUserListDTO>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return new List<CheckedUserListDTO>();
+            }
+        }
+
+        public async Task<bool> AddUserList(UserListDTO userList)
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var requestPayload = userList;
+                string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
+                using var contentPayload = new StringContent(json, Encoding.UTF8, "application/json");
+                var resp = await _httpClient.PostAsync($"{BaseEndpoint}/AddList", contentPayload);
+                if (!resp.IsSuccessStatusCode) return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveUserLists(List<int> userRemoveListIds)
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var requestPayload = userRemoveListIds;
+                string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
+                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseEndpoint}/DeleteLists")
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
+                };
+
+                using var resp = await _httpClient.SendAsync(request);
+
+                if (!resp.IsSuccessStatusCode) return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteUserListItems(int userId, int userListId, IEnumerable<int> itemIds)
+        {
+            try
+            {
+                Global.ApplyAuthHeader(_httpClient, true);
+                var requestPayload = itemIds;
+                string json = JsonSerializer.Serialize(requestPayload, _serializerOptions);
+                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseEndpoint}/DeleteUserListItems/{userId}/{userListId}")
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
+                };
+
+                using var resp = await _httpClient.SendAsync(request);
+
+                if (!resp.IsSuccessStatusCode) return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+    }
+}

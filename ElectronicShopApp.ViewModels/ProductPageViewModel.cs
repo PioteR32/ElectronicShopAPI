@@ -3,11 +3,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services.Interfaces;
 using ElectronicShopApp.ViewModels.DTOs;
-using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CommunityToolkit.Maui.Core;
 
 namespace ElectronicShopApp.ViewModels
 {
@@ -16,17 +16,18 @@ namespace ElectronicShopApp.ViewModels
         readonly IProductsService _productsService;
         readonly IServiceProvider _serviceProvider;
         readonly IUserListsService _userListsService;
-
+        readonly ICommunicateWithView _communicateWithView;
         [ObservableProperty] private int _productID;
         [ObservableProperty] private ProductDTO _product;
 
         [ObservableProperty] private List<ProductSpecificationDTO> _productSpecifications;
 
-        public ProductPageViewModel(IProductsService productsService,IUserListsService userListsService, IServiceProvider serviceProvider)
+        public ProductPageViewModel(IProductsService productsService,IUserListsService userListsService, IServiceProvider serviceProvider, ICommunicateWithView communicateWithView)
         {
             _productsService = productsService;
             _userListsService = userListsService;
             _serviceProvider = serviceProvider;
+            _communicateWithView = communicateWithView;
             ProductSpecifications = new List<ProductSpecificationDTO>();
         }
 
@@ -61,8 +62,7 @@ namespace ElectronicShopApp.ViewModels
                 var viewModel = (MenageProductsOnUserListsViewModel)_serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("MenageProductsOnUserListsViewModel");
                 viewModel.productId = ProductID;
                 viewModel.InitializeCommand.Execute(null);
-                var popup = new RemoveUserListsPopup(viewModel);
-                var result = await Shell.Current.CurrentPage.ShowPopupAsync<List<CheckedUserListDTOViewModel>>(popup);
+                var result = await _communicateWithView.NavigateRemoveUserListsPopup<IPopupResult<List<CheckedUserListDTOViewModel>>>(viewModel, typeof(List<CheckedUserListDTOViewModel>));
 
                 if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
                 {

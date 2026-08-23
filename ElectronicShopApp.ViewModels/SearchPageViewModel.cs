@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
-using ElectronicShopApp.Views;
+
 
 namespace ElectronicShopApp.ViewModels
 {
@@ -21,13 +21,15 @@ namespace ElectronicShopApp.ViewModels
 	public class SearchPageViewModel : BindableObject
 	{
 		readonly IServiceProvider _serviceProvider;
-		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService, IFilterService filterService, IFilterOptionService filterOptionService, IServiceProvider serviceProvider)
+		readonly ICommunicateWithView _communicateWithView;
+		public SearchPageViewModel(ICategoriesService categoriesService, IProductsService _productsService, IFilterService filterService, IFilterOptionService filterOptionService, IServiceProvider serviceProvider, ICommunicateWithView communicateWithView)
 		{
 			_categoriesService = categoriesService;
 			this._productsService = _productsService;
 			_filterService = filterService;
 			_filterOptionService = filterOptionService;
 			this._serviceProvider = serviceProvider;
+			this._communicateWithView = communicateWithView;
 			ChangeView = new Command<string>(async (state) =>
 			{
 				CurrentState = (SearchPageState)int.Parse(state);
@@ -48,7 +50,7 @@ namespace ElectronicShopApp.ViewModels
 				{
 					var actualFilters = await GetFilters();
 					var filtersIds = Filters.Select(f => f.Id);
-					if (actualFilters.Select(af => af.Id).Where(afId => !filtersIds.Any(fId => fId == afId)).Count() > 0 )
+					if (actualFilters.Select(af => af.Id).Where(afId => !filtersIds.Any(fId => fId == afId)).Any())
 					{
 						Filters = actualFilters;
 					}
@@ -135,13 +137,12 @@ namespace ElectronicShopApp.ViewModels
             }
         }
 
-        public Task ProductClicked(int productId)
-        {
-            var pageViewModel = _serviceProvider.GetRequiredService<ProductPageViewModel>();
+		public async Task ProductClicked(int productId)
+		{
+			var pageViewModel = _serviceProvider.GetRequiredService<ProductPageViewModel>();
 
-            Application.Current?.MainPage?.Navigation.PushAsync(new ProductPage(pageViewModel, productId));
-            return Task.CompletedTask;
-        }
+			await _communicateWithView.NavigateToProductPage(pageViewModel, productId);
+		}
 		#endregion
 
 		#region Categories

@@ -84,11 +84,18 @@ namespace ElectronicShopAPI.Extensions
 		};
 
 		// UserListItem detail (requires product)
-		public static UserListItemDetailDTO ToDetailDto(this UserListItem uli, Product p) => new UserListItemDetailDTO
-		{
-			Item = uli.ToDto(),
-			Product = p.ToDto()
-		};
+        public static UserListItemDetailDTO ToDetailDto(this UserListItem uli, Product p)
+        {
+            var item = uli.ToDto();
+            var product = p.ToDto();
+            return new UserListItemDetailDTO
+            {
+                ProductId = p.Id,
+                UserListId = uli.UserListId,
+                Quantity = uli.Quantity,
+                ProductName = product.Name
+            };
+        }
 
 		// Category
 		public static CategoryDTO ToDto(this Category c) => new CategoryDTO

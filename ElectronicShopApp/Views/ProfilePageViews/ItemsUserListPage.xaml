@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
+             xmlns:dtos="clr-namespace:Shared.DTO;assembly=Shared"  
+             x:Class="ElectronicShopApp.Views.ProfilePageViews.ItemsUserListPage"
+             x:Name="self">
+    <ContentPage.Content>
+        <ScrollView>
+            <VerticalStackLayout Spacing="15" Padding="20">
+                <Grid ColumnDefinitions="*,*,*">
+                    <Button Text="Back" 
+                              Command="{Binding BackCommand}"
+                              Grid.Column="0"/>
+                    <Label Text="{Binding ListName}" 
+                            FontSize="20" 
+                            FontAttributes="Bold" 
+                            TextColor="#008000" 
+                            Grid.Column="1"
+                            HorizontalOptions="Center"/>
+                    <Button Text="+" 
+                             FontSize="20" 
+                             FontAttributes="Bold" 
+                             TextColor="#008000" 
+                             Command="{Binding AddItemCommand}"
+                             Grid.Column="2"
+                             HorizontalOptions="End"/>
+                </Grid>
+
+                <Label Text="Items in this list:" 
+                       FontSize="18" 
+                       FontAttributes="Bold" 
+                       TextColor="#008000"/>
+
+                <CollectionView ItemsSource="{Binding UserListItems}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Stroke="#008000" StrokeThickness="1" Padding="10" Margin="5">
+                                <VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                                        Grid.Column="0"/>
+                                        <Button Text="Delete" 
+                                               Command="{Binding Source={x:Reference self}, Path=BindingContext.DeleteItemCommand}"
+                                               CommandParameter="{Binding .}"
+                                               Grid.Column="1"
+                                               HorizontalOptions="End"
+                                               BackgroundColor="Red"
+                                               TextColor="White"
+                                               FontSize="12"/>
+                                    </Grid>
+                                    <Label Text="{Binding Product.Name}" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold"/>
+                                    <Label Text="{Binding Product.Description}" 
+                                           FontSize="14" 
+                                           TextColor="Gray"/>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <Label Text="{Binding Product.Price, StringFormat='Price: {0} zł'}" 
+                                                 Grid.Column="0"/>
+                                        <Label Text="{Binding Quantity, StringFormat='Quantity: {0}'}" 
+                                              Grid.Column="1"
+                                              HorizontalOptions="End"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -2,14 +2,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ElectronicShopApp.Services.Interfaces;
-using ElectronicShopApp.Views.ProfilePageViews;
 using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
 using ElectronicShopApp.ViewModels.DTOs;
+
 
 namespace ElectronicShopApp.ViewModels
 {
@@ -18,11 +19,13 @@ namespace ElectronicShopApp.ViewModels
 		readonly IUserListsService _userListsService;
 		private readonly IPopupService _addUserListPopup;
 		private readonly IServiceProvider _serviceProvider;
-		public ProfileListsViewModel(IUserListsService userListsService, IPopupService addUserListPopup,IServiceProvider serviceProvider)
+		private readonly ICommunicateWithView _communicateWithView;
+        public ProfileListsViewModel(IUserListsService userListsService, IPopupService addUserListPopup,IServiceProvider serviceProvider, ICommunicateWithView communicateWithView)
 		{
 			_userListsService = userListsService;
 			_addUserListPopup = addUserListPopup;
             _serviceProvider = serviceProvider;
+            _communicateWithView = communicateWithView;
             AppearingCommand = new Command(async () =>
 			{
 				var tmp = await _userListsService.GetUserLists();
@@ -48,8 +51,18 @@ namespace ElectronicShopApp.ViewModels
 		public Command BackCommand { get; set; }
 		public Command AppearingCommand { get; set; }
 
-
-		[RelayCommand]
+        [RelayCommand]
+        public async Task GoToItemsPage(UserListDTO userList)
+        {
+			if (userList != null)
+            {
+                var userListId = userList.Id;
+                var userListName = userList.Name;
+                // Navigate to the ItemsUserListPage and pass the userListId and userListName as parameters
+                await _communicateWithView.NavigateToItemsUserListPage();
+            }
+        }
+        [RelayCommand]
 		public async Task AddList()
 		{
 			var newList = await ShowAddListPopupAsync();
@@ -103,10 +116,11 @@ namespace ElectronicShopApp.ViewModels
 			{
                 
                 var viewModel = _serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
-                var popup = new RemoveUserListsPopup(viewModel);
-                var result =  await Shell.Current.CurrentPage.ShowPopupAsync<List<CheckedUserListDTOViewModel>>(popup);
+                ICommunicateWithView communicateWithView = _serviceProvider.GetRequiredService<ICommunicateWithView>();
+               
+                var result = await communicateWithView.NavigateRemoveUserListsPopup<IPopupResult<List<CheckedUserListDTOViewModel>>>(viewModel, typeof(List<CheckedUserListDTOViewModel>));
 
-				if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
+                if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
 				{ 
 					return result.Result;
 				}
