@@ -118,7 +118,7 @@ namespace ElectronicShopApp.ViewModels
                 var viewModel = _serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
                 ICommunicateWithView communicateWithView = _serviceProvider.GetRequiredService<ICommunicateWithView>();
                
-                var result = await communicateWithView.NavigateRemoveUserListsPopup<IPopupResult<List<CheckedUserListDTOViewModel>>>(viewModel, typeof(List<CheckedUserListDTOViewModel>));
+                var result = await communicateWithView.NavigateRemoveUserListsPopup<List<CheckedUserListDTOViewModel>>(viewModel, List<CheckedUserListDTOViewModel>());
 
                 if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
 				{ 

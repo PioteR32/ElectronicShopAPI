@@ -62,12 +62,11 @@ namespace ElectronicShopApp.ViewModels
                 var viewModel = (MenageProductsOnUserListsViewModel)_serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("MenageProductsOnUserListsViewModel");
                 viewModel.productId = ProductID;
                 viewModel.InitializeCommand.Execute(null);
-                var result = await _communicateWithView.NavigateRemoveUserListsPopup<IPopupResult<List<CheckedUserListDTOViewModel>>>(viewModel, typeof(List<CheckedUserListDTOViewModel>));
+                var result = await _communicateWithView.NavigateRemoveUserListsPopup<List<CheckedUserListDTOViewModel>>(viewModel);
 
                 if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
                 {
-                    return result.Result;
-                }
+                    return result.Result;}
                 else
                 {
                     return null;

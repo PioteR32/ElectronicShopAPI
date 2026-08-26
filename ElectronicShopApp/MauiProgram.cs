@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using ElectronicShopApp.Services;
 using ElectronicShopApp.Services.Interfaces;
 using ElectronicShopApp.ViewModels;
 using ElectronicShopApp.Views.ProfilePageViews;
@@ -37,6 +38,8 @@ namespace ElectronicShopApp
 			builder.Services.AddHttpClient<ICategoriesService, Services.Classes.CategoriesService>();
 			builder.Services.AddHttpClient<IFilterService, Services.Classes.FiltersService>();
 			builder.Services.AddHttpClient<IFilterOptionService, Services.Classes.FilterOptionsService>();
+			builder.Services.AddHttpClient<IUserListItemService, Services.Classes.UserListItemService>();
+			builder.Services.AddHttpClient<IUserListService, Services.Classes.UserListService>();
 
 			builder.Services.AddTransientPopup<AddUserListPopup, AddUserListPopupViewModel>();
 			//builder.Services.AddTransientPopup<RemoveUserListsPopup, ICheckedUserListsPopupViewModel>();
@@ -57,7 +60,9 @@ namespace ElectronicShopApp
 			builder.Services.AddTransient<ProfileListsViewModel>();
 			builder.Services.AddTransient<ProductPageViewModel>();
 			builder.Services.AddTransient<ProductPageViewModel>();
-            
+			builder.Services.AddTransient<ItemsUserListViewModel>();
+
+            builder.Services.AddSingleton<ICommunicateWithView, CommunicateWithViewModel>();
             builder.Services.AddKeyedTransient<ICheckedUserListsPopupViewModel, MenageProductsOnUserListsViewModel>("MenageProductsOnUserListsViewModel");
 			builder.Services.AddKeyedTransient<ICheckedUserListsPopupViewModel, RemoveUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
 			

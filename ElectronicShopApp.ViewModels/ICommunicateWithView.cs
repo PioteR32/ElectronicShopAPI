@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Maui.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,6 +10,7 @@ namespace ElectronicShopApp.ViewModels
         public Task NavigateToProductPage(ProductPageViewModel viewModel, int productId);
         public Task NavigateToItemsUserListPage();
 
-        public Task<T> NavigateRemoveUserListsPopup<T>(ICheckedUserListsPopupViewModel viewModel,Type resultType) where T : class;
+        public Task<IPopupResult<T>> NavigateRemoveUserListsPopup<T>(ICheckedUserListsPopupViewModel viewModel)
+            where T : class;
     }
 }

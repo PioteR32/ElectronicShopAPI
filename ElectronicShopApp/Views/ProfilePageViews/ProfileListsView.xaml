@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
              xmlns:dtos="clr-namespace:Shared.DTO;assembly=Shared"
-             x:DataType="vm:ProfileListsViewModel"
-             x:Class="ElectronicShopApp.Views.ProfilePageViews.ProfileListsView">
+             xmlns:viewModels="clr-namespace:ElectronicShopApp.ViewModels;assembly=ElectronicShopApp.ViewModels"
+             x:DataType="viewModels:ProfileListsViewModel"
+             x:Class="ElectronicShopApp.Views.ProfilePageViews.ProfileListsView"
+             x:Name="View">
     <Border Stroke="#008000" StrokeThickness="2" Padding="20" Margin="10">
         <VerticalStackLayout Spacing="15">
             
@@ -36,10 +37,16 @@
                                 >
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <VerticalStackLayout x:DataType="dtos:UserListDTO">
+                            <Grid x:DataType="dtos:UserListDTO" >
+                            <VerticalStackLayout  >
                                 <Label Text="{Binding Name}"/>
                                 <Label Text="{Binding Description}"/>
                             </VerticalStackLayout>
+                                <Button BackgroundColor="Transparent"  
+                                        Command="{Binding Source={x:Reference Name=View}, Path=BindingContext.GoToItemsPageCommand}"
+                                        CommandParameter="{Binding .}"
+                                       ></Button>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
