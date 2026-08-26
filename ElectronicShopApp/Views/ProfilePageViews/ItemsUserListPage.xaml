@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ElectronicShopApp.ViewModels"
-             xmlns:dtos="clr-namespace:Shared.DTO;assembly=Shared"  
+             xmlns:dtos="clr-namespace:Shared.DTO;assembly=Shared"
+             xmlns:viewModels="using:ElectronicShopApp.ViewModels"
              x:Class="ElectronicShopApp.Views.ProfilePageViews.ItemsUserListPage"
              x:Name="self">
+    <ContentPage.BindingContext>
+        <viewModels:ItemsUserListViewModel/>
+    </ContentPage.BindingContext>
     <ContentPage.Content>
         <ScrollView>
             <VerticalStackLayout Spacing="15" Padding="20">
@@ -39,10 +42,10 @@
                             <Border Stroke="#008000" StrokeThickness="1" Padding="10" Margin="5">
                                 <VerticalStackLayout>
                                     <Grid ColumnDefinitions="*,*">
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
                                                         Grid.Column="0"/>
                                         <Button Text="Delete" 
-                                               Command="{Binding Source={x:Reference self}, Path=BindingContext.DeleteItemCommand}"
+                                               Command="{Binding Source={x:Reference self}, Path=BindingContext.DeleteItemsCommand}"
                                                CommandParameter="{Binding .}"
                                                Grid.Column="1"
                                                HorizontalOptions="End"
@@ -50,16 +53,13 @@
                                                TextColor="White"
                                                FontSize="12"/>
                                     </Grid>
-                                    <Label Text="{Binding Product.Name}" 
+                                    <Label Text="{Binding UserListItemDTO.ProductName}" 
                                            FontSize="16" 
                                            FontAttributes="Bold"/>
-                                    <Label Text="{Binding Product.Description}" 
-                                           FontSize="14" 
-                                           TextColor="Gray"/>
+                                   
                                     <Grid ColumnDefinitions="*,*">
-                                        <Label Text="{Binding Product.Price, StringFormat='Price: {0} zł'}" 
-                                                 Grid.Column="0"/>
-                                        <Label Text="{Binding Quantity, StringFormat='Quantity: {0}'}" 
+                                        
+                                        <Label Text="{Binding UserListItemDTO.Quantity, StringFormat='Quantity: {0}'}" 
                                               Grid.Column="1"
                                               HorizontalOptions="End"/>
                                     </Grid>
