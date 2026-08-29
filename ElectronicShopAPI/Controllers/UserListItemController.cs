@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ElectronicShopAPI.Models; // Path to your models
-using Microsoft.AspNetCore.Authorization;
-using Shared.DTO;
+﻿using ElectronicShopAPI.Models; // Path to your models
 using ElectronicShopAPI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Shared.DTO;
+using System.Security.Claims;
 // using ElectronicShopAPI.Data; // not needed, logic moved to service
 namespace ElectronicShopAPI.Controllers
 {
@@ -16,8 +17,8 @@ namespace ElectronicShopAPI.Controllers
 		{
 			_userListItemService = userListItemService;
 		}
-		[Authorize(Policy = "AllCustomers")]
-		[HttpGet("{listId}")]
+		[Authorize(Policy = "Read")]
+		[HttpGet("listId={listId}")]
 		public async Task<IActionResult> GetAllUserListItems(int listId)
 		{
 			try
@@ -41,7 +42,7 @@ namespace ElectronicShopAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> AddUserListItems([FromBody] IEnumerable<UserListItemDTO> userListItemDtos)
 		{
-			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 			try
 			{
 				await _userListItemService.AddUserListItems(userListItemDtos);
@@ -63,13 +64,17 @@ namespace ElectronicShopAPI.Controllers
        
 
 		[Authorize(Policy = "Delete")]
-		[HttpDelete]
-		public async Task<IActionResult> DeleteUserListItems(int listId, [FromBody] IEnumerable<UserListItemDTO> userListItemDtos)
+		[HttpPost("delete")]
+		public async Task<IActionResult> DeleteUserListItems([FromBody] IEnumerable<UserListItemDTO> userListItemDtos)
 		{
-			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+			
 			try
 			{
-				await _userListItemService.DeleteUserListItems(userId, listId, userListItemDtos);
+                var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+                if (userListItemDtos == null || !userListItemDtos.Any())
+					return BadRequest(new { message = "No user list items provided for deletion" });
+
+				await _userListItemService.DeleteUserListItems(userId, (int)userListItemDtos.First().UserListId, userListItemDtos);
 				return Ok(true);
 			}
 			catch (KeyNotFoundException knf)
@@ -90,7 +95,7 @@ namespace ElectronicShopAPI.Controllers
 		[HttpPatch]
 		public async Task<IActionResult> ModifyUserListItemsQuantity(int listId,[FromBody] UserListItemDTO userListItemDTO)
 		{
-			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+			var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 			try
 			{
 				await _userListItemService.ModifyUserListItemsQuantity(userId, listId, userListItemDTO);

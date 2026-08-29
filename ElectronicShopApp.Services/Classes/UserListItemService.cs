@@ -18,7 +18,7 @@ namespace ElectronicShopApp.Services.Classes
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _serializerOptions;
-        private const string BaseEndpoint = "UserListItems";
+        private const string BaseEndpoint = "UserListItem";
 
         public UserListItemService(HttpClient httpClient)
         {
@@ -32,7 +32,8 @@ namespace ElectronicShopApp.Services.Classes
             try
             {
                 Global.ApplyAuthHeader(_httpClient, true);
-                var resp = await _httpClient.GetAsync($"{BaseEndpoint}/{listId}");
+                var resp = await _httpClient.GetAsync($"{BaseEndpoint}/listId={listId}");
+                //problem: the API returns 404 if the list is empty, so we need to handle that case
                 if (!resp.IsSuccessStatusCode) return new List<UserListItemDetailDTO>();
                 var content = await resp.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<UserListItemDetailDTO>>(content, _serializerOptions) ?? new List<UserListItemDetailDTO>();
@@ -49,18 +50,26 @@ namespace ElectronicShopApp.Services.Classes
             {
                 Global.ApplyAuthHeader(_httpClient, true);
                 var json = JsonSerializer.Serialize(userListItemDtos, _serializerOptions);
-                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{BaseEndpoint}?listId={listId}")
+                var resp = await _httpClient.PostAsync($"{BaseEndpoint}/delete",
+                    new StringContent(json, Encoding.UTF8, "application/json"));
+
+                Console.WriteLine($"Status: {resp.StatusCode}");
+                Console.WriteLine($"Response Content: {await resp.Content.ReadAsStringAsync()}");
+
+                // Sprawdź czy operacja się powiodła
+                if (!resp.IsSuccessStatusCode)
                 {
-                    Content = new StringContent(json, Encoding.UTF8, "application/json")
-                };
-                var resp = await _httpClient.SendAsync(request);
-                // ignore response content; return nothing (API returns bool)
+                    throw new Exception($"API call failed with status: {resp.StatusCode}, content: {await resp.Content.ReadAsStringAsync()}");
+                }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error in DeleteUserListItems: {ex.Message}");
                 // log
+                throw; // lub zwróć false jeśli to metoda void
             }
         }
+
 
         public async Task<IEnumerable<UserListItemDTO>> GetUserListItems(int userId, int userListId)
         {

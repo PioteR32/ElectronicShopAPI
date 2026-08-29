@@ -12,8 +12,8 @@
         <ScrollView>
             <VerticalStackLayout Spacing="15" Padding="20">
                 <Grid ColumnDefinitions="*,*,*">
-                    <Button Text="Back" 
-                              Command="{Binding BackCommand}"
+                    <Button Text="Delete Checked Items" 
+                              Command="{Binding DeleteItemsCommand}"
                               Grid.Column="0"/>
                     <Label Text="{Binding ListName}" 
                             FontSize="20" 
@@ -21,13 +21,6 @@
                             TextColor="#008000" 
                             Grid.Column="1"
                             HorizontalOptions="Center"/>
-                    <Button Text="+" 
-                             FontSize="20" 
-                             FontAttributes="Bold" 
-                             TextColor="#008000" 
-                             Command="{Binding AddItemCommand}"
-                             Grid.Column="2"
-                             HorizontalOptions="End"/>
                 </Grid>
 
                 <Label Text="Items in this list:" 
@@ -39,32 +32,25 @@
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border Stroke="#008000" StrokeThickness="1" Padding="10" Margin="5">
-                                <VerticalStackLayout>
-                                    <Grid ColumnDefinitions="*,*">
-                                        <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" 
-                                                        Grid.Column="0"/>
-                                        <Button Text="Delete" 
-                                               Command="{Binding Source={x:Reference self}, Path=BindingContext.DeleteItemsCommand}"
-                                               CommandParameter="{Binding .}"
-                                               Grid.Column="1"
-                                               HorizontalOptions="End"
-                                               BackgroundColor="Red"
-                                               TextColor="White"
-                                               FontSize="12"/>
-                                    </Grid>
+                            <Grid ColumnDefinitions="*,20*" >
+                                <VerticalStackLayout 
+                                    Grid.Column="1">
                                     <Label Text="{Binding UserListItemDTO.ProductName}" 
                                            FontSize="16" 
                                            FontAttributes="Bold"/>
-                                   
-                                    <Grid ColumnDefinitions="*,*">
-                                        
-                                        <Label Text="{Binding UserListItemDTO.Quantity, StringFormat='Quantity: {0}'}" 
-                                              Grid.Column="1"
-                                              HorizontalOptions="End"/>
-                                    </Grid>
+
+                                    <Label 
+                                        Text="{Binding UserListItemDTO.Quantity, StringFormat='Quantity: {0}'}" 
+                                        HorizontalOptions="End"/>
+
                                 </VerticalStackLayout>
-                            </Border>
+                                <CheckBox IsChecked="{Binding IsChecked}" Grid.Column="0"/>
+                                <Button 
+                                    Grid.Column="1"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={x:Reference self},Path=BindingContext.ItemClickedCommand}"    
+                                    CommandParameter="{Binding .}"/>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

@@ -110,13 +110,17 @@ namespace ElectronicShopAPI.Services.Classes
 			{
 				throw new ArgumentException("Invalid quantity for one or more items");
 			}
-			if(_context.UserListItems.Where(uli => userListItemDtos.Any(ulid => ulid.Id == uli.Id && ulid.UserListId == uli.UserListId && ulid.ProductId == uli.ProductId)).Count() != userListItemDtos.Count())
+
+            var debugList = _context.UserListItems.Where(uli => uli.UserListId == listId).ToList();
+            var removeList = debugList.Where(uli =>
+                userListItemDtos.Any(ulid => ulid.UserListId == uli.UserListId && ulid.ProductId == uli.ProductId));
+            if (removeList.Count() != userListItemDtos.Count())
 			{
 				throw new KeyNotFoundException("One or more items not found in the user list");
 			}
 			
 
-			var userListItems = userListItemDtos.Select(dto => new UserListItem() { UserListId = listId, ProductId = dto.ProductId, Quantity = dto.Quantity }).ToList();
+			var userListItems = removeList.ToList();
 			_context.UserListItems.RemoveRange(userListItems);
 			await _context.SaveChangesAsync();
 		}

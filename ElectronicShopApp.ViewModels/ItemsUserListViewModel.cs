@@ -18,19 +18,22 @@ namespace ElectronicShopApp.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private readonly IUserListItemService _userListItemService;
         private readonly IUserListService _userListService;
+        private readonly ICommunicateWithView _communicateWithView;
 
         public ItemsUserListViewModel(IUserListsService userListsService, 
             IProductsService productsService, 
             IServiceProvider serviceProvider,
             IUserListItemService userListItemService,
-            IUserListService userListService)
+            IUserListService userListService,
+            ICommunicateWithView communicateWithView)
         {
             _userListsService = userListsService;
             _productsService = productsService;
             _serviceProvider = serviceProvider;
             _userListItemService = userListItemService;
             _userListService = userListService;
-            
+            _communicateWithView = communicateWithView;
+
             // Initialize the collection
             UserListItems = new List<CheckedUserListItemDetailsDTOViewModel>();
         }
@@ -46,15 +49,19 @@ namespace ElectronicShopApp.ViewModels
         [ObservableProperty]
         private int _userListId;
 
-        public List<CheckedUserListItemDetailsDTOViewModel> UserListItems { get; set; }
+        [ObservableProperty] 
+        private List<CheckedUserListItemDetailsDTOViewModel> _userListItems;
 
      
         [RelayCommand]
-        private async Task Appearing()
+        private async Task Appearing(UserListDTO userListDTO)
         {
             try
             {
-               
+                UserId = userListDTO.CustomerId ?? 0;
+                UserListId = userListDTO.Id;
+                ListName = userListDTO.Name;
+
                 if (UserListItems.Count == 0 && _userListId > 0)
                 {
                     UserListItems = (await _userListItemService.GetAllUserListItems(UserListId)).Select(dto => new CheckedUserListItemDetailsDTOViewModel(dto, false)).ToList();
@@ -65,7 +72,14 @@ namespace ElectronicShopApp.ViewModels
                 Debug.WriteLine($"Error loading user list items: {ex.Message}");
             }
         }
-
+        [RelayCommand]
+        private async Task ItemClicked(CheckedUserListItemDetailsDTOViewModel item)
+        {
+            if(item.UserListItemDTO.ProductId != null)
+            {
+                _communicateWithView.NavigateToProductPage(_serviceProvider.GetService<ProductPageViewModel>(), (int)item.UserListItemDTO.ProductId);
+            }
+        }
         [RelayCommand]
         private async Task DeleteItem(CheckedUserListItemDetailsDTOViewModel item)
         {

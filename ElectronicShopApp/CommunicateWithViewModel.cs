@@ -1,11 +1,12 @@
-﻿using CommunityToolkit.Maui.Extensions;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using ElectronicShopApp.ViewModels;
 using ElectronicShopApp.Views;
 using ElectronicShopApp.Views.ProfilePageViews;
+using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CommunityToolkit.Maui.Core;
 
 namespace ElectronicShopApp
 {
@@ -16,10 +17,10 @@ namespace ElectronicShopApp
         {
             _serviceProvider = serviceProvider;
         }
-        public async Task NavigateToItemsUserListPage()
+        public async Task NavigateToItemsUserListPage(UserListDTO userListDTO)
         {
            
-            await Shell.Current.CurrentPage.Navigation.PushAsync(new ItemsUserListPage(_serviceProvider.GetRequiredService<ItemsUserListViewModel>()));
+            await Shell.Current.CurrentPage.Navigation.PushAsync(new ItemsUserListPage(userListDTO , _serviceProvider.GetRequiredService<ItemsUserListViewModel>()));
         }
         public async Task NavigateToProductPage(ProductPageViewModel viewModel, int productId)
         {

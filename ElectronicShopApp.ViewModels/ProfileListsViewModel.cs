@@ -59,7 +59,7 @@ namespace ElectronicShopApp.ViewModels
                 var userListId = userList.Id;
                 var userListName = userList.Name;
                 // Navigate to the ItemsUserListPage and pass the userListId and userListName as parameters
-                await _communicateWithView.NavigateToItemsUserListPage();
+                await _communicateWithView.NavigateToItemsUserListPage(userList);
             }
         }
         [RelayCommand]
@@ -118,7 +118,7 @@ namespace ElectronicShopApp.ViewModels
                 var viewModel = _serviceProvider.GetRequiredKeyedService<ICheckedUserListsPopupViewModel>("RemoveUserListsPopupViewModel");
                 ICommunicateWithView communicateWithView = _serviceProvider.GetRequiredService<ICommunicateWithView>();
                
-                var result = await communicateWithView.NavigateRemoveUserListsPopup<List<CheckedUserListDTOViewModel>>(viewModel, List<CheckedUserListDTOViewModel>());
+                var result = await communicateWithView.NavigateRemoveUserListsPopup<List<CheckedUserListDTOViewModel>>(viewModel);
 
                 if (result != null && !result.WasDismissedByTappingOutsideOfPopup)
 				{ 
