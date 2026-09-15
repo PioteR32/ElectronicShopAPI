@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=electronic_shop;User Id=electronic_shop_app;Password=loginPassword123!;TrustServerCertificate=True;")));
 builder.Services.AddDbContext<ElectronicShopAPI.Data.DataContext>(options =>
 {
-	options.UseSqlServer("Server=.;Database=electronic_shop;User Id=electronic_shop_app;Password=loginPassword123!;TrustServerCertificate=True;");
+	options.UseInMemoryDatabase("ElectronicShop");
 });
 // Register application services
 // Register service implementations from Services.Classes and interfaces from Services.Interfaces
@@ -121,6 +121,13 @@ builder.Services.AddAuthorization(options =>
 		policy.RequireClaim("Permission", Permission.AllPrivilages.ToString()));
 });
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+	var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+	await SeedData.InitializeAsync(context);
+}
+
 app.UseHttpsRedirection();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
