@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ElectronicShopApp.Views.Default.RegistrationView"
+             x:Name="this"
+             >
+    <VerticalStackLayout>
+        <Grid 
+            ColumnDefinitions="*,*" 
+            RowDefinitions="*,*,*,*,*"
+            Grid.Column="1" 
+            Grid.Row="1"
+            RowSpacing="20"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+            <Label 
+                Grid.ColumnSpan="2" 
+                Text="Rejestracja" 
+                FontSize="Header" />
+            <Label 
+                Text="e-mail: " 
+                VerticalOptions="Center" 
+                Grid.Row="1" />
+            <Entry 
+                Text="{Binding EntryEmail,Source={x:Reference this}}" 
+                Grid.Column="1" 
+                Grid.Row="1" />
+            <Label 
+                Text="num phone: " 
+                VerticalOptions="Center" 
+                Grid.Row="2" />
+            <Entry 
+                Text="{Binding PhoneNum,Source={x:Reference this}}" 
+                Grid.Column="1" 
+                Grid.Row="2" />
+            <Label 
+                Text="password: " 
+                VerticalOptions="Center" 
+                Grid.Row="3"/>
+            <Entry 
+                Text="{Binding EntryPassword,Source={x:Reference this}}" 
+                HeightRequest="10" 
+                Grid.Column="1" 
+                Grid.Row="3"/>
+            <Label 
+                Text="password again: " 
+                VerticalOptions="Center" 
+                Grid.Row="4"/>
+            <Entry 
+                Text="{Binding PasswordAgain,Source={x:Reference this}}" 
+                HeightRequest="10" 
+                Grid.Column="1" 
+                Grid.Row="4"/>
+
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>

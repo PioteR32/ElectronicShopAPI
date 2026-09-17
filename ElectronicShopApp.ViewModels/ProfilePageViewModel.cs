@@ -21,11 +21,6 @@ namespace ElectronicShopApp.ViewModels
 			_userListsService = userListsService;
 			_addUserListPopup = popupService;
 			_serviceProvider = serviceProvider;
-			//LogInCommand = new Command(async () =>
-			//{
-			//	await _customerService.LogIn(EntryName, EntryPassword);
-			//	OnPropertyChanged(nameof(IsUserLoggedIn));
-			//});
 			
 			SubViewModels = new IProfileSubViewModel[]
 			{
@@ -48,6 +43,9 @@ namespace ElectronicShopApp.ViewModels
 		}
 
 		[ObservableProperty]
+		private bool _isRegistration = false;
+
+        [ObservableProperty]
 		string _entryName = string.Empty;
 
 		[ObservableProperty]

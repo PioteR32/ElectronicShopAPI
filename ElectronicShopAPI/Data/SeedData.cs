@@ -72,8 +72,18 @@ public static class SeedData
             FirstName = "Jan",
             LastName = "Kowalski",
             Email = "jan.kowalski@example.com",
-            PhoneNumber = "500600700",
-            Password = "password"
+            PhoneNumber = "1",
+            Password = "1"
+        };
+
+        var customer1 = new Customer
+        {
+            Id = 2,
+            FirstName = "Kuba",
+            LastName = "Stachuuura",
+            Email = "nigerrr.czarnuch@gmail.cum",
+            PhoneNumber = "666666666",
+            Password = "niger"
         };
 
         var towns = new[]
@@ -175,6 +185,7 @@ public static class SeedData
         await context.FilterOptions.AddRangeAsync(filterOptions);
         await context.Products.AddRangeAsync(products);
         await context.Customers.AddAsync(customer);
+        await context.Customers.AddAsync(customer1);
         await context.Towns.AddRangeAsync(towns);
         await context.CategoriesFilters.AddRangeAsync(categoriesFilters);
         await context.Comments.AddRangeAsync(comments);

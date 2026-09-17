@@ -78,12 +78,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\Default\RegistrationView.xaml.cs">
+	    <DependentUpon>RegistrationView.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\ProfilePageViews\RemoveUserListsPopup.xaml.cs">
 	    <DependentUpon>RemoveUserListsPopup.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\Default\LogInView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Default\RegistrationView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\FilterOptionView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

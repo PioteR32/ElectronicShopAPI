@@ -35,7 +35,7 @@ namespace ElectronicShopApp.ViewModels
 
 		}
 
-		public string Title { get => "Krok 2: Adres Dostawy"; }
+		public string Title { get => "Listy produktów"; }
 		public int Index { get; set; }
 
 		[ObservableProperty]

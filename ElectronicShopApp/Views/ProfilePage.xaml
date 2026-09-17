@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:modelViews="clr-namespace:ElectronicShopApp.ViewModels;assembly=ElectronicShopApp.ViewModels"
              xmlns:views="clr-namespace:ElectronicShopApp.Views.ProfilePageViews"
+             xmlns:defaultViews="clr-namespace:ElectronicShopApp.Views.Default"
              xmlns:selectors="clr-namespace:ElectronicShopApp.Selectors"
              x:Class="ElectronicShopApp.Views.ProfilePage"
              x:Name="this"
@@ -45,7 +46,7 @@
                     <Setter Property="IsVisible" Value="True" />
                 </DataTrigger>
             </Grid.Triggers>
-            <Grid 
+            <!--<Grid 
                 ColumnDefinitions="*,*" 
                 RowDefinitions="*,*,*"
                 Grid.Column="1" 
@@ -86,8 +87,35 @@
                 Grid.Column="1" 
                 HorizontalOptions="Center"  
                 VerticalOptions="Start" 
+                Margin="20"/>-->
+
+            <defaultViews:LogInView
+                EntryName="{Binding EntryName}"
+                EntryPassword="{Binding EntryPassword}"
+                Grid.Column="1" 
+                Grid.Row="1">
+                <defaultViews:LogInView.Triggers>
+                    <DataTrigger TargetType="defaultViews:LogInView" 
+                            Binding="{Binding IsRegistration}" 
+                            Value="False">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </defaultViews:LogInView.Triggers>
+            </defaultViews:LogInView>
+            <defaultViews:RegistrationView 
+                Grid.Column="1" 
+                Grid.Row="1" />
+
+
+            <Button 
+                Text="Logowanie" 
+                Command="{Binding LogInCommand}"
+                Grid.Row="2" 
+                Grid.Column="1" 
+                HorizontalOptions="Center"  
+                VerticalOptions="Start" 
                 Margin="20"/>
-            
+
         </Grid>
         <Grid RowDefinitions="*, Auto"
               Padding="20"
