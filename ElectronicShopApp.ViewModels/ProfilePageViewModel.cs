@@ -21,19 +21,18 @@ namespace ElectronicShopApp.ViewModels
 			_userListsService = userListsService;
 			_addUserListPopup = popupService;
 			_serviceProvider = serviceProvider;
-			LogInCommand = new Command(async () =>
-			{
-				await _customerService.LogIn(EntryName, EntryPassword);
-				OnPropertyChanged(nameof(IsUserLoggedIn));
-				
-
-			});
+			//LogInCommand = new Command(async () =>
+			//{
+			//	await _customerService.LogIn(EntryName, EntryPassword);
+			//	OnPropertyChanged(nameof(IsUserLoggedIn));
+			//});
 			
 			SubViewModels = new IProfileSubViewModel[]
 			{
 				new ProfileDataViewModel(_customerService),
 				new ProfileListsViewModel(_userListsService,_addUserListPopup,_serviceProvider,_serviceProvider.GetRequiredService<ICommunicateWithView>())
 			};
+
 			for(int i =0; i < SubViewModels.Length; i++)
 			{
 				var subViewModel = SubViewModels[i];
@@ -48,28 +47,29 @@ namespace ElectronicShopApp.ViewModels
 			get => Global.authorizeToken != null && Global.authorizeToken != "";
 		}
 
-
-		string entryName = string.Empty;
-		public string EntryName
-		{
-			get => entryName;
-			set
-			{
-				entryName = value;
-				OnPropertyChanged(nameof(EntryName));
-			}
-		}
-		string entryPassword = string.Empty;
-		public string EntryPassword
-		{
-			get => entryPassword;
-			set
-			{
-				entryPassword = value;
-				OnPropertyChanged();
-			}
-		}
-		public ICommand LogInCommand { get; set;  }
+		[ObservableProperty]
+		string _entryName = string.Empty;
+		//public string EntryName
+		//{
+		//	get => entryName;
+		//	set
+		//	{
+		//		entryName = value;
+		//		OnPropertyChanged(nameof(EntryName));
+		//	}
+		//}
+		[ObservableProperty]
+		string _entryPassword = string.Empty;
+		//public string EntryPassword
+		//{
+		//	get => _entryPassword;
+		//	set
+		//	{
+		//		_entryPassword = value;
+		//		OnPropertyChanged();
+		//	}
+		//}
+		//public ICommand LogInCommand { get; set;  }
 		public ICommand LogOutCommand { get; set; }
 		
 
@@ -87,7 +87,12 @@ namespace ElectronicShopApp.ViewModels
 		// Collection wrapper so BindableLayout (which expects a collection) can render the current subview
 		// Make settable to avoid readonly-assignment errors from source generators or serializers
 		public  ObservableCollection<IProfileSubViewModel> CurrentSubViewModelCollection { get; set; } = new();
-
+		[RelayCommand]
+		public async void LogIn()
+		{
+            await _customerService.LogIn(EntryName, EntryPassword);
+            OnPropertyChanged(nameof(IsUserLoggedIn));
+        }
 		[RelayCommand]
 		private void OnButtonClickedView(int index)
 		{
@@ -102,7 +107,6 @@ namespace ElectronicShopApp.ViewModels
 		private void OnBackButtonClicked()
 		{
 			IsUserInAbility = false;
-			
 		}
 
 		// Called by CommunityToolkit when CurrentSubViewModel changes

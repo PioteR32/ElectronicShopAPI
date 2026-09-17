@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:modelViews="clr-namespace:ElectronicShopApp.ViewModels"
+             xmlns:modelViews="clr-namespace:ElectronicShopApp.ViewModels;assembly=ElectronicShopApp.ViewModels"
              xmlns:views="clr-namespace:ElectronicShopApp.Views.ProfilePageViews"
              xmlns:selectors="clr-namespace:ElectronicShopApp.Selectors"
              x:Class="ElectronicShopApp.Views.ProfilePage"
@@ -27,7 +27,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     
-    <!--<ContentPage.BindingContext>
+<!--<ContentPage.BindingContext>
     <modelViews:ProfilePageViewModel />
 </ContentPage.BindingContext>-->
     
@@ -35,6 +35,7 @@
         <Grid 
             ColumnDefinitions="*,*,*" 
             RowDefinitions="*,*,*"
+            
             IsVisible="False"
             >
             <Grid.Triggers>
@@ -88,28 +89,20 @@
                 Margin="20"/>
             
         </Grid>
-        <Grid RowDefinitions="*, Auto" Padding="20"
+        <Grid RowDefinitions="*, Auto"
+              Padding="20"
+              RowSpacing="10"
               IsVisible="{Binding IsUserLoggedIn}">
 
-            <!-- MIEJSCE WYŚWIETLANIA DYNAMICZNEGO CONTENT VIEW -->
-            <!-- BindableLayout expects a collection. Use a one-item collection from the VM so
-                 the existing ItemTemplateSelector (SelectorView) can choose the correct view. -->
+            
             <StackLayout Grid.Row="0"
                          BindableLayout.ItemsSource="{Binding CurrentSubViewModelCollection}"
                          BindableLayout.ItemTemplateSelector="{StaticResource SelectorView}" 
                          IsVisible="{Binding IsUserInAbility}"/>
-            <!-- PRZYCISKI STERUJĄCE -->
-            <!--<Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,10,0,0">
-                <Button Grid.Column="0" 
-                    Text="Cofnij" 
-                    Command="{Binding PreviousViewCommand}" />
 
-                <Button Grid.Column="1" 
-                    Text="Dalej" 
-                    Command="{Binding NextViewCommand}" />
-            </Grid>-->
             <CollectionView ItemsSource="{Binding SubViewModels }"
-                            IsVisible="False">
+                            IsVisible="False"
+                            >
                 <CollectionView.Triggers>
                     <DataTrigger 
                         TargetType="CollectionView"
@@ -124,6 +117,7 @@
                             Text="{Binding Title}" 
                             Command="{Binding BindingContext.ButtonClickedViewCommand,Source={x:Reference this}}" 
                             CommandParameter="{Binding Index}"
+                            Margin="10"
                             />
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
