@@ -49,27 +49,10 @@ namespace ElectronicShopApp.ViewModels
 
 		[ObservableProperty]
 		string _entryName = string.Empty;
-		//public string EntryName
-		//{
-		//	get => entryName;
-		//	set
-		//	{
-		//		entryName = value;
-		//		OnPropertyChanged(nameof(EntryName));
-		//	}
-		//}
+
 		[ObservableProperty]
 		string _entryPassword = string.Empty;
-		//public string EntryPassword
-		//{
-		//	get => _entryPassword;
-		//	set
-		//	{
-		//		_entryPassword = value;
-		//		OnPropertyChanged();
-		//	}
-		//}
-		//public ICommand LogInCommand { get; set;  }
+
 		public ICommand LogOutCommand { get; set; }
 		
 
@@ -79,20 +62,20 @@ namespace ElectronicShopApp.ViewModels
 		private bool _isUserInAbility  = false;
 		[ObservableProperty]
 		private  IProfileSubViewModel[] _subViewModels;
-
-		// Tworzy automatycznie właściwość CurrentSubViewModel
 		[ObservableProperty]
 		private IProfileSubViewModel _currentSubViewModel;
 
 		// Collection wrapper so BindableLayout (which expects a collection) can render the current subview
 		// Make settable to avoid readonly-assignment errors from source generators or serializers
 		public  ObservableCollection<IProfileSubViewModel> CurrentSubViewModelCollection { get; set; } = new();
+
 		[RelayCommand]
 		public async void LogIn()
 		{
             await _customerService.LogIn(EntryName, EntryPassword);
             OnPropertyChanged(nameof(IsUserLoggedIn));
         }
+
 		[RelayCommand]
 		private void OnButtonClickedView(int index)
 		{
@@ -103,6 +86,7 @@ namespace ElectronicShopApp.ViewModels
 				CurrentSubViewModel.AppearingCommand.Execute(this);
 			}
 		}
+		
 		[RelayCommand]
 		private void OnBackButtonClicked()
 		{
