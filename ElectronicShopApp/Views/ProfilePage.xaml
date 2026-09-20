@@ -9,7 +9,7 @@
              x:Class="ElectronicShopApp.Views.ProfilePage"
              x:Name="this"
              Title="ProfilePage">
-    
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <!-- 1. Szablony wiążące ViewModel z odpowiednim ContentView -->
@@ -27,11 +27,11 @@
                                            ProfileListsViewModel="{StaticResource ProfileListsTemplate}" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    
-<!--<ContentPage.BindingContext>
+
+    <!--<ContentPage.BindingContext>
     <modelViews:ProfilePageViewModel />
 </ContentPage.BindingContext>-->
-    
+
     <VerticalStackLayout>
         <Grid 
             ColumnDefinitions="*,*,*" 
@@ -46,48 +46,7 @@
                     <Setter Property="IsVisible" Value="True" />
                 </DataTrigger>
             </Grid.Triggers>
-            <!--<Grid 
-                ColumnDefinitions="*,*" 
-                RowDefinitions="*,*,*"
-                Grid.Column="1" 
-                Grid.Row="1"
-                RowSpacing="20"
-                HorizontalOptions="Center"
-                VerticalOptions="Center">
-                <Label 
-                    Grid.ColumnSpan="2" 
-                    Text="Logowanie" 
-                    FontSize="Header" />
-                <Label 
-                    Text="e-mail: " 
-                    VerticalOptions="Center" 
-                    Grid.Row="1" />
-                <Entry 
-                    Text="{Binding EntryName}" 
-                    Grid.Column="1" 
-                    Grid.Row="1" />
 
-
-                <Label 
-                    Text="password: " 
-                    VerticalOptions="Center" 
-                    Grid.Row="2"/>
-                <Entry 
-                    Text="{Binding EntryPassword}" 
-                    HeightRequest="10" 
-                    Grid.Column="1" 
-                    Grid.Row="2"/>
-
-            </Grid>
-            
-            <Button 
-                Text="Logowanie" 
-                Command="{Binding LogInCommand}"
-                Grid.Row="2" 
-                Grid.Column="1" 
-                HorizontalOptions="Center"  
-                VerticalOptions="Start" 
-                Margin="20"/>-->
 
             <defaultViews:LogInView
                 EntryName="{Binding EntryName}"
@@ -97,19 +56,49 @@
                 <defaultViews:LogInView.Triggers>
                     <DataTrigger TargetType="defaultViews:LogInView" 
                             Binding="{Binding IsRegistration}" 
-                            Value="False">
-                        <Setter Property="IsVisible" Value="True" />
+                            Value="True">
+                        <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                 </defaultViews:LogInView.Triggers>
             </defaultViews:LogInView>
+
             <defaultViews:RegistrationView 
+                IsVisible = "{Binding IsRegistration}" 
                 Grid.Column="1" 
                 Grid.Row="1" />
 
+            <Button Text="Przejdź do rejestracji"  Command="{Binding GoToRegistrationCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" 
+                        Binding="{Binding IsRegistration}" 
+                         Value="True">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Text="Przejdź do logowania" IsVisible = "{Binding IsRegistration}"  Command="{Binding GoToLoginCommand}"/>
 
             <Button 
                 Text="Logowanie" 
                 Command="{Binding LogInCommand}"
+                Grid.Row="2" 
+                Grid.Column="1" 
+                HorizontalOptions="Center"  
+                VerticalOptions="Start" 
+                Margin="20">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" 
+                        Binding="{Binding IsRegistration}" 
+                        Value="True">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            
+            <Button
+                IsVisible = "{Binding IsRegistration}" 
+                Text="Zarejestruj konto" 
+                Command="{Binding RegistrationCommand}"
                 Grid.Row="2" 
                 Grid.Column="1" 
                 HorizontalOptions="Center"  
@@ -122,7 +111,7 @@
               RowSpacing="10"
               IsVisible="{Binding IsUserLoggedIn}">
 
-            
+
             <StackLayout Grid.Row="0"
                          BindableLayout.ItemsSource="{Binding CurrentSubViewModelCollection}"
                          BindableLayout.ItemTemplateSelector="{StaticResource SelectorView}" 
@@ -149,7 +138,7 @@
                             />
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-                
+
             </CollectionView>
         </Grid>
     </VerticalStackLayout>

@@ -42,21 +42,76 @@ namespace ElectronicShopApp.ViewModels
 			get => Global.authorizeToken != null && Global.authorizeToken != "";
 		}
 
-		[ObservableProperty]
-		private bool _isRegistration = false;
-
-        [ObservableProperty]
-		string _entryName = string.Empty;
-
-		[ObservableProperty]
-		string _entryPassword = string.Empty;
-
-		public ICommand LogOutCommand { get; set; }
 		
 
+		public ICommand LogOutCommand { get; set; }
 
-		#region UserAbilities
+        #region Before User Abilities
+
+        [ObservableProperty]
+        private bool _isRegistration = false;  
+
+        #region Login
+        [ObservableProperty]
+        string _login = string.Empty;
+
+        [ObservableProperty]
+        string _password = string.Empty;
+
+
+        [RelayCommand]
+        public async void LogIn()
+        {
+            await _customerService.LogIn(Login, Password);
+            OnPropertyChanged(nameof(IsUserLoggedIn));
+			Password = string.Empty;
+        }
+        [RelayCommand]
+        public async void GoToLogin()
+        {
+            IsRegistration = false;
+        }
+
+		#endregion
+
+		#region User Registration
 		[ObservableProperty]
+		string _email = string.Empty;
+
+        [ObservableProperty]
+        string _numPhone = string.Empty;
+
+        [ObservableProperty]
+        string _createdPassword = string.Empty;
+
+        [ObservableProperty]
+        string _rewritedPassword = string.Empty;
+
+        [RelayCommand]
+        public async void UserRegistration()
+        {
+            
+            if (await _customerService.CreateUser(new CustomerDTO() { Email = Email, Password = CreatedPassword, PhoneNumber = NumPhone }))
+            {
+                await _customerService.LogIn(Email, CreatedPassword);
+                OnPropertyChanged(nameof(IsUserLoggedIn));
+
+            }
+        }
+        [RelayCommand]
+        public async void GoToRegistration()
+        {
+            IsRegistration = true;
+        }
+
+        #endregion
+
+        #endregion
+
+
+
+        #region UserAbilities
+        [ObservableProperty]
 		private bool _isUserInAbility  = false;
 		[ObservableProperty]
 		private  IProfileSubViewModel[] _subViewModels;
@@ -66,15 +121,8 @@ namespace ElectronicShopApp.ViewModels
 		// Collection wrapper so BindableLayout (which expects a collection) can render the current subview
 		// Make settable to avoid readonly-assignment errors from source generators or serializers
 		public  ObservableCollection<IProfileSubViewModel> CurrentSubViewModelCollection { get; set; } = new();
-
-		[RelayCommand]
-		public async void LogIn()
-		{
-            await _customerService.LogIn(EntryName, EntryPassword);
-            OnPropertyChanged(nameof(IsUserLoggedIn));
-        }
-
-		[RelayCommand]
+       
+        [RelayCommand]
 		private void OnButtonClickedView(int index)
 		{
 			if (index >= 0 && index < _subViewModels.Length)
