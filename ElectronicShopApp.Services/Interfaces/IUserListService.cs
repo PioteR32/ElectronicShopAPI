@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Shared.DTO;
 
-namespace ElectronicShopApp.Services
+namespace ElectronicShopApp.Services.Interfaces
 {
     public interface IUserListService
     {

@@ -54,7 +54,7 @@ namespace ElectronicShopApp.ViewModels
 
      
         [RelayCommand]
-        private async Task Appearing(UserListDTO userListDTO)
+        public async Task Appearing(UserListDTO userListDTO)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace ElectronicShopApp.ViewModels
             }
         }
         [RelayCommand]
-        private async Task ItemClicked(CheckedUserListItemDetailsDTOViewModel item)
+        public async Task ItemClicked(CheckedUserListItemDetailsDTOViewModel item)
         {
             if(item.UserListItemDTO.ProductId != null)
             {
@@ -81,7 +81,7 @@ namespace ElectronicShopApp.ViewModels
             }
         }
         [RelayCommand]
-        private async Task DeleteItem(CheckedUserListItemDetailsDTOViewModel item)
+        public async Task DeleteItem(CheckedUserListItemDetailsDTOViewModel item)
         {
             if (item == null || item.UserListItemDTO?.Id == null) return;
 
@@ -108,7 +108,7 @@ namespace ElectronicShopApp.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteItems()
+        public async Task DeleteItems()
         {
            
             try
@@ -140,7 +140,7 @@ namespace ElectronicShopApp.ViewModels
         }
 
         [RelayCommand]
-        private async Task Back()
+        public async Task Back()
         {
             // Navigate back to the previous page
             await Shell.Current.GoToAsync("..");
