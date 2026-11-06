@@ -35,7 +35,7 @@ namespace ElectronicShopApp.Services.Classes
 			{
 				Global.ApplyAuthHeader(_httpClient);
 
-				var response = await _httpClient.GetAsync(baseEndpoint + @"/1-10");
+				var response = await _httpClient.GetAsync($"{baseEndpoint}/{pageNumber}-{pageSize}");
 				if (response.IsSuccessStatusCode)
 				{
 					var content = await response.Content.ReadAsStringAsync();

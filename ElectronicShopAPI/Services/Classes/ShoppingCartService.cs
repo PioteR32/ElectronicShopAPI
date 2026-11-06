@@ -54,7 +54,8 @@ namespace ElectronicShopAPI.Services.Classes
 				throw new ArgumentException("Invalid item data");
 			}
 
-			var itemsToRemove = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId && items.Any(si => si.ProductId == sc.ProductId));
+			var productIds = items.Select(i => (int?)i.ProductId).ToArray();
+			var itemsToRemove = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId && productIds.Contains(sc.ProductId));
 			_context.ShoppingCarts.RemoveRange(itemsToRemove);
 			await _context.SaveChangesAsync();
 		}
@@ -66,7 +67,9 @@ namespace ElectronicShopAPI.Services.Classes
 				throw new ArgumentException("Invalid item data");
 			}
 
-			var itemsToUpdate = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId && items.Any(si => si.ProductId == sc.ProductId));
+			var productIds = items.Select(i => (int?)i.ProductId).ToArray();
+			var itemsToUpdate = await _context.ShoppingCarts
+				.Where(sc => sc.CustomerId == userId && productIds.Contains(sc.ProductId)).ToListAsync();
 			foreach (var shoppingCartItem in itemsToUpdate)
 			{
 				var itemToUpdate = items.FirstOrDefault(i => i.ProductId == shoppingCartItem.ProductId);
@@ -85,7 +88,7 @@ namespace ElectronicShopAPI.Services.Classes
 		}
 		public async Task<IEnumerable<ShoppingCartItemDTO>> FindItemsInShoppingCart(int userId, string find)
 		{
-			var shoppingCart = _context.ShoppingCarts.Where(sc => sc.Id == userId).Include(p => p.Product);
+			var shoppingCart = _context.ShoppingCarts.Where(sc => sc.CustomerId == userId).Include(p => p.Product);
 			if(find == "" || find == null)
 			{
 				return shoppingCart.Select(sc => Extensions.Extensions.ToDto(sc, sc.Product)).ToList();

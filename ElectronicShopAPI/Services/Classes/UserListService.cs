@@ -28,9 +28,9 @@ namespace ElectronicShopAPI.Services.Classes
                     , IsChecked = _context.UserListItems.Any(uli => uli.ProductId == productId && x.Id == uli.UserListId) }).ToListAsync();
 			return lists;
 		}
-		public async Task<IEnumerable<CheckedUserListDTO>> MenageUserListsProduct(IEnumerable<CheckedUserListDTO> checkedLists,int productId)
+		public async Task<IEnumerable<CheckedUserListDTO>> MenageUserListsProduct(IEnumerable<CheckedUserListDTO> checkedLists,int productId,int userId)
         {
-           var baseCheckedList =  await GetAllUserListWithCheckedProduct(productId, checkedLists.FirstOrDefault()?.CustomerId ?? 0);
+           var baseCheckedList =  await GetAllUserListWithCheckedProduct(productId, userId);
            var changedLists = checkedLists.Where(bcl => baseCheckedList.Any(cl => cl.Id == bcl.Id && cl.IsChecked != bcl.IsChecked));
            
            var added = changedLists.Where(cl => cl.IsChecked).Select(cl => new UserListItem
@@ -55,7 +55,7 @@ namespace ElectronicShopAPI.Services.Classes
                     itemsToRemove);
             }
             await _context.SaveChangesAsync();
-           return await GetAllUserListWithCheckedProduct(productId, checkedLists.FirstOrDefault()?.CustomerId ?? 0);
+           return await GetAllUserListWithCheckedProduct(productId, userId);
         }
         public async Task<int> AddUserList(int userId, UserListDTO dto)
 		{

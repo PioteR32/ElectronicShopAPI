@@ -26,8 +26,7 @@ namespace ElectronicShopAPI.Controllers
 		{
 			try
 			{
-				var tmp = User.Claims.Where(c => orderDTO.CustomerId.ToString() == ClaimTypes.NameIdentifier).ToList();
-				string? userId = tmp.Count == 0 ? null : tmp[0].Value;
+				string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 				if (userId != orderDTO.CustomerId.ToString() && orderDTO.CustomerId != null)
 					return BadRequest(new { message = "Failed to create order", error = "You can only create orders for yourself" });
 

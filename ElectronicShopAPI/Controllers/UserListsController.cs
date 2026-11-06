@@ -68,7 +68,7 @@ namespace ElectronicShopAPI.Controllers
         public async Task<IActionResult> MenageUserListsProduct(int productId, [FromBody] IEnumerable<CheckedUserListDTO> checkedLists)
         {
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-            var id = await _userListService.MenageUserListsProduct(checkedLists, productId);
+            var id = await _userListService.MenageUserListsProduct(checkedLists, productId, userId);
             return Ok(id);
         }
 

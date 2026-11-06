@@ -103,7 +103,7 @@ namespace ElectronicShopAPI.Controllers
 			try
 			{
 				var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-				return Ok(_shoppingCartService.FindItemsInShoppingCart(userId, name)); 
+				return Ok(await _shoppingCartService.FindItemsInShoppingCart(userId, name));
 			}
 			catch (Exception ex)
 			{

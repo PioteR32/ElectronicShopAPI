@@ -10,7 +10,7 @@ namespace ElectronicShopAPI.Services
         Task<IEnumerable<CheckedUserListDTO>> GetAllUserListWithCheckedProduct(int productId, int userId);
 
         Task<IEnumerable<CheckedUserListDTO>> MenageUserListsProduct(IEnumerable<CheckedUserListDTO> checkedLists,
-            int productId);
+            int productId,int userId);
         Task<int> AddUserList(int userId, UserListDTO dto);
 		Task<int> ModifyUserList(int userId, int listId, UserListDTO dto);
 		Task<int> DeleteUserList(int userId, int listId);

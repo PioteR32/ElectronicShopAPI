@@ -134,7 +134,7 @@ namespace ElectronicShopAPI.Services.Classes
         }
         public async Task<IEnumerable<ProductDTO>> GetFilterProducts(ProductFilterDTO filter)
         {
-            bool isInStock = filter.IsInStock.HasValue ? filter.IsInStock.HasValue : true;
+            bool isInStock = filter.IsInStock ?? true;
             //
             if (filter.FilterOptionsIds.Count > 0)
             {
